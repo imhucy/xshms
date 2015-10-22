@@ -1,0 +1,43 @@
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a></div>
+    <div class="center sliding">通报表扬</div>
+    <div class="right">
+    	<a href="#" class="link icon-only open-panel">
+	      	<i class="icon icon-bars"></i>
+	    </a>
+    </div>
+  </div>
+</div>
+<div class="pages no-toolbar">
+  <div data-page="notification-detail-by" class="page">
+    <div class="page-content">
+		<div class="content-block-title tc">{{title}}<br />发布时间：{{time}}</div>
+		
+		<div class="list-block  media-list">
+			<ul>
+				{{#each people}}
+				<li>
+		            <div class="item-content">
+		                <div class="item-inner">
+		                    <div class="item-title-row">
+		                    	<!-- 处分人 -->
+		                        <div class="item-title">{{name}}</div>
+		                        <!-- 班级 -->
+		                        <div class="item-after">{{class}}</div>
+		                    </div>
+		                    <!--加分-->
+		                    <div class="item-subtitle">{{type}}{{score}}</div>
+		                    <!-- 加分项 -->
+		                    <div class="item-text">{{reason}}</div>
+		                </div>
+		            </div>
+		        </li>
+		        {{/each}}
+			</ul>
+		</div>
+		
+    </div>
+  </div>
+</div>

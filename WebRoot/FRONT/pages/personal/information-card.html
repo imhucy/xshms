@@ -1,0 +1,23 @@
+<meta charset="utf-8" />
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="left">
+			<a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+		</div>
+		<div class="center sliding">个人资料</div>
+		<div class="right">
+			<a href="pages/personal/information-card-edit.html" class="link">
+				<span {{#if none}}class="none" {{/if}}>{{none}}编辑</span>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="pages no-toolbar">
+	<div data-page="information-card" class="page">
+		<div class="page-content">
+			<div class="content-block-title"></div>
+			<!-- 个人详细资料 -->
+			<div class="list-block media-list"></div>
+		</div>
+	</div>
+</div>

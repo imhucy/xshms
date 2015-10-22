@@ -1,0 +1,111 @@
+body{
+	font-family: "arial, helvetica, sans-serif,Microsoft Yahei";
+}
+.page{
+	background: #ffffff;
+}
+#knobWapper{
+	width:100%;
+	height:100%;
+	left:0;
+	top:0;
+	background:url(../img/301.GIF) no-repeat center center #00AEEF;
+	color:#fff;
+	text-align:center;
+}
+/* 用户头像 */
+.user-photo.item-media{
+	display: block;
+	border-radius: 50%;
+	background: #00D449;
+	width: 50px;
+	height: 50px;
+	text-align: center;
+	line-height: 32px;
+	color: #fff;
+}
+
+.nav-list-function .col-33{
+	text-align: center;
+	height: 80px;
+}
+.nav-list-function .col-33 a{
+	display: block;
+	color:#fff;
+	text-shadow: 1px 1px 1px #000;
+}
+div[class*="col-"]{
+	margin-bottom: 15px;
+}
+
+/*请假变红*/
+.leave{
+	background:red;
+	border-color: red;
+	color:white;
+}
+/*通报圆形*/
+.circle-red{
+	background: #00D449;
+	color:#fff;
+}
+.circle-blue{
+	background: #007AFF;
+	color:#fff;
+}
+.circle{
+	border-radius: 50%;
+	width:70px;
+	height:70px;
+	text-align: center;
+	line-height: 50px;
+}
+.circle.circle-blue{
+	display: block;
+}
+
+/*===== 部门简介 =====*/
+
+.swiper-slide span {
+  text-align:center;
+  display:block;
+  margin: 20px;
+  font-size:21px;
+}
+
+/*===== 段鲸苏 =====*/
+.item-lower{
+	color: #999;
+}
+/*
+ *  查课页面
+ */
+#lessonCheckForm .item-text{
+	height:auto;
+	overflow: auto;
+	text-overflow: clip;
+	display: block;
+}
+#lessonCheckForm .item-after{
+	max-height: none;
+}
+.modal-text .preloader:after{
+	background-image:url(../img/301.GIF) no-repeat;
+}
+/*标题*/
+.content-block-title{
+	text-align: center;
+	font-size: 16px;
+	color: black;
+	white-space: normal;
+}
+.footer .content-block{
+	margin:0;
+}
+#nav-list {
+	background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0aD0iNTBweCIgaGVpZ2h0PSI1MHB4IiB2aWV3Qm94PSIyNDQuNSAtMjQ1LjUgNTAgNTAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMjQ0LjUgLTI0NS41IDUwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0iIzAwN0FGRiIgZD0iTTI2MC4xMjktMjIyLjY1OHY0Ljk4NGMwLDAuODI5LTAuNjcyLDEuNS0xLjUsMS41aC00Ljk4NGMtMC44MjgsMC0xLjUtMC42NzEtMS41LTEuNXYtNC45ODRjMC0wLjgyOSwwLjY3Mi0xLjUsMS41LTEuNQoJaDQuOTg0QzI1OS40NTctMjI0LjE1OCwyNjAuMTI5LTIyMy40ODYsMjYwLjEyOS0yMjIuNjU4eiBNMjg2LjkzOC0yMjQuMTU4aC0yMS41MDRoLTAuNzgxYy0wLjgyOCwwLTEuNSwwLjY3MS0xLjUsMS41djQuOTg0CgljMCwwLjgyOSwwLjY3MiwxLjUsMS41LDEuNWgwLjc4MWgyMS41MDRjMC44MjgsMCwxLjUtMC42NzEsMS41LTEuNXYtNC45ODRDMjg4LjQzOC0yMjMuNDg2LDI4Ny43NjYtMjI0LjE1OCwyODYuOTM4LTIyNC4xNTh6CgkgTTI1OC42MjktMjM1LjUzM2gtNC45ODRjLTAuODI4LDAtMS41LDAuNjcxLTEuNSwxLjV2NC45ODVjMCwwLjgyOSwwLjY3MiwxLjUsMS41LDEuNWg0Ljk4NGMwLjgyOCwwLDEuNS0wLjY3MSwxLjUtMS41di00Ljk4NQoJQzI2MC4xMjktMjM0Ljg2MSwyNTkuNDU3LTIzNS41MzMsMjU4LjYyOS0yMzUuNTMzeiBNMjg2LjkzOC0yMzUuNTMzaC0yMS41MDRoLTAuNzgxYy0wLjgyOCwwLTEuNSwwLjY3MS0xLjUsMS41djQuOTg1CgljMCwwLjgyOSwwLjY3MiwxLjUsMS41LDEuNWgwLjc4MWgyMS41MDRjMC44MjgsMCwxLjUtMC42NzEsMS41LTEuNXYtNC45ODVDMjg4LjQzOC0yMzQuODYxLDI4Ny43NjYtMjM1LjUzMywyODYuOTM4LTIzNS41MzN6CgkgTTI1OC42MjktMjEyLjc4M2gtNC45ODRjLTAuODI4LDAtMS41LDAuNjcxLTEuNSwxLjV2NC45ODVjMCwwLjgyOSwwLjY3MiwxLjUsMS41LDEuNWg0Ljk4NGMwLjgyOCwwLDEuNS0wLjY3MSwxLjUtMS41di00Ljk4NQoJQzI2MC4xMjktMjEyLjExMiwyNTkuNDU3LTIxMi43ODMsMjU4LjYyOS0yMTIuNzgzeiBNMjg2LjkzOC0yMTIuNzgzaC0yMS41MDRoLTAuNzgxYy0wLjgyOCwwLTEuNSwwLjY3MS0xLjUsMS41djQuOTg1CgljMCwwLjgyOSwwLjY3MiwxLjUsMS41LDEuNWgwLjc4MWgyMS41MDRjMC44MjgsMCwxLjUtMC42NzEsMS41LTEuNXYtNC45ODVDMjg4LjQzOC0yMTIuMTEyLDI4Ny43NjYtMjEyLjc4MywyODYuOTM4LTIxMi43ODN6Ii8+Cjwvc3ZnPg==") no-repeat;
+}
+/*===== 输入框的问题 =====*/
+.list-block input[type=text]{
+	display : inline;
+}

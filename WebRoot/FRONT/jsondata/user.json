@@ -1,0 +1,22 @@
+{
+	"testData":{
+		"stu_no":"201286250124",
+		"stu_pass":"123456"
+	},
+	"login_status":"true",
+	"msg":"登录成功",
+	"user":{
+		"user_nickname":"超宇",
+		"user_name":"胡超宇",
+		"user_department":"科技部",
+		"user_position":"部长",
+		"user_url":"pages/personal/information-card.html"
+	},
+	"func_list":[
+		{"name":"通讯录","url":"pages/contact/contact.html"},
+		{"name":"考勤","url":"pages/attendence/work-attendance.html"},
+		{"name":"我的任务","url":"my-task.html"},
+		{"name":"个人设置","url":"pages/personal/personal-settings.html"},
+		{"name":"注销","url":"logout"}
+	]
+}

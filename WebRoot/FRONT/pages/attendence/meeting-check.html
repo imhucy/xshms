@@ -1,0 +1,44 @@
+<meta charset="utf-8" />
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="left">
+			<a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span>
+			</a>
+		</div>
+
+		<div class="center sliding">会议考勤</div>
+		<div class="right">
+			<!--<a href="#" class="link">提交</a>-->
+		</div>
+	</div>
+</div>
+<div class="pages no-toolbar">
+	<div data-page="meeting-check" class="page">
+		<form class="searchbar searchbar-init" data-search-list=".list-block-search .media-list" data-search-in=".item-title" data-found=".searchbar-found" data-not-found=".searchbar-not-found">
+	        <div class="searchbar-input">
+	            <input type="search" placeholder="输入姓名快速检索" />
+	            <a href="#" class="searchbar-clear"></a>
+	        </div>
+	        <a href="#" class="searchbar-cancel">取消</a>
+	    </form>
+	    
+	    <div class="searchbar-overlay"></div>
+		<div class="page-content">
+			
+		    <div class="content-block searchbar-not-found">没有找到该同学</div>
+	        <div class="list-block hidden search-found media-list"><ul></ul></div>
+			<div class="content-block-title">默认为缺席状态，请考勤人员主动将状态改成已到</div>
+			<div class="list-block searchbar-found list-block-search accordion-list inset">
+				<ul id="ajaxContain_meeting"></ul>
+			</div>
+			<!-- 提交按钮 -->
+			<div class="list-block media-list">
+				<ul>
+					<li>
+						<a href="#" class="meetingSubmit submit list-button item-link color-red">确认提交</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>

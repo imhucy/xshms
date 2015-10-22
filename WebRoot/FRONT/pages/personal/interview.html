@@ -1,0 +1,58 @@
+<meta charset="utf-8" />
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a></div>
+    <div class="center sliding">通讯录</div>
+    <div class="right">
+    	<a href="#" class="link">
+	      	提交结果
+	    </a>
+    </div>
+    
+  </div>
+</div>
+
+<div class="pages no-toolbar">
+  <div data-page="interview" class="page">
+  	<form class="searchbar searchbar-init" data-search-list=".list-block-search" data-search-in=".item-title" data-found=".searchbar-found" data-not-found=".searchbar-not-found">
+        <div class="searchbar-input">
+            <input type="search" placeholder="输入姓名搜索">
+            <a href="#" class="searchbar-clear"></a>
+        </div>
+        <a href="#" class="searchbar-cancel">Cancel</a>
+    </form>
+    
+    <div class="searchbar-overlay"></div>
+    <div class="page-content hide-bars-on-scroll">
+    	<div class="content-block searchbar-not-found">
+                没有找到该同学
+        </div>
+        <div class="list-block hidden search-found media-list"><ul></ul></div>
+    	<div class="list-block list-block-search searchbar-found media-list">
+			<ul>
+				{{#each interviewers}}
+				<li>
+					<a href="#" class="item-link smart-select">
+						<select name="interview-result">
+							<option value="未审核" selected="selected">未审核</option>
+							<option value="通过面试">通过面试</option>
+							<option value="未通过">未通过</option>
+						</select>
+						<div class="item-content">
+							<div class="item-inner">
+								<div class="item-title-row">
+									<div class="item-title">{{name}}</div>
+									<div class="item-after"></div>
+								</div>
+								<div class="item-subtitle">{{no}}-{{class}}</div>
+								<div class="item-text">{{introduce}}</div>
+							</div>
+						</div>
+					</a>
+				</li>
+				{{/each}}
+			</ul>
+		</div>
+    </div>
+  </div>
+</div>

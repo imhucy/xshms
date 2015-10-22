@@ -1,0 +1,13 @@
+{
+	"depts":[
+		{"deptName":"科技部","deptId":1}
+		,{"deptName":"宣传部","deptId":2}
+		,{"deptName":"科技部","deptId":1}
+		,{"deptName":"宣传部","deptId":2}
+		,{"deptName":"科技部","deptId":1}
+		,{"deptName":"宣传部","deptId":2}
+		,{"deptName":"科技部","deptId":1}
+		,{"deptName":"宣传部","deptId":2}
+		,{"deptName":"科技部","deptId":1}
+	]
+}

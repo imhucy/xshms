@@ -1,0 +1,160 @@
+<!--<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+request.setAttribute("frontPath", basePath+"FRONT");
+request.setAttribute("pagePath", basePath+"FRONT/pages/");
+%>-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>学生会管理系统</title>
+    <!--<link rel="stylesheet" type="text/css" href="${frontPath}/css/reset.min.css"/>
+    <link rel="stylesheet" href="${frontPath}/css/framework7.min.css" />
+    <link rel="stylesheet" type="text/css" href="${frontPath}/css/kitchen-sink.css"/>
+    <link rel="stylesheet" type="text/css" href="${frontPath}/css/mystyle.css"/>-->
+    <link rel="stylesheet" type="text/css" href="css/reset.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/framework7.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/kitchen-sink.css"/>
+    <link rel="stylesheet" type="text/css" href="css/mystyle.css"/>
+  </head>
+  <body>
+  	<!-- 应用启动界面 -->
+  	<div id="knob-overlay"></div>
+  	<div id="knobWapper">
+  		<span id="loadWheel">0</span>%<br />
+		应用加载中,请稍后<span id="loadDot">...</span><br />
+		若页面长时间无响应，请刷新页面，给您带来的不便请谅解		
+  	</div>
+    <!-- Status bar overlay for fullscreen mode-->
+    <div class="statusbar-overlay"></div>
+    <!-- Panels overlay-->
+    <div class="panel-overlay"></div>
+    <!-- Left panel with reveal effect-->
+    <div class="panel panel-left panel-cover" style="background: #fff;color: #000;">
+      
+      <div class="list-block">
+       	<ul>
+       		<li>
+       			<a href="pages/login/login.html" class="item-link item-content close-panel">
+       				您还未登陆，点击登陆
+       			</a>
+       		</li>
+       	</ul>
+      </div>
+      
+    </div>
+    
+    <!-- Views-->
+    <div class="views">
+      <!-- Your main view, should have "view-main" class-->
+      <div class="view view-main">
+        <!-- Top Navbar-->
+        <div class="navbar">
+          <div class="navbar-inner">
+          	<!--登录按钮-->
+          	<!--
+          	<div class="left sliding">
+          		<a href="login.html" class="link icon-only login-btn" style="{{hide}}">
+                	<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                	<span>登录</span>
+                </a>
+          	</div>
+          	-->
+            <div class="center sliding">水利计通系</div>
+            <!--功能面板-->
+            <div class="right">
+              <a href="#" class="link icon-only open-panel nav-btn">
+              	<i class="icon icon-bars"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="pages navbar-through toolbar-through">
+          <div data-page="index" class="page">
+            <div class="page-content">
+              
+              <div data-pagination=".swiper-pagination1" data-loop="true" data-autoplay = "3000" data-space-between="20" data-slidesPerView="1" class="swiper-container swiper-init">
+		        <div class="swiper-pagination swiper-pagination1"></div>
+		        <div class="swiper-wrapper" style="height: 260px;">
+		          <div class="swiper-slide"><img style="height: 260px;width: 100%;" src="http://wwwedu.csust.edu.cn/pub/cnxy/xsgz/xgdt/W020120518322891861903.jpg"/></div>
+		          <div class="swiper-slide"><img style="height: 260px;width: 100%;" src="http://wwwedu.csust.edu.cn/pub/cnxy/xsgz/xgdt/W020120427537558128409.JPG"/></div>
+		          <div class="swiper-slide"><img style="height: 260px;width: 100%;" src="http://wwwedu.csust.edu.cn/pub/cnxy/xsgz/xgdt/W020120427537558439037.JPG"/></div>
+		          <div class="swiper-slide"><img style="height: 260px;width: 100%;" src="http://wwwedu.csust.edu.cn/pub/cnxy/rcpy/W020110523351577186734.JPG"/></div>
+		        </div>
+		      </div>
+              <div class="content-block-title"></div>
+              <!-- start swiper -->
+              <div data-pagination=".swiper-pagination2" data-loop="true" class="swiper-container swiper-init nav-list-function">
+		        <div style="display:none" class="swiper-pagination2"></div>
+		        <div class="swiper-wrapper">
+
+		          <div class="swiper-slide">
+		          	<div class="row">
+	                	<div class="col-33 tablet-20"><a href="pages/notification/notification-list.html" ><img src="img/icon/reminders.png"/><br />通报</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/apply-for/apply-for-new.html" ><img src="img/icon/textedit.png"/><br />申请加入学生会</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/idea-box/ideas-box-submit.html" ><img src="img/icon/message.png"/><br />意见箱</a></div>
+	                </div>
+	                <div class="row">
+	                	<div class="col-33 tablet-20"><a href="pages/notification/notification-detail-chart.html" ><img src="img/icon/ibook.png"/><br />统计报表</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/dept/voluntary-activity.html" ><img src="img/icon/tips.png"/><br />志愿者活动</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/dept/planning.html" ><img src="img/icon/finder.png"/><br />部门活动策划</a></div>
+	                </div>
+		          </div>
+		          <div class="swiper-slide">
+		          	<div class="row">
+	                	<div class="col-33 tablet-20"><a href="pages/dept/introduction-department.html" ><img src="img/icon/i-f7.png"/><br />各部门简介</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/apply-for/apply-for-new.html" ><img src="img/icon/i-f7.png"/><br />申请加入学生会</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/ideas-box/ideas-box.html" ><img src="img/icon/i-f7.png"/><br />意见箱</a></div>
+	                </div>
+	                <div class="row">
+	                	<div class="col-33 tablet-20"><a href="pages/notification/notification-detail-chart.html" ><img src="img/icon/i-f7.png"/><br />统计报表</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/dept/voluntary-activity.html" ><img src="img/icon/i-f7.png"/><br />志愿者活动</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/dept/planning.html" ><img src="img/icon/i-f7.png"/><br />部门活动策划</a></div>
+	                </div>
+		          </div>
+		        </div>
+		      </div>
+		      <!-- end swiper -->
+		      <div class="footer">
+		      	<div class="content-block tc">
+		      		版权所有：长沙理工大学城南学院  水利计通系<br />
+		      		技术支持：云作坊（金）
+		      	</div>
+		      </div>
+            </div>
+            <!-- Bottom Toolbar-->
+	        <!--  
+	        <div class="toolbar">
+	          <div class="toolbar-inner">
+	          	<a href="${pagePath}apply-for/apply-for-new.html" class="link hash">申请加入学生会</a>
+	          	<a href="${pagePath}dept/introduction-department.html" class="link">查看各部门简介</a>
+	          </div>
+	        </div> 
+	        -->
+          </div>
+        </div>
+     </div>
+    </div>
+    
+    
+    <div id="template7Script"></div>
+
+    <!-- script -->
+    <!--
+    <script src="${frontPath}/js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="${frontPath}/js/main.js" type="text/javascript" charset="utf-8"></script>
+    -->
+    <script src="js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script type="text/javascript">
+    	$.getScript("js/main.js",function(){
+    		init();
+    	});
+    </script>
+  </body>
+</html>

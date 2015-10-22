@@ -1,0 +1,37 @@
+{
+    "chart": {
+        "plotBackgroundColor": null,
+        "plotBorderWidth": null,
+        "plotShadow": false
+    },
+    "title": {
+        "text": "各班违纪人数报表, 2015"
+    },
+    "tooltip": {
+        "pointFormat": "{series.name}: <b>{point.y}人</b>"
+    },
+    "plotOptions": {
+        "pie": {
+            "allowPointSelect": true,
+            "cursor": "pointer",
+            "dataLabels": {
+                "enabled": true
+            },
+            "showInLegend": true
+        }
+    },
+    "series": [{
+        "type": "pie",
+        "name": "违纪人数",
+        "data": [
+            ["计算机1501",   10],
+            ["计算机1502",   20],
+            ["通信1501", 30],
+            ["通信1502", 25],
+            ["港航1501", 6],
+            ["港航1502", 0],
+            ["水利1501", 13],
+            ["水利1502", 12]
+        ]
+    }]
+}
