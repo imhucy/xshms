@@ -20,7 +20,22 @@
   <option value="{{deptName}}">{{deptName}}</option>
 {{/each}}
 </script>
-	
+<script id="linkListTemplate" type="text/template7">
+<div class="list-block">
+<ul>
+{{#each lists}}
+  <li>
+      <a href="{{url}}" class="item-link item-content">
+          <div class="item-inner">
+              <div class="item-title">{{text}}</div>
+              <div class="item-after">{{datetime}}</div>
+          </div>
+      </a>
+  </li>
+{{/each}}
+</ul>
+</div>
+</script>
 <script id="panelTemplate" type="text/template7">
 	<div class="list-block  media-list">
       <ul>

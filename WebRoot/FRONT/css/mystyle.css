@@ -109,3 +109,9 @@ div[class*="col-"]{
 .list-block input[type=text]{
 	display : inline;
 }
+
+i.icon.icon-tips{
+	width:20px;
+	height: 20px;
+	background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iLTM1LjUgMTA0LjUgNTAgNTAiPiAgPHBhdGggZmlsbD0iIzAwN2FmZiIgZD0iTS0zLjM2IDExMi4wODR2MTljMCAxLjkzMy0xLjU2OCAzLjUtMy41IDMuNWgtNS42OTZjLTEuOTMzIDAtMy41LTEuNTY3LTMuNS0zLjV2LTE5YzAtMS45MzMgMS41NjctMy41IDMuNS0zLjVoNS42OTVjMS45MzIgMCAzLjUgMS41NjcgMy41IDMuNXptLTMuNSAyNi4wMDJoLTUuNjk2Yy0xLjkzMyAwLTMuNSAxLjU2Ny0zLjUgMy41djUuOTk4YzAgMS45MzMgMS41NjcgMy41IDMuNSAzLjVoNS42OTVjMS45MzIgMCAzLjUtMS41NjcgMy41LTMuNXYtNS45OThjMC0xLjkzMy0xLjU2OC0zLjUtMy41LTMuNXoiLz48L3N2Zz4=);
+}

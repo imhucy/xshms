@@ -35,11 +35,11 @@
  * ********************
  * 17.招新申请页面
  * ********************
- * 18、志愿者活动页面
+ * 18.志愿者活动页面
  * ********************
- * 19、查课页面
+ * 19.查课页面
  * ********************
- * 
+ * 20.考勤选择页
  * */
 
 // 初始化应用
@@ -830,7 +830,7 @@ myApp.onPageInit("apply-for-new", function(page) {
 
 });
 
-/*===== 18、志愿者活动页面 =====*/
+/*===== 18.志愿者活动页面 =====*/
 myApp.onPageInit('voluntary-activity',function(page){
 	var swiperVoluntary = myApp.swiper('#swiper-container-volutary', {
 		
@@ -843,7 +843,7 @@ myApp.onPageInit('voluntary-activity',function(page){
 		speed: 400
 	});
 });
-/*===== 19、查课页面 =====*/
+/*===== 19.查课页面 =====*/
 
 myApp.onPageInit('lesson-check-1',function(page){
 	
@@ -927,4 +927,34 @@ myApp.onPageInit('lesson-check-2',function(page){
 	// 只能提交一次
 	curPage.find('.submit').on('click',fnSubmit);
 });
+/*===== 20.考勤功能列表页 =====*/
+myApp.onPageInit('work-attendance',function(page){
+	var curPage = $(page.container);
+	var data ={  
+		lists:[
+			{url:"pages/attendence/morning-check.html",text:"查早寝"},
+			{url:"pages/attendence/evening-check.html",text:"查晚寝"},
+			{url:"pages/attendence/lesson-check-1.html",text:"查课"},
+			{url:"pages/attendence/exercise-check.html",text:"查早操"},
+			{url:"pages/attendence/meeting-check.html",text:"会议考勤"}
+		]
+	}
+	var linkList = compileScript("#linkListTemplate",data);
+	$(linkList).appendTo(curPage.find(".page-content"));
+	
+});
 
+/*===== 21.通报列表页 =====*/
+myApp.onPageInit('notification-list',function(page){
+	var curPage = $(page.container);
+	var data = {
+		lists : [
+			{url:"pages/notification/notification-detail-zlb.html",text:"第10周查寝通报",datetime:"2015-5-18"},
+		    {url:"pages/notification/notification-detail-xxb.html",text:"第10周查课通报",datetime:"2015-5-18"},
+		    {url:"pages/notification/notification-detail-pp.html",text:"通报批评",datetime:"2015-5-18"},
+		    {url:"pages/notification/notification-detail-by.html",text:"通报表扬",datetime:"2015-5-18"}
+		]
+	}
+	var linkList = compileScript("#linkListTemplate",data);
+	$(linkList).appendTo(curPage.find(".page-content"));
+});
