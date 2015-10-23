@@ -86,11 +86,11 @@ myApp.onPageInit('index', function(page) {
 
 myApp.onPageInit('login-screen', function(page) {
 
-	var pageContainer = $$(page.container);
+	var curPage = $$(page.container);
 
-	pageContainer.find('.login-btn').on('click', function() {
-		var username = pageContainer.find('input[name="username"]').val();
-		var password = pageContainer.find('input[name="password"]').val();
+	curPage.find('.login-btn').on('click', function() {
+		var username = curPage.find('input[name="username"]').val();
+		var password = curPage.find('input[name="password"]').val();
 		
 		LoginBiz(username, password,function(msg ,login_status){
 			myApp.alert(msg, function(){
