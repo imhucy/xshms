@@ -19,7 +19,7 @@ request.setAttribute("pagePath", basePath+"FRONT/pages/");
     <link rel="stylesheet" type="text/css" href="${frontPath}/css/mystyle.css"/>-->
     <link rel="stylesheet" type="text/css" href="css/reset.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/framework7.min.css" />
-    <link rel="stylesheet" type="text/css" href="css/kitchen-sink.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="css/kitchen-sink.css"/>-->
     <link rel="stylesheet" type="text/css" href="css/mystyle.css"/>
   </head>
   <body>
@@ -96,12 +96,12 @@ request.setAttribute("pagePath", basePath+"FRONT/pages/");
 		          <div class="swiper-slide">
 		          	<div class="row">
 	                	<div class="col-33 tablet-20"><a href="pages/notification/notification-list.html" ><img src="img/icon/reminders.png"/><br />通报</a></div>
-	                	<div class="col-33 tablet-20"><a href="pages/apply-for/apply-for-new.html" ><img src="img/icon/textedit.png"/><br />申请加入学生会</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/apply-for/apply-for-new.html" ><img src="img/icon/textedit.png"/><br />申请入会</a></div>
 	                	<div class="col-33 tablet-20"><a href="pages/idea-box/ideas-box-submit.html" ><img src="img/icon/message.png"/><br />意见箱</a></div>
 	                </div>
 	                <div class="row">
 	                	<div class="col-33 tablet-20"><a href="pages/notification/notification-detail-chart.html" ><img src="img/icon/ibook.png"/><br />统计报表</a></div>
-	                	<div class="col-33 tablet-20"><a href="pages/dept/voluntary-activity.html" ><img src="img/icon/tips.png"/><br />志愿者活动</a></div>
+	                	<div class="col-33 tablet-20"><a href="pages/dept/voluntary-activity.html" ><img src="img/icon/tips.png"/><br />志愿者</a></div>
 	                	<div class="col-33 tablet-20"><a href="pages/dept/planning.html" ><img src="img/icon/finder.png"/><br />部门活动策划</a></div>
 	                </div>
 		          </div>
@@ -144,11 +144,30 @@ request.setAttribute("pagePath", basePath+"FRONT/pages/");
     
     <div id="template7Script"></div>
 		<div id="tips">
+			<!--早晚寝提示-->
 			<div class="popover popover-evening-check-tip">
 		    <div class="popover-angle"></div>
 		    <div class="popover-inner">
 	        <div class="content-block">
 	          <p>有情况的才需要修改，没情况的保持默认就好</p>
+	        </div>
+		    </div>
+			</div>
+			<!--早操提示-->
+			<div class="popover popover-exercise-check-tip">
+		    <div class="popover-angle"></div>
+		    <div class="popover-inner">
+	        <div class="content-block">
+	          <p>默认是到场的，没来的同学需要记录为缺席</p>
+	        </div>
+		    </div>
+			</div>
+			<!--会议考勤提示-->
+			<div class="popover popover-meeting-check-tip">
+		    <div class="popover-angle"></div>
+		    <div class="popover-inner">
+	        <div class="content-block">
+	          <p>默认记录为缺席，考勤的同学需要将到场人员记录为已到</p>
 	        </div>
 		    </div>
 			</div>
