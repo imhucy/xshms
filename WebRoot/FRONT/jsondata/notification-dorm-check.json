@@ -1,0 +1,16 @@
+{
+	"title":"第10周查寝通报",
+	"datetime":"2015-5-23",
+	"buildings":{
+		"西十":[
+			{"name":"郑夏苗","major":"通信","enterYear":2012,"classes":1,"room":"912","bed":3,"score":5,"results":["未归","大功率"]},
+			{"name":"郑夏苗1","major":"通信","enterYear":2012,"classes":1,"room":"912","bed":4,"score":5,"results":["未归","大功率"]},
+			{"name":"郑夏苗2","major":"通信","enterYear":2012,"classes":1,"room":"912","bed":2,"score":5,"results":["未归","大功率"]}
+		],
+		"西十一":[
+			{"name":"罗华伟","major":"通信","enterYear":2012,"classes":2,"room":"732","bed":1,"score":3,"results":["晚归","大功率"]},
+			{"name":"罗华伟1","major":"通信","enterYear":2012,"classes":2,"room":"732","bed":2,"score":3,"results":["晚归","大功率"]},
+			{"name":"罗华伟2","major":"通信","enterYear":2012,"classes":2,"room":"732","bed":4,"score":3,"results":["晚归","大功率"]}
+		]
+	}
+}

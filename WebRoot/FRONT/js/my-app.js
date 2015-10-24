@@ -27,7 +27,7 @@
  * ********************
  * 13.通报表扬详情页面(notification-detail-by)
  * ********************
- * 14.通报批评详情页面
+ * 24.通报批评详情页面
  * ********************
  * 15.个人信息页面
  * ********************
@@ -684,23 +684,6 @@ myApp.onPageBeforeInit('notification-detail-by', function(page) {
 		}
 	});
 });
-/*===== 14.通报批评详情页面 =====*/
-myApp.onPageAfterAnimation("notification-detail-pp", function(page) {
-	mainView.router.refreshPage();
-});
-myApp.onPageBeforeInit('notification-detail-pp', function(page) {
-	myApp.showPreloader('载入中');
-	$.ajax({
-		url: "jsondata/notification-pp.json",
-		data: {},
-		dataType: 'json',
-		success: function(data) {
-			myApp.hidePreloader();
-			myApp.template7Data["url:notification-detail-pp.html"] = data;
-		}
-	});
-});
-
 /*===== 15.个人信息页面 =====*/
 myApp.onPageInit("information-card", function(page) {
 	curPage = $(page.container);
@@ -957,4 +940,37 @@ myApp.onPageInit('notification-list',function(page){
 	}
 	var linkList = compileScript("#linkListTemplate",data);
 	$(linkList).appendTo(curPage.find(".page-content"));
+});
+/*=====  22.学习部通报  =====*/
+myApp.onPageInit('notification-detail-xxb',function(page){
+	var curPage = $(page.container);
+	$.getJSON('jsondata/notification-lesson-check.json',{},function(context){
+		var htmlElem = compileScript("#lessonCheckNoticeTemplate",context);
+		$(htmlElem).appendTo(curPage.find('.page-content'));
+	});
+});
+/*===== 23.自律部通报 =====*/
+myApp.onPageInit('notification-detail-zlb',function(page){
+	var curPage = $(page.container);
+	
+	$.getJSON('jsondata/notification-dorm-check.json',{},function(context){
+		var htmlElem = compileScript("#dormCheckNoticeTemplate",context);
+		$(htmlElem).appendTo(curPage.find('.page-content'));
+	});
+});
+/*===== 24.通报批评详情页 =====*/
+myApp.onPageInit('notification-detail-pp',function(page){
+  var curPage = $(page.container);
+  $.getJSON('jsondata/notification-pp.json',{},function(context){
+    var htmlElem = compileScript("#PPNoticeTemplate",context);
+    $(htmlElem).appendTo(curPage.find('.page-content'));
+  });
+});
+/*===== 25.通报表扬详情页 =====*/
+myApp.onPageInit('notification-detail-by',function(page){
+  var curPage = $(page.container);
+  $.getJSON('jsondata/notification-by.json',{},function(context){
+    var htmlElem = compileScript("#BYNoticeTemplate",context);
+    $(htmlElem).appendTo(curPage.find('.page-content'));
+  });
 });
