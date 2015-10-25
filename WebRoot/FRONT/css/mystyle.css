@@ -123,3 +123,5 @@ i.icon.icon-tips {
 	display: block;
 	padding-top: 10px;
 }
+/*===== 任务截止时间 =====*/
+.task-dateline{background-color: #4cd964;color: #fff;border-radius: 3px;padding:2px 8px;}

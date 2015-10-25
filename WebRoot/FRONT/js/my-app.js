@@ -974,3 +974,13 @@ myApp.onPageInit('notification-detail-by',function(page){
     $(htmlElem).appendTo(curPage.find('.page-content'));
   });
 });
+/*===== 26.我的任务 =====*/
+myApp.onPageInit('my-task',function(page){
+  var curPage = $$(page.container);
+  curPage.find('.pull-to-refresh-content').on('refresh',function(e){
+    console.log("aaaa");
+    setTimeout(function(){
+      myApp.pullToRefreshDone();
+    },2000);
+  })
+});

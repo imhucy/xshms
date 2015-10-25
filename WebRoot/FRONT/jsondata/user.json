@@ -15,8 +15,7 @@
 	"func_list":[
 		{"name":"通讯录","url":"pages/contact/contact.html"},
 		{"name":"考勤","url":"pages/attendence/work-attendance.html"},
-		{"name":"我的任务","url":"my-task.html"},
-		{"name":"个人设置","url":"pages/personal/personal-settings.html"},
-		{"name":"注销","url":"logout"}
+		{"name":"我的任务","url":"pages/task/my-task.html"},
+		{"name":"退出登录","url":"logout"}
 	]
 }
