@@ -16,6 +16,7 @@
 		{"name":"通讯录","url":"pages/contact/contact.html"},
 		{"name":"考勤","url":"pages/attendence/work-attendance.html"},
 		{"name":"我的任务","url":"pages/task/my-task.html"},
+		{"name":"志愿者通讯录","url":"pages/contact/voluntary-contact.html"},
 		{"name":"退出登录","url":"logout"}
 	]
 }

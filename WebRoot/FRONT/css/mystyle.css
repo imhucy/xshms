@@ -123,5 +123,7 @@ i.icon.icon-tips {
 	display: block;
 	padding-top: 10px;
 }
-/*===== 任务截止时间 =====*/
-.task-dateline{background-color: #4cd964;color: #fff;border-radius: 3px;padding:2px 8px;}
+/*===== 任务状态 =====*/
+.task-status-ing{background-color: #5677fc;color: #fff;border-radius: 3px;padding:2px 8px;}
+.task-status-over{background-color: #4cd964;color: #fff;border-radius: 3px;padding:2px 8px;}
+.task-status-error{background-color: #f00;color: #fff;border-radius: 3px;padding:2px 8px;}

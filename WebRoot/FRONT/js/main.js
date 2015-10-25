@@ -142,6 +142,9 @@ function LoginBiz(username,password,callback){
 		$.cookie('password',password,{'expires':7});
 		Template7.global.login_status = data.login_status;
 		Template7.global.user = data;
+		
+		$('.panel-left').delegate('a[href="logout"]','click',LogoutBiz);
+		
 		if (callback && typeof(callback) === "function") {
 			callback(data.msg ,data.login_status);
 		}
@@ -158,6 +161,20 @@ function LoginBiz(username,password,callback){
     },dataFn);
 	
 }
+/**
+ * 登录注销逻辑
+ * 清除cookie
+ * 还原功能列表
+ */
+function LogoutBiz(){
+  $.cookie('username','');
+  $.cookie('password','');
+  
+  var loginBtn = '<div class="list-block"><ul><li><a href="pages/login/login.html" class="item-link item-content close-panel">您还未登陆，点击登陆</a></li></ul></div>'
+  $('.panel-left').html(loginBtn);
+  return false;
+}
+
 /**
  * 加载模板脚本
  * @param callback

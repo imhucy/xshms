@@ -99,6 +99,8 @@ myApp.onPageInit('login-screen', function(page) {
 		});
 		
 	});
+	
+	
 
 });
 
@@ -977,10 +979,22 @@ myApp.onPageInit('notification-detail-by',function(page){
 /*===== 26.我的任务 =====*/
 myApp.onPageInit('my-task',function(page){
   var curPage = $$(page.container);
+  //  下拉刷新
   curPage.find('.pull-to-refresh-content').on('refresh',function(e){
     console.log("aaaa");
     setTimeout(function(){
       myApp.pullToRefreshDone();
     },2000);
-  })
+  });
+  //  请求数据
+});
+/*27.志愿者通讯录页面*/
+myApp.onPageInit('voluntary-contact', function(page) {
+  var curPage = $(page.container);
+  showLoading();
+  $.getJSON("jsondata/contacts.json", {}, function(context) {
+    $('.ajaxContain').html(compileScript('#ContactList', context));
+    
+    hideLoading();
+  });
 });
