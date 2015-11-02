@@ -1,0 +1,18 @@
+{
+
+	"boss":false,
+	"eqeqeq":true,
+	"-W030": true,
+
+	"expr":false,
+
+	"browser":true,
+	"devel":true,
+	"node":true,
+	"laxbreak":true,
+	"globals":{
+		"$":true,
+		"jQuery":true,
+		"google":true
+	}
+}

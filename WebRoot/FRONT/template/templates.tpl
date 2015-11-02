@@ -504,7 +504,7 @@
 							<div class="item-after">{{major}}{{enterYear}}级{{classes}}班</div>
 						</div>
 						<!-- 加分 -->
-						<div class="item-subtitle">-{{score}}</div>
+						<div class="item-subtitle">+{{score}}</div>
 						<!-- 加分项 -->
 						<div class="item-text">{{results}}</div>
 					</div>
