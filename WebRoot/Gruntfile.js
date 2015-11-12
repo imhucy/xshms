@@ -51,7 +51,7 @@ module.exports = function(grunt){
 					banner: '/* main style <%=grunt.template.today("yyyy-mm-dd") %> */',
 				},
 				files : {
-					'admin/css/main.min.css':[ 'src/devoops/css/reset.css' , 'src/devoops/css/style.css' ],
+					'admin/css/main.min.css':[ 'src/devoops/css/reset.css' , 'src/devoops/css/font-awesome.css' , 'src/devoops/css/style.css' ],
 				},
 			},
 		},
@@ -95,11 +95,11 @@ module.exports = function(grunt){
 		watch:{
 			loadjs:{
 				files:['src/devoops/js/loadPlugin/*.js','src/devoops/js/loadPlugin/*.txt'],
-				tasks:['jshint:load','contact:loadjs'],
+				tasks:['jshint:load','concat:loadjs'],
 			},
 			themejs:{
 				files:['src/devoops/js/theme/*.js','src/devoops/js/theme/*.txt'],
-				tasks:['jshint:theme','contact:theme'],
+				tasks:['jshint:theme','concat:theme'],
 			},
 			pagejs:{
 				files:['src/devoops/js/pageDemo/*.js','src/devoops/js/pageDemo/*.txt'],
@@ -110,7 +110,7 @@ module.exports = function(grunt){
 				tasks:['jshint:main','concat:merge','uglify'],
 			},
 			css:{
-				files:['src/devoops/css/style.css'],
+				files:['src/devoops/css/*.css'],
 				tasks:['cssmin'],
 			},
 			// others:{
@@ -138,7 +138,7 @@ module.exports = function(grunt){
 				// 服务器端口号
 				port: 8019,
 				// 服务器地址(可以使用主机名localhost，也能使用IP)
-				hostname: 'localhost',
+				hostname: '172.16.4.233',
 				// 物理路径(默认为. 即根目录) 注：使用'.'或'..'为路径的时，可能会返回403 Forbidden. 此时将该值改为相对路径 如：/grunt/reloard。
 				base: '.'
 			},

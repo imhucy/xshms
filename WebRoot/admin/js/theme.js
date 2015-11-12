@@ -33,7 +33,7 @@ function DrawKnob(elem){
 		},
 		draw : function () {
 			// "tron" case
-			if(this.$.data('skin') == 'tron') {
+			if(this.$.data('skin') === 'tron') {
 				var a = this.angle(this.cv);  // Angle
 				var sa = this.startAngle;          // Previous start angle
 				var sat = this.startAngle;         // Start angle
@@ -74,7 +74,7 @@ function DrawKnob(elem){
 	var i=0;
 	var $idir = $("div.idir");
 	var $ival = $("div.ival");
-	var incr = function() { i++; $idir.show().html("+").fadeOut(); $ival.html(i); }
+	var incr = function() { i++; $idir.show().html("+").fadeOut(); $ival.html(i); };
 	var decr = function() { i--; $idir.show().html("-").fadeOut(); $ival.html(i); };
 	$("input.infinite").knob(
 		{
@@ -117,7 +117,8 @@ function LoadAjaxContent(url){
 			$('.preloader').hide();
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
-			alert(errorThrown);
+			$('#ajax-content').html(errorThrown);
+			$('.preloader').hide();
 		},
 		dataType: "html",
 		async: false
@@ -271,17 +272,18 @@ function ScreenSaver(){
 //  Function set min-height of window (required for this theme)
 //
 function SetMinBlockHeight(elem){
-	elem.css('min-height', window.innerHeight - 49)
+	elem.css('min-height', window.innerHeight - 49);
 }
 //
 // Helper for draw Sparkline plots on Dashboard page
 //
 function SparkLineDrawBarGraph(elem, arr, color){
+	var stacked_color;
 	if (color) {
-		var stacked_color = color;
+		stacked_color = color;
 	}
 	else {
-		stacked_color = '#6AA6D6'
+		stacked_color = '#6AA6D6';
 	}
 	elem.sparkline(arr, { type: 'bar', barWidth: 7, highlightColor: '#000', barSpacing: 2, height: 40, stackedBarColor: stacked_color});
 }
@@ -295,7 +297,7 @@ function Table2Json(table) {
 	table.find("tr").each(function () {
 		var oneRow = [];
 		var varname = $(this).index();
-		$("td", this).each(function (index) { if (index != 0) {oneRow.push($("input", this).val());}});
+		$("td", this).each(function (index) { if (index !== 0) {oneRow.push($("input", this).val());}});
 		result[varname] = oneRow;
 	});
 	var result_json = JSON.stringify(result);
@@ -306,11 +308,11 @@ function Table2Json(table) {
 //
 function TinyMCEStart(elem, mode){
 	var plugins = [];
-	if (mode == 'extreme'){
+	if (mode === 'extreme'){
 		plugins = [ "advlist anchor autolink autoresize autosave bbcode charmap code contextmenu directionality ",
 			"emoticons fullpage fullscreen hr image insertdatetime layer legacyoutput",
 			"link lists media nonbreaking noneditable pagebreak paste preview print save searchreplace",
-			"tabfocus table template textcolor visualblocks visualchars wordcount"]
+			"tabfocus table template textcolor visualblocks visualchars wordcount"];
 	}
 	tinymce.init({selector: elem,
 		theme: "modern",
@@ -408,7 +410,7 @@ function WinMove(){
 		var target = event.target;
 		var tr = $(target).closest("tr");
 		var col = $(target).closest("td");
-		if (target.tagName.toUpperCase() == 'INPUT'){
+		if (target.tagName.toUpperCase() === 'INPUT'){
 			if (event.shiftKey === true){
 				switch(event.keyCode) {
 					case 37: // left arrow
@@ -418,12 +420,12 @@ function WinMove(){
 						col.next().children("input[type=text]").focus();
 						break;
 					case 40: // down arrow
-						if (string_fill==false){
+						if (string_fill===false){
 							tr.next().find('td:eq('+col.index()+') input[type=text]').focus();
 						}
 						break;
 					case 38: // up arrow
-						if (string_fill==false){
+						if (string_fill===false){
 							tr.prev().find('td:eq('+col.index()+') input[type=text]').focus();
 						}
 						break;
@@ -438,26 +440,26 @@ function WinMove(){
 						tr.find('td:last-child').find("input[type=text]").focus();
 						break;
 				case 40: // down arrow
-					if (string_fill==false){
+					if (string_fill===false){
 						table.find('tr:last-child td:eq('+col.index()+') input[type=text]').focus();
 					}
 					break;
 				case 38: // up arrow
-					if (string_fill==false){
+					if (string_fill===false){
 						table.find('tr:eq(1) td:eq('+col.index()+') input[type=text]').focus();
 					}
 						break;
 				}
 			}
-			if (event.keyCode == 13 || event.keyCode == 9 ) {
+			if (event.keyCode === 13 || event.keyCode === 9 ) {
 				event.preventDefault();
 				col.next().find("input[type=text]").focus();
 			}
-			if (string_fill==false){
-				if (event.keyCode == 34) {
+			if (string_fill===false){
+				if (event.keyCode === 34) {
 					event.preventDefault();
 					table.find('tr:last-child td:last-child').find("input[type=text]").focus();}
-				if (event.keyCode == 33) {
+				if (event.keyCode === 33) {
 					event.preventDefault();
 					table.find('tr:eq(1) td:eq(1)').find("input[type=text]").focus();}
 			}
@@ -467,13 +469,13 @@ function WinMove(){
 			$(this).on('blur', function(event){
 			var target = event.target;
 			var col = $(target).parents("td");
-			if(table.find("input[name=string-fill]").prop("checked")==true) {
+			if(table.find("input[name=string-fill]").prop("checked")===true) {
 				col.nextAll().find("input[type=text]").each(function() {
 					$(this).val($(target).val());
 				});
 			}
 		});
-	})
+	});
 };
 })( jQuery );
 //
@@ -520,7 +522,7 @@ function drawMap(lon, lat, elem, layers) {
 	map.addControl(new OpenLayers.Control.Permalink());
 	// Show current mouse coords
 	map.addControl(new OpenLayers.Control.MousePosition({ displayProjection: epsg4326 }));
-	return map
+	return map;
 }
 //
 // Swap 2 elements on page. Used by WinMove function

@@ -2,14 +2,12 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>学生会管理系统</title>
+		<title>学生会OA系统后台管理</title>
 		<meta name="description" content="description">
 		<meta name="author" content="学生会管理系统">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href="plugins/bootstrap/bootstrap.css" rel="stylesheet">
 		<link href="plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet">
-		<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-		<link href='http://fonts.googleapis.com/css?family=Righteous' rel='stylesheet' type='text/css'>
 		<link href="plugins/fancybox/jquery.fancybox.css" rel="stylesheet">
 		<link href="plugins/fullcalendar/fullcalendar.css" rel="stylesheet">
 		<link href="plugins/xcharts/xcharts.min.css" rel="stylesheet">
@@ -49,41 +47,25 @@
 	<div class="container-fluid expanded-panel">
 		<div class="row">
 			<div id="logo" class="col-xs-12 col-sm-2">
-				<a href="index.html">学生会管理系统</a>
+				<a href="index.html">学生会OA系统后台</a>
 			</div>
 			<div id="top-panel" class="col-xs-12 col-sm-10">
 				<div class="row">
 					<div class="col-xs-8 col-sm-4">
-						<a href="#" class="show-sidebar">
+						<!-- 功能展开 -->
+						<a href="javascript:;" class="show-sidebar">
 						  <i class="fa fa-bars"></i>
 						</a>
-						<div id="search">
+						<!-- 搜索框 -->
+						<!-- <div id="search">
 							<input type="text" placeholder="search"/>
 							<i class="fa fa-search"></i>
-						</div>
+						</div> -->
 					</div>
 					<div class="col-xs-4 col-sm-8 top-panel-right">
 						<ul class="nav navbar-nav pull-right panel-menu">
-							<li class="hidden-xs">
-								<a href="index.html" class="modal-link">
-									<i class="fa fa-bell"></i>
-									<span class="badge">7</span>
-								</a>
-							</li>
-							<li class="hidden-xs">
-								<a class="ajax-link" href="ajax/calendar.html">
-									<i class="fa fa-calendar"></i>
-									<span class="badge">7</span>
-								</a>
-							</li>
-							<li class="hidden-xs">
-								<a href="ajax/page_messages.html" class="ajax-link">
-									<i class="fa fa-envelope"></i>
-									<span class="badge">7</span>
-								</a>
-							</li>
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle account" data-toggle="dropdown">
+								<a href="javascript:;" class="dropdown-toggle account" data-toggle="dropdown">
 									<div class="avatar">
 										<img src="img/avatar.jpg" class="img-rounded" alt="avatar" />
 									</div>
@@ -95,39 +77,15 @@
 								</a>
 								<ul class="dropdown-menu">
 									<li>
-										<a href="#">
-											<i class="fa fa-user"></i>
-											<span>Profile</span>
-										</a>
-									</li>
-									<li>
-										<a href="ajax/page_messages.html" class="ajax-link">
-											<i class="fa fa-envelope"></i>
-											<span>Messages</span>
-										</a>
-									</li>
-									<li>
-										<a href="ajax/gallery_simple.html" class="ajax-link">
-											<i class="fa fa-picture-o"></i>
-											<span>Albums</span>
-										</a>
-									</li>
-									<li>
-										<a href="ajax/calendar.html" class="ajax-link">
-											<i class="fa fa-tasks"></i>
-											<span>Tasks</span>
-										</a>
-									</li>
-									<li>
-										<a href="#">
+										<a class="ajax-link" href="ajax/setting_	pass.html">
 											<i class="fa fa-cog"></i>
-											<span>Settings</span>
+											<span>密码修改</span>
 										</a>
 									</li>
 									<li>
-										<a href="#">
+										<a href="javascript:;">
 											<i class="fa fa-power-off"></i>
-											<span>Logout</span>
+											<span>退出</span>
 										</a>
 									</li>
 								</ul>
@@ -145,178 +103,83 @@
 	<div class="row">
 		<div id="sidebar-left" class="col-xs-2 col-sm-2">
 			<ul class="nav main-menu">
-				<li>
-					<a href="ajax/dashboard.html" class="active ajax-link">
-						<i class="fa fa-cog"></i>
-						<span class="hidden-xs">系统设置</span>
-					</a>
-				</li>
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-bar-chart-o"></i>
-						<span class="hidden-xs">Charts</span>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a class="ajax-link" href="ajax/charts_xcharts.html">xCharts</a></li>
-						<li><a class="ajax-link" href="ajax/charts_flot.html">Flot Charts</a></li>
-						<li><a class="ajax-link" href="ajax/charts_google.html">Google Charts</a></li>
-						<li><a class="ajax-link" href="ajax/charts_morris.html">Morris Charts</a></li>
-						<li><a class="ajax-link" href="ajax/charts_coindesk.html">CoinDesk realtime</a></li>
-					</ul>
-				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-table"></i>
-						 <span class="hidden-xs">Tables</span>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a class="ajax-link" href="ajax/tables_simple.html">Simple Tables</a></li>
-						<li><a class="ajax-link" href="ajax/tables_datatables.html">Data Tables</a></li>
-						<li><a class="ajax-link" href="ajax/tables_beauty.html">Beauty Tables</a></li>
-					</ul>
-				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-pencil-square-o"></i>
-						 <span class="hidden-xs">Forms</span>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a class="ajax-link" href="ajax/forms_elements.html">Elements</a></li>
-						<li><a class="ajax-link" href="ajax/forms_layouts.html">Layouts</a></li>
-						<li><a class="ajax-link" href="ajax/forms_file_uploader.html">File Uploader</a></li>
-					</ul>
-				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
+					<a href="javascript:;" class="dropdown-toggle">
 						<i class="fa fa-desktop"></i>
-						 <span class="hidden-xs">UI Elements</span>
+						<span class="hidden-xs">系统管理</span>
 					</a>
 					<ul class="dropdown-menu">
-						<li><a class="ajax-link" href="ajax/ui_grid.html">Grid</a></li>
-						<li><a class="ajax-link" href="ajax/ui_buttons.html">Buttons</a></li>
-						<li><a class="ajax-link" href="ajax/ui_progressbars.html">Progress Bars</a></li>
-						<li><a class="ajax-link" href="ajax/ui_jquery-ui.html">Jquery UI</a></li>
-						<li><a class="ajax-link" href="ajax/ui_icons.html">Icons</a></li>
+						<li><a class="ajax-link" href="ajax/system_user.html">用户管理</a></li>
+						<li><a class="ajax-link" href="ajax/system_role.html">角色管理</a></li>
+						<li><a class="ajax-link" href="ajax/system_power.html">权限管理</a></li>
+						<li><a class="ajax-link" href="ajax/system_classes.html">班级管理</a></li>
+						<li><a class="ajax-link" href="ajax/system_major.html">专业管理</a></li>
+						<li><a class="ajax-link" href="ajax/system_dept.html">部门管理</a></li>
+						<li><a class="ajax-link" href="ajax/system_discipline.html">违纪项管理</a></li>
+						<li><a class="ajax-link" href="ajax/system_term.html">学期管理</a></li>
 					</ul>
 				</li>
+
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-list"></i>
-						 <span class="hidden-xs">Pages</span>
+					<a href="javascript:;" class="dropdown-toggle">
+						<i class="fa fa-edit"></i>
+						<span class="hidden-xs">日常管理</span>
 					</a>
 					<ul class="dropdown-menu">
-						<li><a href="ajax/page_login.html">Login</a></li>
-						<li><a href="ajax/page_register.html">Register</a></li>
-						<li><a id="locked-screen" class="submenu" href="ajax/page_locked.html">Locked Screen</a></li>
-						<li><a class="ajax-link" href="ajax/page_contacts.html">Contacts</a></li>
-						<li><a class="ajax-link" href="ajax/page_feed.html">Feed</a></li>
-						<li><a class="ajax-link add-full" href="ajax/page_messages.html">Messages</a></li>
-						<li><a class="ajax-link" href="ajax/page_pricing.html">Pricing</a></li>
-						<li><a class="ajax-link" href="ajax/page_invoice.html">Invoice</a></li>
-						<li><a class="ajax-link" href="ajax/page_search.html">Search Results</a></li>
-						<li><a class="ajax-link" href="ajax/page_404.html">Error 404</a></li>
-						<li><a href="ajax/page_500.html">Error 500</a></li>
+						<li><a class="ajax-link" href="ajax/manage_student.html">学生管理</a></li>
+						<li><a class="ajax-link" href="ajax/manage_attendance.html">考勤管理</a></li>
+						<li><a class="ajax-link" href="ajax/manage_task.html">任务管理</a></li>
+						<li><a class="ajax-link" href="ajax/manage_active.html">志愿活动管理</a></li>
+						
 					</ul>
 				</li>
+
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-map-marker"></i>
-						<span class="hidden-xs">Maps</span>
+					<a href="javascript:;" class="dropdown-toggle">
+						<i class="fa fa-cogs"></i>
+						<span class="hidden-xs">设置</span>
 					</a>
 					<ul class="dropdown-menu">
-						<li><a class="ajax-link" href="ajax/maps.html">OpenStreetMap</a></li>
-						<li><a class="ajax-link" href="ajax/map_fullscreen.html">Fullscreen map</a></li>
+						<li><a class="ajax-link" href="ajax/setting_term.html">学期设置</a></li>
+						<li><a class="ajax-link" href="ajax/setting_report.html">通报设置</a></li>
+						<li><a class="ajax-link" href="ajax/setting_index.html">首页设置</a></li>
 					</ul>
 				</li>
+
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-picture-o"></i>
-						 <span class="hidden-xs">Gallery</span>
+					<a href="javascript:;" class="dropdown-toggle">
+						<i class="fa fa-dashboard "></i>
+						<span class="hidden-xs">统计图表</span>
 					</a>
 					<ul class="dropdown-menu">
-						<li><a class="ajax-link" href="ajax/gallery_simple.html">Simple Gallery</a></li>
-						<li><a class="ajax-link" href="ajax/gallery_flickr.html">Flickr Gallery</a></li>
+						<li><a class="ajax-link" href="ajax/statistics_enterYear.html">年级违纪统计</a></li>
+						<li><a class="ajax-link" href="ajax/statistics_major.html">专业违纪统计</a></li>
+						<li><a class="ajax-link" href="ajax/statistics_classes.html">班级违纪统计</a></li>
 					</ul>
+				</li>
+
+				<li>
+					<a class="ajax-link" href="ajax/box_message.html">
+						<i class="fa fa-envelope"></i>
+						<span class="hidden-xs">意见箱</span>
+					</a>
 				</li>
 				<li>
-					 <a class="ajax-link" href="ajax/typography.html">
-						 <i class="fa fa-font"></i>
-						 <span class="hidden-xs">Typography</span>
-					</a>
-				</li>
-				 <li>
-					<a class="ajax-link" href="ajax/calendar.html">
-						 <i class="fa fa-calendar"></i>
-						 <span class="hidden-xs">Calendar</span>
-					</a>
-				 </li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-picture-o"></i>
-						 <span class="hidden-xs">Multilevel menu</span>
+					<a href="javascript:;" class="dropdown-toggle">
+						<i class="fa fa-pencil-square-o"></i>
+						 <span class="hidden-xs">测试页面</span>
 					</a>
 					<ul class="dropdown-menu">
-						<li><a href="#">First level menu</a></li>
-						<li><a href="#">First level menu</a></li>
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle">
-								<i class="fa fa-plus-square"></i>
-								<span class="hidden-xs">Second level menu group</span>
-							</a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Second level menu</a></li>
-								<li><a href="#">Second level menu</a></li>
-								<li class="dropdown">
-									<a href="#" class="dropdown-toggle">
-										<i class="fa fa-plus-square"></i>
-										<span class="hidden-xs">Three level menu group</span>
-									</a>
-									<ul class="dropdown-menu">
-										<li><a href="#">Three level menu</a></li>
-										<li><a href="#">Three level menu</a></li>
-										<li class="dropdown">
-											<a href="#" class="dropdown-toggle">
-												<i class="fa fa-plus-square"></i>
-												<span class="hidden-xs">Four level menu group</span>
-											</a>
-											<ul class="dropdown-menu">
-												<li><a href="#">Four level menu</a></li>
-												<li><a href="#">Four level menu</a></li>
-												<li class="dropdown">
-													<a href="#" class="dropdown-toggle">
-														<i class="fa fa-plus-square"></i>
-														<span class="hidden-xs">Five level menu group</span>
-													</a>
-													<ul class="dropdown-menu">
-														<li><a href="#">Five level menu</a></li>
-														<li><a href="#">Five level menu</a></li>
-														<li class="dropdown">
-															<a href="#" class="dropdown-toggle">
-																<i class="fa fa-plus-square"></i>
-																<span class="hidden-xs">Six level menu group</span>
-															</a>
-															<ul class="dropdown-menu">
-																<li><a href="#">Six level menu</a></li>
-																<li><a href="#">Six level menu</a></li>
-															</ul>
-														</li>
-													</ul>
-												</li>
-											</ul>
-										</li>
-										<li><a href="#">Three level menu</a></li>
-									</ul>
-								</li>
-							</ul>
-						</li>
+						<li><a class="ajax-link" href="ajax/table-test.html">表格测试咯</a></li>
 					</ul>
 				</li>
+				
 			</ul>
 		</div>
 		<!--Start Content-->
 		<div id="content" class="col-xs-12 col-sm-10">
 			<div class="preloader">
-				<img src="img/devoops_getdata.gif" class="devoops-getdata" alt="preloader"/>
+				<img src="img/loading.GIF" class="mt50" alt="preloader"/>
 			</div>
 			<div id="ajax-content"></div>
 		</div>

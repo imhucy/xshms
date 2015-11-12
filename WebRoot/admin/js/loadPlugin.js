@@ -44,7 +44,7 @@ function LoadCalendarScript(callback){
 //
 function LoadDataTablesScripts(callback){
 	function LoadDatatables(){
-		$.getScript('plugins/datatables/jquery.dataTables.js', function(){
+		$.getScript('plugins/datatables/jquery.dataTables.10.js', function(){
 			$.getScript('plugins/datatables/ZeroClipboard.js', function(){
 				$.getScript('plugins/datatables/TableTools.js', function(){
 					$.getScript('plugins/datatables/dataTables.bootstrap.js', callback);
@@ -216,7 +216,7 @@ function LoadXChartScript(callback){
 	}
 	function LoadD3Script(){
 		if (!$.fn.d3){
-			$.getScript('plugins/d3/d3.v3.min.js', LoadXChart)
+			$.getScript('plugins/d3/d3.v3.min.js', LoadXChart);
 		}
 		else {
 			LoadXChart();

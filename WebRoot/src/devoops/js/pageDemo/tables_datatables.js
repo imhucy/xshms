@@ -26,7 +26,8 @@ function TestTable2(){
 		"sPaginationType": "bootstrap",
 		"oLanguage": {
 			"sSearch": "",
-			"sLengthMenu": '_MENU_'
+			"sLengthMenu": '_MENU_',
+			"sInfo": "显示 _START_ 到 _END_ 条记录 共 _TOTAL_ 条记录"
 		},
 		bAutoWidth: false
 	});
@@ -61,7 +62,8 @@ function TestTable3(){
 		"sPaginationType": "bootstrap",
 		"oLanguage": {
 			"sSearch": "",
-			"sLengthMenu": '_MENU_'
+			"sLengthMenu": '_MENU_',
+			"sInfo": "显示 _START_ 到 _END_ 条记录 共 _TOTAL_ 条记录"
 		},
 		"oTableTools": {
 			"sSwfPath": "plugins/datatables/copy_csv_xls_pdf.swf",

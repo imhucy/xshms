@@ -12,7 +12,8 @@ function LoadAjaxContent(url){
 			$('.preloader').hide();
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
-			alert(errorThrown);
+			$('#ajax-content').html(errorThrown);
+			$('.preloader').hide();
 		},
 		dataType: "html",
 		async: false

@@ -4,7 +4,7 @@
 //
 function LoadDataTablesScripts(callback){
 	function LoadDatatables(){
-		$.getScript('plugins/datatables/jquery.dataTables.js', function(){
+		$.getScript('plugins/datatables/jquery.dataTables.10.js', function(){
 			$.getScript('plugins/datatables/ZeroClipboard.js', function(){
 				$.getScript('plugins/datatables/TableTools.js', function(){
 					$.getScript('plugins/datatables/dataTables.bootstrap.js', callback);
