@@ -1,0 +1,102 @@
+<!--Start Breadcrumb-->
+<div class="row">
+	<div id="breadcrumb" class="col-xs-12">
+		<ol class="breadcrumb">
+			<li><a href="index.html">主 页</a></li>
+			<li><a href="javascript:;">系统管理</a></li>
+			<li><a href="javascript:;">角色管理</a></li>
+		</ol>
+	</div>
+</div>
+<!--End Breadcrumb-->
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-content editable-table">
+				<h4 class="fb">说明如下</h4>
+				<ol>
+					<li>操作按钮<kbd>修改</kbd>，<kbd>删除</kbd>在表格末尾</li>
+					<li>点击表头可以按该列排序，默认按首列排序</li>
+					<li>在表头输入数据可以进行数据检索</li>
+					<li>删除后数据不可恢复，请慎重操作</li>
+				</ol>
+				<hr>
+				<button class="btn btn-info" id="addBtn"> 添 加 <i class="fa fa-plus"></i></button>
+				<table class="table table-bordered table-striped table-hover table-heading table-datatable" id="datatable-2">
+					<thead>
+						<tr>
+							<th><label><input type="text" name="role_name" value="角色名" class="search_init" /></label></th>
+							<th><label><input type="text" name="role_desc" value="角色描述" class="search_init" /></label></th>
+							<th> 操 作 </th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>超级管理员</td>
+							<td>超级管理员是本系统的最高权限</td>
+							<td class="actions">
+								<a href="javascript:;" class="hidden on-editing save-row"><i class="fa fa-save"></i>保存</a>
+								<a href="javascript:;" class="hidden on-editing cancel-row"><i class="fa fa-times"></i>取消</a>
+								<a href="javascript:;" class="on-default edit-row"><i class="fa fa-pencil"></i>修改</a>
+								<a href="javascript:;" class="on-default remove-row"><i class="fa fa-trash-o"></i>删除</a>
+								<a href="ajax/setting_power.html" class="on-default setting-row ajax-link"><i class="fa fa-cog"></i>设置权限</a>
+							</td>
+						</tr>
+						
+					</tbody>
+					<tfoot>
+						<tr>
+							<th>角色名</th>
+							<th>角色描述</th>
+							<th>操作</th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="removeModal" class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+          	<div class="col-md-12">你确定要删除？</div>
+          </div>
+          <div class="row">
+          	<div class="col-md-8"></div>
+          	<div class="col-md-2">
+          		<button type="button" class="btn btn-default btn-lg" data-dismiss="modal">取消</button>
+          	</div>
+          	<div class="col-md-2">
+          		<button type="button" id="removeBtn" class="btn btn-primary btn-lg">确定</button>
+          	</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+// Run Datables plugin and create 3 variants of settings
+function AllTables(){
+	EditabeTableRole();
+	LoadSelect2Script(MakeSelect2);
+}
+function MakeSelect2(){
+	$('select').select2();
+	$('.dataTables_filter').each(function(){
+		$(this).find('input').attr('placeholder', '全表检索').addClass('form-control');
+	});
+}
+
+$(document).ready(function() {
+	// Load Datatables and run plugin on tables 
+	LoadDataTablesScripts(AllTables);
+	// Add Drag-n-Drop feature
+	WinMove();
+});
+
+</script>
