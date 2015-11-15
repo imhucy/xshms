@@ -22,7 +22,7 @@
 				</ol>
 				<hr>
 				<button class="btn btn-info" id="addBtn"> 添 加 <i class="fa fa-plus"></i></button>
-				<table class="table table-bordered table-striped table-hover table-heading table-datatable" id="datatable-2">
+				<table class="table table-bordered table-striped table-hover table-heading table-datatable" id="datatable-user">
 					<thead>
 						<tr>
 							<th><label><input type="text" name="login_name" value="登录名" class="search_init" /></label></th>
@@ -107,7 +107,9 @@
 <script type="text/javascript">
 // Run Datables plugin and create 3 variants of settings
 function AllTables(){
-	EditabeTable2();
+	if ( !$.fn.dataTable.isDataTable( '#datatable-user' ) ){
+		EditabeTable2();
+	}
 	LoadSelect2Script(MakeSelect2);
 }
 function MakeSelect2(){

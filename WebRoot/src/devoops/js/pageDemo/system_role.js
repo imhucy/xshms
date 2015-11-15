@@ -1,12 +1,12 @@
 /*-------------------------------------------
-	Scripts for DataTables page (table-test.html)
+	Scripts for DataTables page (system_role.html)
 	EditabeTable 编辑表格
 ---------------------------------------------*/
 
 function EditabeTableRole(option){
 
 	var defaults = {
-		table:'#datatable-2',
+		table:'#datatable-role',
 		addBtn:'#addBtn',
 
 		rowAdd:fnAdd,

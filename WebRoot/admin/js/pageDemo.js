@@ -1353,14 +1353,14 @@ function LoadTestMap(){
 	);
 }
 /*-------------------------------------------
-	Scripts for DataTables page (table-test.html)
+	Scripts for DataTables page (system_role.html)
 	EditabeTable 编辑表格
 ---------------------------------------------*/
 
 function EditabeTableRole(option){
 
 	var defaults = {
-		table:'#datatable-2',
+		table:'#datatable-role',
 		addBtn:'#addBtn',
 
 		rowAdd:fnAdd,
@@ -1583,7 +1583,7 @@ function EditabeTableRole(option){
 function EditabeTable2(option){
 
 	var defaults = {
-		table:'#datatable-2',
+		table:'#datatable-user',
 		addBtn:'#addBtn',
 
 		rowAdd:fnAdd,
@@ -1731,7 +1731,18 @@ function EditabeTable2(option){
 	function fnEdit( $row ){
 		var data = oTable.row( $row.get(0) ).data();
 
-		var type = [ 'text' , 'text' ,'select' , 'select' ,'select' ,'date' ,'text' ,'text' , 'text' ,'text' ];
+		var type = [ 
+			'text' , 
+			'text' ,
+			'select' , 
+			'select' ,
+			'select' ,
+			'date' ,
+			'text' ,
+			'text' , 
+			'text' ,
+			'text' 
+		];
 
 		var $field;
 		$row.children( 'td' ).each(function( i ) {

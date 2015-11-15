@@ -111,6 +111,12 @@ $(document).ready(function () {
 		e.preventDefault();
 		CloseModalBox();
 	});
+	$('body').on('click', 'a.ajax-link', function(e){
+		e.preventDefault();
+		var url = $(this).attr('href');
+		window.location.hash = url;
+		LoadAjaxContent(url);
+	});
 	$('#top-panel').on('click','a', function(e){
 		if ($(this).hasClass('ajax-link')) {
 			e.preventDefault();

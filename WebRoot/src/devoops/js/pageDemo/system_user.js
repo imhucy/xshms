@@ -6,7 +6,7 @@
 function EditabeTable2(option){
 
 	var defaults = {
-		table:'#datatable-2',
+		table:'#datatable-user',
 		addBtn:'#addBtn',
 
 		rowAdd:fnAdd,
@@ -154,7 +154,18 @@ function EditabeTable2(option){
 	function fnEdit( $row ){
 		var data = oTable.row( $row.get(0) ).data();
 
-		var type = [ 'text' , 'text' ,'select' , 'select' ,'select' ,'date' ,'text' ,'text' , 'text' ,'text' ];
+		var type = [ 
+			'text' , 
+			'text' ,
+			'select' , 
+			'select' ,
+			'select' ,
+			'date' ,
+			'text' ,
+			'text' , 
+			'text' ,
+			'text' 
+		];
 
 		var $field;
 		$row.children( 'td' ).each(function( i ) {
