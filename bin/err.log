@@ -1,0 +1,44 @@
+﻿F:\xshms\routes\libs\excute.js:206
+		client.connectionLimit:10;
+		                      ^
+
+SyntaxError: Unexpected token :
+    at exports.runInThisContext (vm.js:53:16)
+    at Module._compile (module.js:413:25)
+    at Object.Module._extensions..js (module.js:452:10)
+    at Module.load (module.js:355:32)
+    at Function.Module._load (module.js:310:12)
+    at Module.require (module.js:365:17)
+    at require (module.js:384:17)
+    at Object.<anonymous> (F:\xshms\routes\index.js:3:14)
+    at Module._compile (module.js:434:26)
+    at Object.Module._extensions..js (module.js:452:10)
+events.js:141
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: Cannot enqueue Quit after invoking quit.
+    at Protocol._validateEnqueue (F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:196:16)
+    at Protocol._enqueue (F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:129:13)
+    at Protocol.quit (F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:87:36)
+    at Connection.end (F:\xshms\node_modules\mysql\lib\Connection.js:242:18)
+    at Query._callback (F:\xshms\routes\libs\excute.js:224:13)
+    at Query.Sequence.end (F:\xshms\node_modules\mysql\lib\protocol\sequences\Sequence.js:96:24)
+    at F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:393:18
+    at Array.forEach (native)
+    at F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:392:13
+    at doNTCallback0 (node.js:407:9)
+events.js:141
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: Cannot enqueue Quit after invoking quit.
+    at Protocol._validateEnqueue (F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:196:16)
+    at Protocol._enqueue (F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:129:13)
+    at Protocol.quit (F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:87:36)
+    at Connection.end (F:\xshms\node_modules\mysql\lib\Connection.js:242:18)
+    at Query._callback (F:\xshms\routes\libs\excute.js:177:15)
+    at Query.Sequence.end (F:\xshms\node_modules\mysql\lib\protocol\sequences\Sequence.js:96:24)
+    at F:\xshms\node_modules\mysql\lib\protocol\Protocol.js:220:14
+    at doNTCallback0 (node.js:407:9)
+    at process._tickCallback (node.js:336:13)

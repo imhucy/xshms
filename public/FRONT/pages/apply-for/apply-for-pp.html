@@ -1,0 +1,73 @@
+<meta charset="utf-8" />
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="left">
+    	<a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+    </div>
+    
+    <div class="center sliding">申请通报批评</div>
+    <div class="right">
+    	<a href="#" class="link">
+	      	提交
+	    </a>
+    </div>
+  </div>
+</div>
+<div class="pages no-toolbar">
+  <div data-page="apply-for-pp" class="page">
+    <div class="page-content">
+    	<div class="list-block">
+        	<ul>
+        		<li>
+        			<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select"  data-page-title="选择通报名单" data-back-text="确认">
+                    <select name="menbers" multiple>
+                        {{#each class}}
+                        <optgroup label="{{name}}">
+				            {{#each menbers}}
+				            <option value="{{no}}">{{name}}({{no}})</option>
+				            {{/each}}
+				        </optgroup>
+				        {{/each}}
+                    </select>
+                    <div class="item-content">
+                        <div class="item-inner">
+                          <div class="item-title">选择通报名单</div>
+                        </div>
+                    </div></a></li>
+                <li>
+		        
+			    <li>
+			      <div class="item-content">
+			        <div class="item-inner">
+			          <div class="item-title label">扣分数额</div>
+			          <div class="item-input">
+			            <select name="score">
+			              <option>-1</option>
+			              <option>-2</option>
+			              <option>-3</option>
+			              <option>-4</option>
+			              <option>-5</option>
+			            </select>
+			          </div>
+			        </div>
+			      </div>
+			    </li>
+			    
+			    <!-- 表扬理由描述 -->
+			   
+		        <li class="align-top">
+			      <div class="item-content">
+			        <div class="item-inner">
+			          <div class="item-title label">批评理由</div>
+			          <div class="item-input">
+			            <textarea></textarea>
+			          </div>
+			        </div>
+			      </div>
+			    </li>
+			</ul>
+		</div>
+    </div>
+  </div>
+</div>
+

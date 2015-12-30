@@ -1,0 +1,150 @@
+<!--Start Breadcrumb-->
+<div class="row">
+	<div id="breadcrumb" class="col-xs-12">
+		<ol class="breadcrumb">
+			<li><a href="index.html">主 页</a></li>
+			<li><a href="javascript:;">日常管理</a></li>
+			<li><a href="javascript:;">考勤管理</a></li>
+		</ol>
+	</div>
+</div>
+<!--End Breadcrumb-->
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-content editable-table">
+				<h4 class="fb">说明如下</h4>
+				<ol>
+					<li>点击表头可以按该列排序，默认按首列排序</li>
+					<li>在表头输入数据可以进行数据检索</li>
+					<li>删除后数据不可恢复，请慎重操作</li>
+					<li>刚添加的数据无法立即修改，请刷新后重试</li>
+					<li>审核<kbd>未通过</kbd>的数据会定期的清除</li>
+				</ol>
+				<hr>
+				<button class="btn btn-info" id="addBtn"> 添 加 <i class="fa fa-plus"></i></button>
+				<button class="btn btn-info" id="modifyBtn"> 修 改 <i class="fa fa-pencil"></i></button>
+				<button class="btn btn-info" id="removeBtn"> 删 除 <i class="fa fa-trash-o"></i></button>
+				<table class="table table-bordered table-striped table-hover table-heading table-datatable" id="datatable-attendance">
+					<thead>
+						<tr>
+							<th><label><input type="hidden" name="id" /></label></th>
+							<th><label><input type="text" name="attendance_man" data-select="useres" value="考勤人" class="search_init" /></label></th>
+							<th><label><input type="text" name="dop_man" data-select="student" value="被考勤人" class="search_init" /></label></th>
+							<th><label><input type="text" name="discipline_id" data-select="discipline" value="考勤项" class="search_init" /></label></th>
+							<th><label><input type="text" name="attendance_term" data-select="term" value="考勤学期" class="search_init" /></label></th>
+							<th><label><input type="text" name="attendance_date" data-date="true" value="考勤时间" class="search_init" /></label></th>
+							<th><label><input type="text" name="attendance_status" data-select="a_status" value="考勤记录状态" class="search_init" /></label></th>
+							<th><label><input type="text" name="attendance_desc" value="考勤描述（备注）" class="search_init" /></label></th>
+						</tr>
+					</thead>
+					<tbody>
+
+					</tbody>
+					<tfoot>
+						<tr>
+							<th></th>
+							<th>考勤人</th>
+							<th>被考勤人</th>
+							<th>考勤项</th>
+							<th>考勤学期</th>
+							<th>考勤时间</th>
+							<th>考勤记录状态</th>
+							<th>考勤描述（备注）</th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="removeModal" class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+          	<div class="col-md-12">你确定要删除？</div>
+          </div>
+          <div class="row">
+          	<div class="col-md-8"></div>
+          	<div class="col-md-2">
+          		<button type="button" class="btn btn-default btn-lg" data-dismiss="modal">取消</button>
+          	</div>
+          	<div class="col-md-2">
+          		<button type="button" id="removeBtn" class="btn btn-primary btn-lg">确定</button>
+          	</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div id="successModal" class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+          	<div class="col-md-12">添加成功</div>
+          </div>
+          <div class="row">
+          	<div class="col-md-10"></div>
+          	<div class="col-md-2">
+          		<button type="button" class="btn btn-primary btn-lg" data-dismiss="modal">确定</button>
+          	</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+// Run Datables plugin and create 3 variants of settings
+function AllTables(){
+	if ( !$.fn.dataTable.isDataTable( '#datatable-attendance' ) ){
+		// EditabeTableRole();
+		EditabeTableModel({
+			table:'#datatable-attendance'
+			,widths : [ 0,100,100,100,150,150,150,150 ]
+			,dbTable : 'attendance'
+		});
+	}
+	LoadSelect2Script(MakeSelect2);
+}
+function MakeSelect2(){
+	$('select').select2();
+	$('.dataTables_filter').each(function(){
+		$(this).find('input').attr('placeholder', '全表检索').addClass('form-control');
+	});
+}
+
+$(document).ready(function() {
+	$('.preloader').show();
+	$.get('/all/attendance',function (attendance) {
+		var attendance = $.parseJSON(attendance);
+		var tBody = $('#datatable-attendance').find('tbody');
+		$.each(attendance,function  (i,elem) {
+
+			var oTr = $('<tr></tr>');
+			oTr.append('<td> <input type="hidden" value="'+elem.id+'" /> </td>');
+			oTr.append('<td>'+(elem.attendance_man)+'</td>');
+			oTr.append('<td>'+(elem.dop_man)+'</td>');
+			oTr.append('<td>'+(elem.discipline_id)+'</td>');
+			oTr.append('<td>'+(elem.attendance_term)+'</td>');
+			oTr.append('<td>'+(elem.attendance_date)+'</td>');
+			oTr.append('<td>'+(elem.attendance_status)+'</td>');
+			oTr.append('<td>'+(elem.attendance_desc||'-')+'</td>');
+			tBody.append(oTr);
+		});
+		LoadDataTablesScripts(AllTables);
+	})
+
+	// Load Datatables and run plugin on tables 
+	LoadDataTablesScripts(AllTables);
+	// Add Drag-n-Drop feature
+	WinMove();
+});
+
+</script>

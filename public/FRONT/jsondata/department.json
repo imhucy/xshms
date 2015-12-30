@@ -1,0 +1,14 @@
+{
+	"depts":[
+		 {"deptName":"科技部","deptId":1}
+		,{"deptName":"宣传部","deptId":2}
+		,{"deptName":"办公室","deptId":3}
+		,{"deptName":"青志基","deptId":4}
+		,{"deptName":"自律部","deptId":5}
+		,{"deptName":"学习部","deptId":6}
+		,{"deptName":"文艺部","deptId":7}
+		,{"deptName":"外联部","deptId":8}
+		,{"deptName":"体育部","deptId":9}
+		,{"deptName":"组织部","deptId":10}
+	]
+}

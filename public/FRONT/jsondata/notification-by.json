@@ -1,0 +1,12 @@
+{
+  "title":"通报表扬",
+  "datetime":"2015-5-23",
+  "people":[
+    {"name":"郑夏苗","major":"通信","enterYear":2012,"classes":1,"room":"912","bed":3,"score":2,"results":["演讲比赛三等奖","节水大赛第一名"]},
+    {"name":"郑夏苗1","major":"通信","enterYear":2012,"classes":1,"room":"912","bed":4,"score":5,"results":["演讲比赛三等奖","节水大赛第一名"]},
+    {"name":"郑夏苗2","major":"通信","enterYear":2012,"classes":1,"room":"912","bed":2,"score":5,"results":["演讲比赛三等奖","节水大赛第一名"]},
+    {"name":"罗华伟","major":"通信","enterYear":2012,"classes":2,"room":"732","bed":1,"score":3,"results":["演讲比赛三等奖","节水大赛第一名"]},
+    {"name":"罗华伟1","major":"通信","enterYear":2012,"classes":2,"room":"732","bed":2,"score":3,"results":["演讲比赛三等奖","节水大赛第一名"]},
+    {"name":"罗华伟2","major":"通信","enterYear":2012,"classes":2,"room":"732","bed":4,"score":3,"results":["演讲比赛三等奖","节水大赛第一名"]}
+  ]
+}

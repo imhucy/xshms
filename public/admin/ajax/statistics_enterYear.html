@@ -1,0 +1,214 @@
+<!--Start Breadcrumb-->
+<div class="row">
+	<div id="breadcrumb" class="col-xs-12">
+		<ol class="breadcrumb">
+			<li><a href="index.html">主 页</a></li>
+			<li><a href="javascript:;">统计图表</a></li>
+			<li><a href="javascript:;">年级违纪统计</a></li>
+		</ol>
+	</div>
+</div>
+<!--End Breadcrumb-->
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box-content">
+			<h4>本页说明：</h4>
+			<ol>
+				<li>点击按钮显示对应年级的情况</li>
+			</ol>
+			<hr>
+			<div class="btn-group">
+				<button class="btn btn-primary">2013</button>
+				<button class="btn btn-primary">2014</button>
+				<button class="btn btn-primary">2015</button>
+				<button class="btn btn-primary">2016</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="container"></div>
+
+<script>
+function drawChart () {
+	Highcharts.setOptions({
+		"lang": {
+			"printChart": "打印图表",
+			"downloadJPEG": "导出JPEG图片",
+			"downloadPDF": "导出PDF文档",
+			"downloadPNG": "导出PNG 图片",
+			"downloadSVG": "导出SVG 矢量图",
+			"exportButtonTitle": "导出图片"
+		}
+	});
+	var chart1 = {
+		"title": {
+			"text": "各班违纪汇总图表"
+		},
+		"subtitle": {
+			"text": "2015-10-10"
+		},
+		"xAxis": {
+			"categories": ['1班','2班'],
+			"crosshair": true
+		},
+		"yAxis": {
+			"title": {
+				"text": "违 纪 人 数"
+			}
+		},
+		"series": [{
+			"type": "column",
+			"name": "旷课",
+			"data": [12,23]
+		}, {
+			"type": "column",
+			"name": "未归",
+			"data": [13,24]
+		}, {
+			"type": "column",
+			"name": "晚归",
+			"data": [12,5]
+		}, {
+			"type": "column",
+			"name": "违章用电",
+			"data": [2,3]
+		}, {
+			"type": "column",
+			"name": "拒检",
+			"data": [1,0]
+		}, {
+			"type": "column",
+			"name": "未叠被子",
+			"data": [2,5]
+		}, {
+			"type": "column",
+			"name": "未起床",
+			"data": [15,3]
+		}, {
+			"type": "column",
+			"name": "未挂大锁",
+			"data": [3,5]
+		}, {
+			"type": "column",
+			"name": "贴可视窗",
+			"data": [12,56]
+		}, {
+			"type": "column",
+			"name": "缺早操",
+			"data": [54,5]
+		}, {
+			"type": "column",
+			"name": "大会缺席",
+			"data": [54]
+		}, {
+			"type": "column",
+			"name": "其他违纪",
+			"data": [15,54]
+		}, {
+			"type": "column",
+			"name": "请假",
+			"data": [45,56]
+		}, {
+			"type": "spline",
+			"name": "总违纪数",
+			"data": [15,54],
+			"marker": {
+				"lineWidth": 2,
+				"lineColor": "green",
+				"fillColor": "white"
+			}
+		}]
+	},
+	chart2 = {
+		"title": {
+			"text": "各班违纪汇总图表"
+		},
+		"subtitle": {
+			"text": "2015-10-10"
+		},
+		"xAxis": {
+			"categories": ['1班','2班'],
+			"crosshair": true
+		},
+		"yAxis": {
+			"title": {
+				"text": "违 纪 人 数"
+			}
+		},
+		"series": [{
+			"type": "column",
+			"name": "旷课",
+			"data": [1,23]
+		}, {
+			"type": "column",
+			"name": "未归",
+			"data": [14,4]
+		}, {
+			"type": "column",
+			"name": "晚归",
+			"data": [12,5]
+		}, {
+			"type": "column",
+			"name": "违章用电",
+			"data": [25,13]
+		}, {
+			"type": "column",
+			"name": "拒检",
+			"data": [10,20]
+		}, {
+			"type": "column",
+			"name": "未叠被子",
+			"data": [2,15]
+		}, {
+			"type": "column",
+			"name": "未起床",
+			"data": [15,3]
+		}, {
+			"type": "column",
+			"name": "未挂大锁",
+			"data": [3,5]
+		}, {
+			"type": "column",
+			"name": "贴可视窗",
+			"data": [2,6]
+		}, {
+			"type": "column",
+			"name": "缺早操",
+			"data": [54,5]
+		}, {
+			"type": "column",
+			"name": "大会缺席",
+			"data": [5,4]
+		}, {
+			"type": "column",
+			"name": "其他违纪",
+			"data": [15,54]
+		}, {
+			"type": "column",
+			"name": "请假",
+			"data": [45,56]
+		}, {
+			"type": "spline",
+			"name": "总违纪数",
+			"data": [15,54],
+			"marker": {
+				"lineWidth": 2,
+				"lineColor": "green",
+				"fillColor": "white"
+			}
+		}]
+	}
+	$('.btn').eq(0).click(function(e) {
+		$('#container').highcharts(chart1);
+	});
+	$('.btn').eq(1).click(function(e) {
+		$('#container').highcharts(chart2);
+	});
+	$('.preloader').hide();
+}
+$(document).ready(function () {
+
+	LoadHighchartsScript(drawChart);
+
+});
+</script>

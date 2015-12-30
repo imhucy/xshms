@@ -1,0 +1,50 @@
+{
+	"chart":{
+		"renderTo":"container"
+	},
+    "title": {
+        "text": "各班违纪汇总图表"
+    },
+    "subtitle":{
+    	"text": "2015-10-10"
+    },
+    "xAxis": {
+        "categories": ["计算机1501", "计算机1502", "通信1501", "通信1502", "港航1501", "港航1502", "水利1501", "水利1501"],
+        "crosshair":true
+    },
+    "yAxis":{
+    	"title":{
+    		"text":"违 纪 人 数"
+    	}
+    },
+    "series": [{
+        "type": "column",
+        "name": "旷课",
+        "data": [12, 5, 3, 8, 20, 22, 44, 36]
+    }, {
+        "type": "column",
+        "name": "未归",
+        "data": [23, 20, 5, 2, 4, 3, 4, 1]
+    }, {
+        "type": "column",
+        "name": "晚归",
+        "data": [31, 2, 5, 4, 4, 55, 23, 12]
+    }, {
+        "type": "column",
+        "name": "大功率",
+        "data": [31, 2, 5, 4, 4, 55, 23, 12]
+    }, {
+        "type": "column",
+        "name": "拒检",
+        "data": [1, 2, 5, 4, 4, 5, 3, 0]
+    }, {
+        "type": "spline",
+        "name": "总违纪数",
+        "data": [66, 27, 13, 14, 28,80,71,49],
+        "marker": {
+            "lineWidth": 2,
+            "lineColor": "green",
+            "fillColor": "white"
+        }
+    }]
+}

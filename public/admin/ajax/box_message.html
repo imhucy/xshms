@@ -1,0 +1,71 @@
+<!--Start Breadcrumb-->
+<div class="row">
+	<div id="breadcrumb" class="col-xs-12">
+		<ol class="breadcrumb">
+			<li><a href="index.html">主 页</a></li>
+			<li><a href="javascript:;">意见箱</a></li>
+		</ol>
+	</div>
+</div>
+<!--End Breadcrumb-->
+<div class="row">
+	<div class="col-xs-12">
+		<div class="well">
+			<h4>说明：</h4>
+			<ol>
+				<li>此页面只能查看反馈的信息，不能做其他任何操作</li>
+				<li>关闭按钮不会删除数据，只是暂时看不到了而已，刷新即可恢复</li>
+			</ol>
+		</div>
+	</div>
+</div>
+<div class="row" id="ibox-list">
+	
+</div>
+<script type="text/javascript">
+	
+	var template = [
+		'<div class="col-xs-4">',
+		'	<div class="box ui-draggable ui-droppable">',
+		'		<div class="box-header">',
+		'			<div class="box-name">',
+		'				<i class="fa fa-user"></i>',
+		'				<span class="ibox_name"></span>',
+		'				<i class="fa fa-clock-o"></i>',
+		'				<span class="ibox_date"></span>',
+		'			</div>',
+		'			<div class="box-icons">',
+		'				<a class="collapse-link">',
+		'					<i class="fa fa-chevron-up"></i>',
+		'				</a>',
+		'				<a class="expand-link">',
+		'					<i class="fa fa-expand"></i>',
+		'				</a>',
+		'				<a class="close-link">',
+		'					<i class="fa fa-times"></i>',
+		'				</a>',
+		'			</div>',
+		'			<div class="no-move"></div>',
+		'		</div>',
+		'		<div class="box-content">',
+		'			<div class="ibox_content"></div>',
+		'		</div>',
+		'	</div>',
+		'</div>'
+	].join(' ');
+	jQuery(document).ready(function($) {
+		$('.preloader').hide();
+		var iboxList = $('#ibox-list');
+		$.get('/all/ibox',function (data) {
+			var iboxes = $.parseJSON(data);
+			$.each(iboxes,function(i, ibox) {
+				var box = $(template);
+				box.find('.ibox_name').text(ibox.ibox_name);
+				box.find('.ibox_date').text(ibox.ibox_date);
+				box.find('.ibox_content').text(ibox.ibox_content);
+				iboxList.append(box);
+			});
+		});
+		WinMove();
+	});
+</script>
