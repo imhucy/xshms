@@ -66,16 +66,19 @@ var mainView = myApp.addView('.view-main', {
 
 // 设置全局变量
 Template7.global = {
-	basePath: '/xshms/WebRoot',
-	frontPath: '/xshms/WebRoot/FRONT/',
-	pagePath: '/xshms/WebRoot/FRONT/pages/',
-	personalPath: '/xshms/WebRoot/FRONT/pages/personal/',
 	login_status: false
 };
 $.getJSON('/all/dept').done(function (tableContent){
-
+	Template7.global.dept = tableContent;
+	myApp.template7Data['page:introduction-department']={
+		depts:tableContent
+	}
+});
+$.getJSON('/front/getAllActivity').done(function (activities) {
+	myApp.template7Data['page:voluntary-activity']={
+		activities:activities.value
+	}
 })
-
 
 /*===== 1.主页 =====*/
 myApp.onPageInit('index', function(page) {
@@ -836,8 +839,8 @@ myApp.onPageInit("apply-for-new", function(page) {
 
 /*===== 18.志愿者活动页面 =====*/
 myApp.onPageInit('voluntary-activity',function(page){
+
 	var swiperVoluntary = myApp.swiper('#swiper-container-volutary', {
-		
 		paginationHide: true,
 		paginationClickable: true,
 		nextButton: '.swiper-button-next',
@@ -1016,4 +1019,35 @@ myApp.onPageInit('voluntary-contact', function(page) {
     
     hideLoading();
   });
+});
+/*28.提交意见箱*/
+myApp.onPageInit('idea-box-submit',function (page) {
+	var curPage = $(page.container);
+	curPage.find('.submit').click(function(e) {
+		ajaxData = {};
+
+		curPage.find('[name]').each(function(i,elem) {
+			var key = $(elem).attr('name');
+			var val = $.trim( $(elem).val() );
+			if(val=== '' && key === 'ibox_name'){
+				val = '匿名';
+			}
+			if(val === '' && key === 'ibox_content') {
+				myApp.alert('意见不能为空');
+				return;
+			}
+			ajaxData[ key ] = val;
+		});
+		ajaxData['ibox_date'] = new Date().format('yyyy-MM-dd');
+		
+		showLoading();
+		$.post('/front/postIBox',ajaxData)
+		.done(function (json) {
+			hideLoading();
+			json = $.parseJSON(json);
+			myApp.alert(json['message'],function () {
+				mainView.back();
+			});
+		});
+	});
 });

@@ -17,50 +17,18 @@
       <div class="slider-custom">
         <div id="swiper-container-volutary">
           <div class="swiper-wrapper">
-          
+            {{#each activities}}
             <div class="swiper-slide">
               <div class="content-block">
                 <div class="content-block-inner">
-                  <p class="content-block-title">志愿服务1<br /><em class="content-block-subtitle">活动id:#XSA14S | 活动负责人:米雪</em></p>
-                  <p>6月13日（星期天），湘雅附一医院旁献血车服务，加3个道德币。</p>
-                  <p>活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，活动内容，</p>
-                  <p><a href="pages/apply-for/apply-for-voluntary.html" class="button button-big button-fill color-orange">我要参加</a></p>
+                  <p class="content-block-title">{{activity_name}}<br />
+                  <em class="content-block-subtitle">编号:{{id}} | 负责人:{{useres_name}}|时间:{{activity_date}}</em></p>
+                  {{activity_content}}
+                  <p><a href="pages/apply-for/apply-for-voluntary.html" class="button button-big button-fill color-orange" data-activityId="{{id}}">我要参加</a></p>
                 </div>
               </div>
             </div>
-            
-            <div class="swiper-slide">
-              <div class="content-block">
-                <div class="content-block-inner">
-                  <p class="content-block-title">志愿服务2<br />
-                  <em class="content-block-subtitle">活动id:#XSA14S | 活动负责人:米雪</em>
-                  </p>
-                  <p>6月14日（星期天），清洁校车服务，加5个道德币。</p>
-                  <p><a href="pages/apply-for/apply-for-voluntary.html" class="button button-big button-fill color-orange">我要参加</a></p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="swiper-slide">
-              <div class="content-block">
-                <div class="content-block-inner">
-                  <p class="content-block-title">志愿服务3<br /><em class="content-block-subtitle">活动id:#XSA14S | 活动负责人:米雪</em></p>
-                  <p>6月20日（星期天），献血车服务，加5个道德币。</p>
-                  <p><a href="pages/apply-for/apply-for-voluntary.html" class="button button-big button-fill color-orange">我要参加</a></p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="swiper-slide">
-              <div class="content-block">
-                <div class="content-block-inner">
-                  <p class="content-block-title">志愿服务4<br /><em class="content-block-subtitle">活动id:#XSA14S | 活动负责人:米雪</em></p>
-                  <p>6月21日（星期天），献血车服务，加5个道德币。</p>
-                  <p><a href="pages/apply-for/apply-for-voluntary.html" class="button button-big button-fill color-orange">我要参加</a></p>
-                </div>
-              </div>
-            </div>
-            
+            {{/each}}
           </div>
         </div>
         <div class="swiper-button-prev" style="position: fixed;"></div>

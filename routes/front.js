@@ -8,10 +8,11 @@ var baseJson = {
 		message : "获取成功",
 		value : ''
 	};
-/* GET users listing. */
+/* GET front listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
+
 
 router.get('/getUseres',function (req,res) {
 	var joinTable = req.query.joinTable;
@@ -37,51 +38,114 @@ router.get('/getUseres',function (req,res) {
 	});
 });
 
-router.get('/closeDB',function (req,res) {
-	excute.close();
-	res.setHeader('content-type','text/plain;charset=utf-8');
-	res.write('success closed db');
-	res.end();
-});
-
 router.get('/getStudent',function (req,res){
 	var sql = 'select * from student';
 	
 	excute.query(sql,function (results) {
 		if(results){
-			context = {};
-			context.dormitory = {};
-			
-			for(i = 0 ; i < results.length; i++){
-				student = results[i];
-				if(!context['dormitory'][student.student_building]){
-					context['dormitory'][student.student_building] = {};
-					if(!context['dormitory'][student.student_building][student.student_room]){
-					 	context['dormitory'][student.student_building][student.student_room] = [];
-						context['dormitory'][student.student_building][student.student_room].push( student );
-					}else{
-						context['dormitory'][student.student_building][student.student_room].push( student );
-					}
-				}
-				else{
-					if(!context['dormitory'][student.student_building][student.student_room]){
-					 	context['dormitory'][student.student_building][student.student_room] = [];
-						context['dormitory'][student.student_building][student.student_room].push( student );
-					}else{
-						context['dormitory'][student.student_building][student.student_room].push( student );
-					}
-				}
-			}
-			baseJson.value = context;
+
+			baseJson.value = student2dormitory(results);
+
 		}else {
+
 			baseJson.status = 0;
 			baseJson.message = "获取失败";
+
 		}
-		res.setHeader('content-type','text/plain');
+		res.setHeader('content-type','text/plain;charset=utf-8');
 		res.write( JSON.stringify( baseJson ) );
 		res.end();
 	});
 });
+//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+// 提交意见反馈
+///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.post('/postIBox',function (req,res,next) {
+	// var ibox_name = req.body.ibox_name;
+	// var ibox_content = req.body.ibox_content;
+	// var ibox_date = req.body.ibox_date;
+	var rowInfo = req.body;
+	console.log(req.body);
+	excute.insert('ibox',rowInfo,function (insertId) {
+		if(insertId){
+			baseJson.status = 1;
+			baseJson.message = '提交成功';
+			baseJson.value = '';
+		}else{
+			baseJson.status = 0;
+			baseJson.message = '提交失败，请重新提交';
+			baseJson.value = '';
+		}
+	});
+	res.setHeader('content-type','text/plain;charset=utf-8');
+	res.write( JSON.stringify( baseJson ) );
+	res.end();
+});
+//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+// 获取所有的志愿活动
+// 是所有没有完成的志愿活动
+///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.get('/getAllActivity',function (req,res) {
+	var sql = 'select * from activity join useres on activity.activity_leader = useres.id where activity_status = 1';
+	excute.query(sql,function (results) {
+		if(results){
+			baseJson.status = 1;
+			baseJson.message = '获取成功';
+			baseJson.value = results;
+		} else {
+			baseJson.status = 0;
+			baseJson.message = "获取失败";
+			baseJson.value = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+
+
+//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+// 
+///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
+
+// router.get('/getGrades',function(req,res){var sql = 'SELECT DISTINCT student_enterYear  FROM student ;'})
+//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+// 将学生信息进行加工，方便前台显示查寝表单
+///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+function student2dormitory (results) {
+	context = {};
+	context.dormitory = {};	
+	for(i = 0 ; i < results.length; i++){
+		student = results[i];
+		if(!context['dormitory'][student.student_building]){
+			context['dormitory'][student.student_building] = {};
+			if(!context['dormitory'][student.student_building][student.student_room]){
+			 	context['dormitory'][student.student_building][student.student_room] = [];
+				context['dormitory'][student.student_building][student.student_room].push( student );
+			}else{
+				context['dormitory'][student.student_building][student.student_room].push( student );
+			}
+		}
+		else{
+			if(!context['dormitory'][student.student_building][student.student_room]){
+			 	context['dormitory'][student.student_building][student.student_room] = [];
+				context['dormitory'][student.student_building][student.student_room].push( student );
+			}else{
+				context['dormitory'][student.student_building][student.student_room].push( student );
+			}
+		}
+	}
+	return context;
+}
 
 // router.get('/getUseres',function (req,res) {
 // 	var baseJson = {
@@ -128,5 +192,10 @@ router.get('/getStudent',function (req,res){
 // 		res.end();
 // 	},10000)
 // });
-
+// router.get('/closeDB',function (req,res) {
+// 	excute.close();
+// 	res.setHeader('content-type','text/plain;charset=utf-8');
+// 	res.write('success closed db');
+// 	res.end();
+// });
 module.exports = router;
