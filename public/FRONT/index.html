@@ -1,10 +1,3 @@
-<!--<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%
-String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-request.setAttribute("frontPath", basePath+"FRONT");
-request.setAttribute("pagePath", basePath+"FRONT/pages/");
-%>-->
 <!DOCTYPE html>
 <html>
 
@@ -193,7 +186,9 @@ request.setAttribute("pagePath", basePath+"FRONT/pages/");
     <script src="${frontPath}/js/main.js" type="text/javascript" charset="utf-8"></script>
     -->
     <script src="js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
-
+    <script src="js/validation/jquery.validate.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/validation/messages_zh.min.js" type="text/javascript" charset="utf-8"></script>
+    
     <script type="text/javascript">
       $.getScript("js/main.js", function() {
         init();

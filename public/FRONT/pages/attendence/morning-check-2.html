@@ -1,0 +1,73 @@
+<meta charset="utf-8" />
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="left">
+			<a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+		</div>
+
+		<div class="center sliding">查早寝</div>
+		<div class="right">
+			<a href="#" data-popover=".popover-evening-check-tip" class="open-popover link"><i class="icon icon-tips"></i>提示</a>
+		</div>
+	</div>
+</div>
+<div class="pages no-toolbar">
+	<div data-page="morning-check-2" class="page">
+		<div class="page-content myform">
+			<div id="ajaxContain_evening">
+				<div class="list-block accordion-list inset">
+					<ul>
+						{{#each dormitory}}
+						<li class="accordion-item">
+							<a href="#" class="item-link item-content room-students-prev">
+								<div class="item-inner">
+									<!--寝室号-->
+									<div class="item-title room-number">{{@key}}</div>
+									<div class="item-after">
+										<button name="{{@key}}" value="0" data-popover=".popover-menu" class="dormitory-check button ">寝室情况(无)</button>
+									</div>
+								</div>
+							</a>
+							<div class="accordion-item-content" id="room-number-{{@key}}">
+								<div class="list-block media-list">
+									<ul>
+										{{#each this}}
+										<li class="student">
+											<a href="#" class="item-link smart-select">
+												<select name="{{id}}">
+													<option value="" selected="selected">无</option>
+													<option value="1">未起床</option>
+													<option value="3">未叠被子</option>
+													<option value="18">请假</option>
+												</select>
+												<div class="item-content">
+													<div class="item-inner">
+														<div class="item-title-row">
+															<div class="item-title">{{student_bed}}号床-{{student_name}}</div>
+															<div class="item-after breach-the-principle">无</div>
+														</div>
+														<div class="item-subtitle">{{student_id}}</div>
+													</div>
+												</div>
+											</a>
+										</li>
+										{{/each}}
+									</ul>
+								</div>
+							</div>
+						</li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+			<div class="list-block media-list">
+				<ul>
+					<li>
+						<a href="#" class="dormAttendSubmit submit list-button item-link color-red">确认提交</a>
+					</li>
+				</ul>
+			</div>
+			
+		</div>
+	</div>
+</div>

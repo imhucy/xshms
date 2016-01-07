@@ -1,0 +1,68 @@
+<meta charset="utf-8" />
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="left">
+      <a href="#" class="back link"><i class="icon icon-back"></i><span>返回</span></a>
+    </div>
+
+    <div class="center sliding">选择查寝楼栋和年级</div>
+    <div class="right">
+      <!-- <a href="#" class="link"> 提交 </a>-->
+    </div> 
+  </div>
+</div>
+<div class="pages no-toolbar">
+  <div data-page="morning-check-1" class="page">
+    <div class="page-content">
+      <div class="list-block media-list">
+        <form id="morningCheckOneForm">
+        <ul>
+          <li>
+            <div class="item-content">
+
+              <div class="item-inner">
+                <div class="item-title-row">
+                  <div class="item-title label">年级</div>
+                  <div class="item-input">
+                    <select name="enterYear">
+                      <option value="">请选择年级</option>
+                      {{#each @global.grades}}
+                      <option value="{{student_enterYear}}">{{student_enterYear}}</option>
+                      {{/each}}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="errorContainer"><div class="item-content"><div class="item-inner"></div></div></li>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title-row">
+                  <div class="item-title label">楼栋号</div>
+                  <div class="item-input">
+                    <select name="student_building">
+                      <option value="">请选择楼栋</option>
+                      {{#each @global.buildings}}
+                      <option value="{{student_building}}">{{student_building}}</option>
+                      {{/each}}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+          
+          <li class="errorContainer"><div class="item-content"><div class="item-inner"></div></div></li>
+          
+          <li>
+            <a href="#" class="submit-next list-button item-link color-red" >下一步(进行考勤)</a>
+          </li>
+        </ul>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

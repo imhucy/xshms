@@ -16,7 +16,45 @@
 	<div data-page="exercise-check" class="page">
 		<div class="page-content">
 			<div class="list-block accordion-list inset">
-				<ul id="ajaxContain_exercise"></ul>
+				<ul id="ajaxContain_exercise">
+					{{#each data}}
+					<li class="accordion-item">
+						<a href="#" class="item-link item-content">
+							<div class="item-inner">
+								<!--班级-->
+								<div class="item-title">{{@key}}</div>
+							</div>
+						</a>
+						<div class="accordion-item-content">
+							<div class="list-block media-list">
+								<ul>
+									{{#each this}}
+									<li>
+										<a href="#" class="item-link smart-select">
+											<select name="{{id}}">
+												<option value="0" selected="selected">已到</option>
+												<option value="12">迟到</option>
+												<option value="13">缺席</option>
+												<option value="21">请假</option>
+											</select>
+											<div class="item-content">
+												<div class="item-inner">
+													<div class="item-title-row">
+														<div class="item-title">{{student_name}}</div>
+														<div class="item-after exercise-result">已到</div>
+													</div>
+													<div class="item-subtitle">{{student_id}}</div>
+												</div>
+											</div>
+										</a>
+									</li>
+									{{/each}}
+								</ul>
+							</div>
+						</div>
+					</li>
+					{{/each}}
+				</ul>
 			</div>
 			
 			<div class="list-block media-list">

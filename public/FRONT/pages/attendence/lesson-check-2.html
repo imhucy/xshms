@@ -16,13 +16,29 @@
 	<div data-page="lesson-check-2" class="page">
 		<div class="page-content" id="lessonCheckFormWrapper2">
 			<div class="list-block media-list">
-				<ul id="lessonCheckForm"></ul>
+				<ul id="lessonCheckForm">
+					<li>
+						<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select" data-page-title="选择通报名单" data-back-text="确认">
+							<select name="students" multiple>
+								{{#each @global.lessonCheckStudent}}
+								<option value="{{id}}">{{student_name}}({{student_id}})</option>
+								{{/each}}
+							</select>
+							<div class="item-content">
+								<div class="item-inner">
+									<div class="item-title-row">
+										<div class="item-title">旷课名单</div>
+									</div>
+									<div class="item-text"><span class="item-after student-list"></span></div>
+								</div>
+							</div>
+						</a>
+					</li>
+				</ul>
 			</div>
 			<div class="list-block media-list">
 				<ul>
-					<li>
-				    	<a href="#" class="submit list-button item-link color-red" >确认提交</a>
-				    </li>
+					<li><a href="#" class="submit list-button item-link color-red" >确认提交</a></li>
 				</ul>
 			</div>
 			

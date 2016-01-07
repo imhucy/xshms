@@ -66,19 +66,49 @@ var mainView = myApp.addView('.view-main', {
 
 // 设置全局变量
 Template7.global = {
-	login_status: false
+	login_status: false,
+	useres:{
+		id : 2
+	}
 };
+/*===== 0.初始化应用数据 =====*/
 $.getJSON('/all/dept').done(function (tableContent){
-	Template7.global.dept = tableContent;
+	Template7.global.depts = tableContent;
 	myApp.template7Data['page:introduction-department']={
 		depts:tableContent
 	}
 });
+$.getJSON('/all/major').done(function (tableContent){
+	Template7.global.majors = tableContent;
+});
+$.getJSON('/front/getGrades', function(json) {
+	Template7.global.grades = json.value;
+});
+$.getJSON('/front/getBuildings', function(json) {
+	Template7.global.buildings = json.value;
+});
 $.getJSON('/front/getAllActivity').done(function (activities) {
+	console.log(JSON.stringify(activities));
 	myApp.template7Data['page:voluntary-activity']={
 		activities:activities.value
 	}
-})
+});
+$.getJSON('/front/getStudentByMaxGrade', function(json, textStatus) {
+		var students = json.value;
+		var classesData = {};
+		$.each(students,function (i,sItem) {
+			if ( !classesData[ sItem.classes_name ] ){
+				classesData[ sItem.classes_name ] = [];
+				classesData[ sItem.classes_name ].push( sItem );
+			}
+			else{
+				classesData[ sItem.classes_name ].push( sItem );
+			}
+		});
+		myApp.template7Data['page:exercise-check']={
+			data:classesData
+		};
+});
 
 /*===== 1.主页 =====*/
 myApp.onPageInit('index', function(page) {
@@ -184,185 +214,414 @@ myApp.onPageInit('meeting-check', function (page) {
 	});
 });
 /*===== 5.查早起 =====*/
-myApp.onPageInit('morning-check', function(page) {
-	var model = {aRoomCache:[],aStuCache:[]};
+myApp.onPageInit('morning-check-1',function (page) {
 	var curPage = $(page.container);
-	curPage.find('.dormAttendSubmit').click(function(){
-		console.dir( fnDormAttendSubmit() );
-	});
-	
 	showLoading();
-	$.getJSON("/front/getStudent", function(json) {
-		// console.log('json======>'+JSON.stringify( json ))
-		if(json.status){
-			
-			// console.log('context======>' + JSON.stringify( context['dormitory']['南三'] ) );
-			context = json.value;
-			$('#ajaxContain_morning').html( compileScript('#dormTemplate', context) );
-			var aStu  = curPage.find('.breach-the-principle');
-			var aRoom = curPage.find('.button.dormitory-check');
-			var roomModel = [];
-			var stuModel = [];
-			// 本地缓存
-			var fnSave = function(){
-				model.aRoomCache = roomModel;
-				model.aStuCache = stuModel;
-				cacheData.set("morningCache",JSON.stringify(model));
-				debug && console.log(cacheData.get("morningCache"));
-			};
-			// 加载本地缓存
-			var fnLoad = function(){
-				if(cacheData.get("morningCache")){
-					model = JSON.parse(cacheData.get("morningCache"));
-					roomModel = model.aRoomCache;
-					stuModel = model.aStuCache;
-					debug && console.log("有缓存");
-				}else{
-					debug && console.log("没有缓存");
-					for(var i = 0 ; i < aStu.size();i++){
-						stuModel.push("无");
+	// 表单验证和表单提交
+	$('#morningCheckOneForm').validate({
+		rules:{
+			"enterYear":"required",
+			"building":"required"
+		},
+		errorPlacement: function(error, element) {  
+		  element.parents('li').next('li').find('.item-inner').append(error);
+		},
+		errorContainer:".errorContainer",
+		submitHandler: function(form) { 
+			showLoading();
+			var ajaxData = {};     
+	    $(form).find('[name]').each(function (i,item) {
+	    	var key = $(item).attr('name');
+	    	var val = $(item).val();
+	    	ajaxData[key] = val;
+	    	Template7.global.morningCheck = Template7.global.morningCheck || {};
+	    	Template7.global.morningCheck[key] = val;
+	    });
+
+			// 请求学生列表
+			$.getJSON('/front/getStudentByGradeBuilding', 
+				{
+					enterYear : ajaxData['enterYear'],
+					student_building : ajaxData['student_building']
+				}, function(json, textStatus) {
+					console.log( JSON.stringify(json) )
+					// Template7.global.morningCheckStudent = json.value;
+					var context = student2dormitory(json.value);
+					console.log( JSON.stringify(context) );
+					myApp.template7Data['page:morning-check-2'] = {
+						dormitory:context
 					}
-					for(var i = 0 ; i < aRoom.size();i++){
-						roomModel.push("寝室情况(无)");
-					}
-					
-					model.aRoomCache = roomModel;
-					model.aStuCache = stuModel;
-					cacheData.set("morningCache",JSON.stringify(model));
-				}
-				aStu.each(function(i,elem){
-					elem.innerHTML = stuModel[i];
-				});
-				aRoom.each(function(i,elem){
-					elem.value = roomModel[i];
-				});
-				console.log(roomModel);
-				console.log(stuModel);
-			};
-			fnLoad();
-			hideLoading();
-			aStu.on('DOMNodeInserted',function(){
-				var i = aStu.index(this);
-				stuModel[i] = this.innerHTML;
-				fnSave();
+					hideLoading();
+					mainView.loadPage('pages/attendence/morning-check-2.html');
+			});
+	  }
+	});// end of validate
+	curPage.find('.submit-next').click(function(){
+		$('#morningCheckOneForm').submit();
+	});
+
+	hideLoading();
+
+});
+	// 查早寝2
+myApp.onPageInit('morning-check-2',function (page){
+	var curPage = $(page.container);
+	
+	var eCheck = Template7.global.morningCheck;
+	var eCache = eCheck['student_building'] + eCheck['enterYear'];
+	// 缓存数据
+	var cd = {};
+	if( cacheData.get('morningCache') )
+		cd = $.parseJSON( cacheData.get('morningCache') ) ;
+	var cName = Template7.global.morningCheck['student_building'] + 
+							Template7.global.morningCheck['enterYear'];
+	console.log(cName);
+	// 寝室情况选择
+	var btnText = {
+		"0"  : "寝室情况(无)" ,
+		"4"  : "优寝",
+		"5"  : "差寝",
+		"8"  : "遮挡可视窗",
+		"9"  : "未挂大锁",
+		"15" : "拒检" 
+	}
+	curPage.find('.dormitory-check').on('click', function (e) {
+		e.stopPropagation();
+		
+		var _this = $(this);
+		// 按钮组
+		var buttons = [];
+		for( key in btnText ){
+			var obj = new Object();
+			obj['text'] = btnText[key];
+			obj['key'] = key;
+
+			var fnClick = function(){
+				_this.val( this.key );
+				_this.text( this.text );
 				
-				debug && console.log(stuModel);
-			});
-			curPage.find('.dormitory-check').click(function(e) {
-				e.stopPropagation();
-			});
-			curPage.find('.dormitory-check').on('click', function() {
-				var _this = $(this);
-				var fnClick = function() {
-						_this.val( this.text );
-						var i = aRoom.index( _this[0] );
-						roomModel[i] = this.text;
-						fnSave();
-						debug && console.log(roomModel);
-					};
-				var btnText = ['拒检','未挂大锁','贴可视窗','差寝','优寝','寝室情况(无)'];
-				var buttons = [];
-				for(var i = 0; i < btnText.length;i++){
-					var obj = {text : btnText[i],onClick : fnClick};
-					(i == btnText.length-1) && (obj['color'] = 'red');
-					buttons.push(obj);
-				}
-				myApp.actions(buttons);
-			});
+				cd[cName]['domitorys'][ _this.attr('name') ] = this.key;
+				cacheData.set('morningCache',JSON.stringify( cd ));
+			}
+
+			obj.onClick = fnClick;
+			
+			// 最后一个按钮显示红字
+			(key == 0) && (obj['color'] = 'red');
+			buttons.push(obj);
 		}
-	});// end of getJSON
+		console.log(buttons)
+		// 初始化操作钮
+		myApp.actions(buttons);
+	});
+	// 学生情况选择
+	curPage.find('select[name]').on('change' , function(){
+		var name = $(this).attr('name');
+		var value = $(this).val();
+		cd[cName]['students'][ name ] = value;
+		cacheData.set('morningCache',JSON.stringify( cd ));
+	})
+
+	// 缓存页面数据
+	debug && console.log(cd)
+	if( cd[cName] ) {
+		// 有缓存就读缓存
+		debug && console.log('有缓存');
+		curPage.find('select[name]').each(function (i ,item){
+			var key = $(item).attr('name');
+			var val = cd[cName]['students'][key];
+			$(item).val( val );
+			var text = $(item).find('option:selected').text();
+			$(item).next().find('.breach-the-principle').text( text );
+		});
+		curPage.find('button[name]').each(function (i ,item){
+			var key = $(item).attr('name');
+			var val = cd[cName]['domitorys'][key];
+			$(item).val( val );
+			$(item).text( btnText[val] )
+		});
+	}else {
+		// 没有缓存就新建缓存
+		debug && console.log('没有缓存');
+		cd[cName] = {};
+		cd[cName]['students'] = {};
+		cd[cName]['domitorys'] = {};
+		curPage.find('select[name]').each(function (i ,item){
+			var key = $(item).attr('name');
+			var val = $(item).val();
+			cd[cName]['students'][key] = val;
+		});
+		curPage.find('.dormitory-check[name]').each(function (i ,item){
+			var key = $(item).attr('name');
+			var val = $(item).val();
+			cd[cName]['domitorys'][key] = val;
+		});
+		cacheData.set('morningCache',JSON.stringify( cd ));
+	}// end of 缓存情况
+
+	// 提交查寝结果
+	curPage.find('.dormAttendSubmit').on('click', function(e) {
+
+		ajaxData = jQuery.extend(true, {}, cd[cName]);
+		// 把多余的项给去了
+		$.each(ajaxData.students,function( i , item ){
+			if(item == 0 || item == '无')  delete ajaxData.students[i];
+		});
+		$.each(ajaxData.domitorys,function( i , item ){
+			if(item == 0 || item == '无')  delete ajaxData.domitorys[i];
+		});
+		// 要给这个寝室的每一个人都记上这个id
+		// 要获取该寝室所有人的id
+		// 每个人的id作为key值
+		// 每个人的违纪项id为val值
+		var domData = myApp.template7Data['page:morning-check-2']['dormitory'];
+		ajaxData.domStudent = {};
+		debug && console.log(domData);
+		// 重新组织下查寝的情况
+		$.each(ajaxData.domitorys,function( domNum , disciplineId ){
+			// 该寝室所有学生的数据 type 数组
+			$.each( domData[ domNum ] ,function(i,student) {
+				var sId = student.id ;
+				ajaxData.domStudent[sId] = disciplineId;
+			});
+		});
+		// 组织完成后，删除原记录
+		delete ajaxData.domitorys;
+		if($.isEmptyObject( ajaxData.domStudent ) && $.isEmptyObject(ajaxData.students) ){
+			myApp.alert('一人未选不能提交,若确实没有可以提交的，便不用提交了');
+			return;
+		}
+		// 查早起描述
+		// ajaxData['attendance_desc']
+		// 查寝负责人
+		ajaxData['attendance_man'] = Template7.global['useres']['id'];
+		console.log(ajaxData);
+		$.post('/front/postDormitoryCheck',{data:JSON.stringify(ajaxData)})
+		.done(function (data){
+			console.log(data);
+			myApp.alert('提交成功',function(){
+				mainView.back();
+			});
+		});
+		cacheData.set('morningCache',"");
+	});
 });
 
+
+
 /*===== 6.查晚归 =====*/
-myApp.onPageInit('evening-check', function(page) {
-	var model = {aRoomCache:[],aStuCache:[]};
+myApp.onPageInit('evening-check-1',function (page) {
 	var curPage = $(page.container);
 	
-	
 	showLoading();
-	$.getJSON("/front/getStudent", function(json) {
-		context = json.value;
-		$('#ajaxContain_evening').html(compileScript('#dormEveningTemplate', context));
-		var aStu  = curPage.find('.breach-the-principle');
-		var aRoom = curPage.find('.button.dormitory-check');
-		var roomModel = [];
-		var stuModel = [];
-		// 本地缓存
-		var fnSave = function(){
-			model.aRoomCache = roomModel;
-			model.aStuCache = stuModel;
-			cacheData.set("eveningCache",JSON.stringify(model));
-			debug && console.log(cacheData.get("eveningCache"));
-		};
-		// 加载本地缓存
-		var fnLoad = function(){
-			if(cacheData.get("eveningCache")){
-				model = JSON.parse(cacheData.get("eveningCache"));
-				roomModel = model.aRoomCache;
-				stuModel = model.aStuCache;
-				debug && console.log("有缓存");
-			}else{
-				debug && console.log("没有缓存");
-				for(var i = 0 ; i < aStu.size();i++){
-					stuModel.push("无");
-				}
-				for(var i = 0 ; i < aRoom.size();i++){
-					roomModel.push("寝室情况(无)");
-				}
+	
+	
+	// 表单验证和表单提交
+	$('#eveningCheckOneForm').validate({
+		rules:{
+			"enterYear":"required",
+			"building":"required"
+		},
+		errorPlacement: function(error, element) {  
+		  element.parents('li').next('li').find('.item-inner').append(error);
+		},
+		errorContainer:".errorContainer",
+		submitHandler: function(form) { 
+			showLoading();
+			var ajaxData = {};     
+	    $(form).find('[name]').each(function (i,item) {
+	    	var key = $(item).attr('name');
+	    	var val = $(item).val();
+	    	ajaxData[key] = val;
+	    	Template7.global.eveningCheck = Template7.global.eveningCheck || {};
+	    	Template7.global.eveningCheck[key] = val;
+	    });
+
+			// 请求学生列表
+			$.getJSON('/front/getStudentByGradeBuilding', 
+				{
+					enterYear : ajaxData['enterYear'],
+					student_building : ajaxData['student_building']
+				}, function(json, textStatus) {
+					console.log( JSON.stringify(json) )
+					
+					var context = student2dormitory(json.value);
+					console.log( JSON.stringify(context) );
+					myApp.template7Data['page:evening-check-2'] = {
+						dormitory:context
+					}
+					hideLoading();
+					mainView.loadPage('pages/attendence/evening-check-2.html');
+			});
+	  }
+	});// end of validate
+	curPage.find('.submit-next').click(function(){
+		$('#eveningCheckOneForm').submit();
+	});
+
+	hideLoading();
+
+});
+
+function student2dormitory (students) {
+	var context = {}
+	$.each(students,function (i,item){
+		var dormitoryNumber = item.student_room;
+		if ( !context[ dormitoryNumber ] ){
+			context[ dormitoryNumber ] = [];
+			context[ dormitoryNumber ].push( item );
+		}else{
+			context[ dormitoryNumber ].push( item );
+		}
+	});
+	return context;
+}
+	// 查晚寝2
+myApp.onPageInit('evening-check-2',function (page){
+	var curPage = $(page.container);
+	
+	var eCheck = Template7.global.eveningCheck;
+	var eCache = eCheck['student_building'] + eCheck['enterYear'];
+	// 缓存数据
+	var cd = {};
+	if( cacheData.get('eveningCache') )
+		cd = $.parseJSON( cacheData.get('eveningCache') ) ;
+	var cName = Template7.global.eveningCheck['student_building'] + 
+							Template7.global.eveningCheck['enterYear'];
+	console.log(cName);
+	// 寝室情况选择
+	var btnText = {
+		"16" : "拒检" ,
+		"2"  : "大功率",
+		"17" : "挂锁",
+		"0"  : "寝室情况(无)" 
+	}
+	// 寝室情况
+	curPage.find('.dormitory-check').on('click', function (e) {
+		e.stopPropagation();
+		
+		var _this = $(this);
+		// 按钮组
+		var buttons = [];
+		for( key in btnText ){
+			var obj = new Object();
+			obj['text'] = btnText[key];
+			obj['key'] = key;
+
+			var fnClick = function(){
+				_this.val( this.key );
+				_this.text( this.text );
 				
-				model.aRoomCache = roomModel;
-				model.aStuCache = stuModel;
-				cacheData.set("eveningCache",JSON.stringify(model));
+				cd[cName]['domitorys'][ _this.attr('name') ] = this.key;
+				cacheData.set('eveningCache',JSON.stringify( cd ));
 			}
-			aStu.each(function(i,elem){
-				elem.innerHTML = stuModel[i];
-			});
-			aRoom.each(function(i,elem){
-				elem.value = roomModel[i];
-			});
-			console.log(roomModel);
-			console.log(stuModel);
-		};
-		fnLoad();
-		hideLoading();
-		aStu.on('DOMNodeInserted',function(){
-			var i = aStu.index(this);
-			stuModel[i] = this.innerHTML;
-			fnSave();
+
+			obj.onClick = fnClick;
 			
-			debug && console.log(stuModel);
+			// 最后一个按钮显示红字
+			(key == 0) && (obj['color'] = 'red');
+			buttons.push(obj);
+		}
+		console.log(buttons)
+		// 初始化操作钮
+		myApp.actions(buttons);
+	});// end of 寝室情况
+	// 学生情况选择
+	curPage.find('select[name]').on('change' , function(){
+		var name = $(this).attr('name');
+		var value = $(this).val();
+		cd[cName]['students'][ name ] = value;
+		cacheData.set('eveningCache',JSON.stringify( cd ));
+	});
+
+	// 缓存页面数据
+	debug && console.log(cd)
+	if( cd[cName] ) {
+		// 有缓存就读缓存
+		debug && console.log('有缓存');
+		curPage.find('select[name]').each(function (i ,item){
+			var key = $(item).attr('name');
+			var val = cd[cName]['students'][key];
+			$(item).val( val );
+			var text = $(item).find('option:selected').text();
+			$(item).next().find('.breach-the-principle').text( text );
 		});
-		
-		
-		curPage.find('.dormitory-check').click(function(e) {
-			e.stopPropagation();
+		curPage.find('button[name]').each(function (i ,item){
+			var key = $(item).attr('name');
+			var val = cd[cName]['domitorys'][key];
+			$(item).val( val );
+			$(item).text( btnText[val] )
 		});
-		curPage.find('.dormAttendSubmit').click(function(){
-			// 这里是查寝结果，传输到后台的数据
-			debug && console.dir( fnDormAttendSubmit() );
+	}else {
+		// 没有缓存就新建缓存
+		debug && console.log('没有缓存');
+		cd[cName] = {};
+		cd[cName]['students'] = {};
+		cd[cName]['domitorys'] = {};
+		curPage.find('select[name]').each(function (i ,item){
+			var key = $(item).attr('name');
+			var val = $(item).val();
+			cd[cName]['students'][key] = val;
 		});
-		curPage.find('.dormitory-check').on('click', function() {
+		curPage.find('.dormitory-check[name]').each(function (i ,item){
+			// 寝室号码
+			var key = $(item).attr('name');
+			// 犯错项id
+			var val = $(item).val();
 			
-			var _this = $(this);
-			var fnClick = function() {
-					_this.val( this.text );
-					var i = aRoom.index( _this[0] );
-					roomModel[i] = this.text;
-					fnSave();
-					debug && console.log(roomModel);
-				};
-			var btnText = ['拒检','大功率','挂锁','寝室情况(无)'];
-			var buttons = [];
-			for(var i = 0; i < btnText.length;i++){
-				var obj = {text : btnText[i],onClick : fnClick};
-				(i == btnText.length-1) && (obj['color'] = 'red');
-				buttons.push(obj);
-			}
-			myApp.actions(buttons);
+			cd[cName]['domitorys'][key] = val;
 		});
-		
+		cacheData.set('eveningCache',JSON.stringify( cd ));
+	}// end of 缓存页面数据
+
+	// 提交查寝结果
+	curPage.find('.dormAttendSubmit').on('click', function(e) {
+
+		ajaxData = jQuery.extend(true, {}, cd[cName]);
+		// 把多余的项给去了
+		$.each(ajaxData.students,function( i , item ){
+			if(item == 0 || item == '无')  delete ajaxData.students[i];
+		});
+		$.each(ajaxData.domitorys,function( i , item ){
+			if(item == 0 || item == '无')  delete ajaxData.domitorys[i];
+		});
+		// 要给这个寝室的每一个人都记上这个id
+		// 要获取该寝室所有人的id
+		// 每个人的id作为key值
+		// 每个人的违纪项id为val值
+		var domData = myApp.template7Data['page:evening-check-2']['dormitory'];
+		ajaxData.domStudent = {};
+		debug && console.log(domData);
+		// 重新组织下查寝的情况
+		$.each(ajaxData.domitorys,function( domNum , disciplineId ){
+			// 该寝室所有学生的数据 type 数组
+			$.each( domData[ domNum ] ,function(i,student) {
+				var sId = student.id ;
+				ajaxData.domStudent[sId] = disciplineId;
+			});
+		});
+		// 组织完成后，删除原记录
+		delete ajaxData.domitorys
+		if($.isEmptyObject( ajaxData.domStudent ) && $.isEmptyObject(ajaxData.students) ){
+			myApp.alert('一人未选不能提交,若确实没有可以提交的，便不用提交了');
+			return;
+		}
+		// 查晚归描述
+		// ajaxData['attendance_desc']
+		// 查寝负责人
+		ajaxData['attendance_man'] = Template7.global['useres']['id']
+		console.log(ajaxData);
+		$.post('/front/postDormitoryCheck',{data:JSON.stringify(ajaxData)})
+		.done(function (data){
+			console.log(data);
+			myApp.alert('提交成功',function(){
+				mainView.back();
+			});
+		});
+		cacheData.set('eveningCache',"");
 	});
 });
+
 
 /*===== 7.部门简介 =====*/
 myApp.onPageInit('introduction-department', function(page) {
@@ -660,37 +919,60 @@ myApp.onPageBeforeInit('notification-detail-chart', function(page) {
 /*===== 12.早操 =====*/
 myApp.onPageInit('exercise-check', function(page) {
 	var curPage = $(page.container);
-	var model = [];
+	var modal = cacheData.get('exerciseCache');
 	showLoading();
-	$.getJSON("jsondata/exercise.json", function(context) {
-		$('#ajaxContain_exercise').html(compileScript('#exerciseTemplate', context));
-		var fnLoad = function(){
-			if(cacheData.get('exerciseCache')){
-				debug && console.log("有缓存");
-				model = JSON.parse(cacheData.get('exerciseCache'));
-				curPage.find('.exercise-result').each(function(i,elem){
-					$(elem).text( model[i] );
-				})
-			}else{
-				debug && console.log("没有缓存");
-				for (var i = 0;i < curPage.find('.exercise-result').size();i++) {
-					model.push("已到");
-				}
-			}
-		}
-		var fnSave = function(){
-			cacheData.set('exerciseCache',JSON.stringify(model));
-			debug && console.log(cacheData.get('exerciseCache'));
-		}
-		fnLoad();
-		curPage.find('.exercise-result').on('DOMNodeInserted',function(){
-			var i = curPage.find('.exercise-result').index(this);
-			model[i] = $(this).text();
-			fnSave();
+	if ( modal ){
+		// 如果有缓存则读取缓存
+		debug && console.log( '有缓存' );
+		curPage.find('select[name]').each(function(i,item){
+			var key = $(item).attr('name');
+			var val = modal[key] ;
+			$(item).val( val );
+			var text = $(item).find('option:selected').text();
+			$(item).next().find('.exercise-result').text(text);
 		});
-		
-		hideLoading();
+	}
+	else{
+		// 没有缓存则建立缓存
+		debug && console.log( '没有缓存' );
+		modal = {};
+		curPage.find('select[name]').each(function(i,item){
+			var key = $(item).attr('name');
+			var val = $(item).val();
+			modal[key] = val;
+		});
+
+		cacheData.set('exerciseCache',JSON.stringify(modal));
+
+	}
+	// 选择后更新缓存
+	curPage.find('select[name]').on('change', function(e) {
+		var key = $(this).attr('name');
+		var val = $(this).val();
+		modal[ key ] = val;
+		cacheData.set('exerciseCache',JSON.stringify(modal));
 	});
+	// 提交
+	curPage.find('.exerciseSubmit').on('click', function(e) {
+		$.each(modal, function(sId, disciplineId) {
+			if(disciplineId == 0) delete modal[sId];
+		});
+		if(modal.length <= 0) {
+			myApp.alert('没有可以提交的数据，不必提交');
+			return;
+		}
+
+		ajaxData = {};
+		ajaxData[ 'attendance_man' ] = Template7.global.useres.id;
+		ajaxData[ 'result' ] = modal;
+		$.post('/front/postExerciseCheck')
+		.done(function(data){
+			debug && console.log(data);
+		});
+
+	});
+	hideLoading();
+
 });
 /*===== 13.通报表扬详情页面 =====*/
 myApp.onPageAfterAnimation("notification-detail-by", function(page) {
@@ -839,7 +1121,9 @@ myApp.onPageInit("apply-for-new", function(page) {
 
 /*===== 18.志愿者活动页面 =====*/
 myApp.onPageInit('voluntary-activity',function(page){
-
+	$('.applyForVolBtn').on('click', function(event) {
+		Template7.global.activityid = $(this).data('activityid');
+	});
 	var swiperVoluntary = myApp.swiper('#swiper-container-volutary', {
 		paginationHide: true,
 		paginationClickable: true,
@@ -850,6 +1134,59 @@ myApp.onPageInit('voluntary-activity',function(page){
 		speed: 400
 	});
 });
+
+myApp.onPageInit('apply-for-voluntary',function(page){
+	curPage = $(page.container);
+	var activityid = Template7.global.activityid;
+	curPage.find('#activityid').val(activityid);
+	$('#applyForVoluntary').validate({
+		rules:{
+			"activity_id":"required",
+			"student_id":{
+				required:true,
+				digits:true,
+				maxlength:12,
+				minlength:12
+			},
+			"student_mobile":{
+				required:true,
+				digits:true,
+				maxlength:11,
+				minlength:11
+			}
+		},
+		errorPlacement: function(error, element) {  
+		  element.parents('li').next('li').find('.item-inner').append(error);
+		},
+		errorContainer:".errorContainer",
+		submitHandler: function(form) {      
+	    ajaxData = {};
+			$(form).find('[name]').each(function(i,item){
+				var key = $(item).attr('name');
+				var val = $.trim($(item).val());
+				
+				ajaxData[ key ] = val;
+			});
+
+			console.log(ajaxData);
+			$.post('/front/applyForActivity',ajaxData)
+			.done(function (json){
+				json = $.parseJSON(json);
+				console.log(JSON.stringify( json ) )
+				myApp.alert(json.message,function () {
+					if( json.status === 1 ){
+						mainView.back();
+					}
+				})
+			})
+	  }
+	});
+	curPage.find('.submit').on('click', function(e) {
+		$('#applyForVoluntary').submit();
+	});
+	
+});
+
 /*===== 19.查课页面 =====*/
 
 myApp.onPageInit('lesson-check-1',function(page){
@@ -882,7 +1219,97 @@ myApp.onPageInit('lesson-check-1',function(page){
 		if ( !fnSave() ) {debug && console.log( "保存失败！" );myApp.alert("还没填完呢，再检查检查");return false;}
 		debug && console.log(localStorage);
 	});
-	
+	// 根据majorId和enterYear来定位班级
+	curPage.find('[name="majorId"],[name="enterYear"]').on('change', function(event) {
+		var majorId = curPage.find('[name="majorId"]').val();
+		var enterYear = curPage.find('[name="enterYear"]').val();
+		var classesSelect = curPage.find('[name="classes"]');
+		$.getJSON('/front/getClasses',{majorId:majorId,enterYear:enterYear}
+			, function(json, textStatus) {
+			var data = json.value;
+			var str = '';
+			$.each(data, function(i,item) {
+				str+='<option value="'+item.id+'">'+item.classes_name+'</option>';
+			});
+			classesSelect.html(str);
+		});
+	});
+	// 表单验证和表单提交
+	$('#lessonCheckOneForm').validate({
+		rules:{
+			"enterYear":"required",
+			"majorId":"required",
+			"classes":"required",
+			"course":{
+				required:true
+			},
+			"classroom":{
+				required:true,
+				digits:true
+			},
+			"need-number":{
+				required:true,
+				digits:true
+			},
+			"real-number":{
+				required:true,
+				digits:true
+			}
+		},
+		errorPlacement: function(error, element) {  
+		  element.parents('li').next('li').find('.item-inner').append(error);
+		},
+		errorContainer:".errorContainer",
+		submitHandler: function(form) {      
+	    ajaxData = {};
+	    // 提交的时候，计算缺勤人数
+	    // 获取班级人员列表
+	    // 拼接查课描述
+	    $(form).find('[name]').each(function (i,item){
+	    	var formElem = $(item);
+	    	var key = formElem.attr('name');
+	    	var val = formElem.val();
+	    	ajaxData[key] = val;
+	    });
+	    var qNumber = parseInt(ajaxData['need-number']) - parseInt(ajaxData['real-number']);
+	    if(qNumber <= 0) return;
+	    var className = $(form).find('[name="classes"]').find('option:selected').text();
+	    var now = new Date().format('yyyy-MM-dd hh:mm:ss');
+	    var buildingNumber = ajaxData['building-number'];
+	    var classroom = ajaxData['classroom'];
+	    var course = ajaxData['course'];
+
+	    var attendenceDesc = className + '班于' + now +'在'+buildingNumber+classroom+'上'
+	    											+course+'课时，旷课'+qNumber+'人';
+	    //  查课数据											
+	    Template7.global.lessonCheck = {
+	    	data : {
+		    	// 查课描述
+		    	'attendance_desc' : attendenceDesc,
+		    	// 查课人
+		    	'attendance_man' : Template7.global['useres']['id']
+		    }
+		  }
+			debug && console.log(ajaxData);
+			debug && console.log(attendenceDesc);
+			showLoading();
+			// 请求学生列表
+			$.getJSON('/front/getStudentByMajorGradeClasses', 
+				{
+					majorId : ajaxData['majorId'],
+					enterYear : ajaxData['enterYear'],
+					classes : ajaxData['classes']
+				}, function(json, textStatus) {
+					console.log( JSON.stringify(json) )
+					Template7.global.lessonCheckStudent = json.value;
+					hideLoading();
+					mainView.loadPage('pages/attendence/lesson-check-2.html');
+			});
+	  }
+	});// end of validate
+	curPage.find('.submit-next').click(function(){
+		$('#lessonCheckOneForm').submit();
+	});
 });
 
 myApp.onPageInit('lesson-check-2',function(page){
@@ -902,10 +1329,16 @@ myApp.onPageInit('lesson-check-2',function(page){
 		var arr = [];
 		var obj = JSON.parse( cacheData.get("lessonCheck") );
 		curPage.find('select option:checked').each(function(index, el) {
-		    arr.push(el.value);
+		  arr.push(el.value);
 		});
-		if( obj["need-number"]-obj["real-number"] != arr.length ){myApp.alert("人数不一致,请重新选择");return null;}
+		if( obj["need-number"]-obj["real-number"] != arr.length ){
+			myApp.alert("人数与缺勤人数不一致,请重新选择");return null;
+		}
 		obj["result"] = arr;
+		// 缺课名单
+		Template7.global.lessonCheck['data']['result'] = arr;
+		// 查课时间
+		Template7.global.lessonCheck['data']['attendance_date'] = new Date().format('yyyy-MM-dd hh:mm:ss');
 		return obj;
 	}
 	var fnSubmit = function(){
@@ -913,23 +1346,29 @@ myApp.onPageInit('lesson-check-2',function(page){
 		if(!data) return ;
 		debug && console.log( data );
 		showLoading();
-//		此处可以将数据传到后台去
-		debug || $.post(url,data,function(){;});
-		setTimeout(function(){
+		//	此处可以将数据传到后台去
+		$.post('/front/postLessonCheck', Template7.global.lessonCheck.data)
+		.done(function(json){
+			json = $.parseJSON(json);
+			console.log(json);
+			// setTimeout(function(){
 			hideLoading();
 			myApp.alert("提交成功",function(){
 				mainView.back(mainView.back(mainView.back));
 			});
-		},3000);
-		fnClear();
-		$(this).off();
+			// },3000);
+			fnClear();
+			$(this).off();
+		});
+		
 	};
-	$.getJSON("jsondata/exercise.json",function(data){
-		var htmlStr = compileScript("#lessonCheckTemplate",data);
-		var container = curPage.find("#lessonCheckForm");
-		$(htmlStr).appendTo(container);
-		$('.student-list').on('DOMNodeInserted',fnFormart);
-	});
+	// $.getJSON("jsondata/exercise.json",function(data){
+	// 	var htmlStr = compileScript("#lessonCheckTemplate",data);
+	// 	var container = curPage.find("#lessonCheckForm");
+	// 	$(htmlStr).appendTo(container);
+		
+	// });
+	$('.student-list').on('DOMNodeInserted',fnFormart);
 	var curPage = $(page.container);
 	// 只能提交一次
 	curPage.find('.submit').on('click',fnSubmit);
@@ -937,10 +1376,10 @@ myApp.onPageInit('lesson-check-2',function(page){
 /*===== 20.考勤功能列表页 =====*/
 myApp.onPageInit('work-attendance',function(page){
 	var curPage = $(page.container);
-	var data ={  
+	var data ={
 		lists:[
-			{url:"pages/attendence/morning-check.html",text:"查早寝"},
-			{url:"pages/attendence/evening-check.html",text:"查晚寝"},
+			{url:"pages/attendence/morning-check-1.html",text:"查早寝"},
+			{url:"pages/attendence/evening-check-1.html",text:"查晚寝"},
 			{url:"pages/attendence/lesson-check-1.html",text:"查课"},
 			{url:"pages/attendence/exercise-check.html",text:"查早操"},
 			{url:"pages/attendence/meeting-check.html",text:"会议考勤"}

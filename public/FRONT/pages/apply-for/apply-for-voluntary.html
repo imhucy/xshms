@@ -13,51 +13,46 @@
   <div data-page="apply-for-voluntary" class="page">
     <div class="page-content">
       <div class="list-block">
+      <form id="applyForVoluntary">
         <ul>
         <li>
             <div class="item-content">
               <div class="item-inner">
-                <div class="item-title label">活动id</div>
+                <div class="item-title label">活动编号</div>
                 <div class="item-input">
-                  <input type="text" readonly="readonly" value="#XSA14S" />
+                  <input type="text" id="activityid" name="activity_id" readonly="readonly" />
                 </div>
               </div>
             </div>
           </li>
-          <li>
-            <div class="item-content">
-              <div class="item-inner">
-                <div class="item-title label">姓名</div>
-                <div class="item-input">
-                  <input type="text" placeholder="姓名" />
-                </div>
-              </div>
-            </div>
-          </li>
+
           <li>
             <div class="item-content">
               <div class="item-inner">
                 <div class="item-title label">学号</div>
                 <div class="item-input">
-                  <input type="number" placeholder="学号" />
+                  <input type="number" name="student_id" placeholder="请输入12位学号" />
                 </div>
               </div>
             </div>
           </li>
+          <li class="errorContainer"><div class="item-content"><div class="item-inner"></div></div></li>
           <li>
             <div class="item-content">
               <div class="item-inner">
                 <div class="item-title label">手机</div>
                 <div class="item-input">
-                  <input type="number" placeholder="手机号码" />
+                  <input type="number" name="student_mobile" placeholder="请输入11位手机号" />
                 </div>
               </div>
             </div>
           </li>
+          <li class="errorContainer"><div class="item-content"><div class="item-inner"></div></div></li>
         </ul>
+        </form>
         <div class="list-block-label">请确保您在活动当天有时间</div>
       </div>
-      <a href="" class="button button-fill button-big color-red">提交申请</a>
+      <a href="" class="button button-fill button-big color-red submit">提交申请</a>
     </div>
   </div>
 </div>

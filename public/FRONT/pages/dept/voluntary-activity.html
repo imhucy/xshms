@@ -21,10 +21,14 @@
             <div class="swiper-slide">
               <div class="content-block">
                 <div class="content-block-inner">
-                  <p class="content-block-title">{{activity_name}}<br />
-                  <em class="content-block-subtitle">编号:{{id}} | 负责人:{{useres_name}}|时间:{{activity_date}}</em></p>
+                  <p class="content-block-title">
+                    {{activity_name}}<br />
+                    <em class="content-block-subtitle">
+                      编号:{{activity_id}} | 负责人:{{useres_name}}|时间:{{activity_date}}
+                    </em>
+                  </p>
                   {{activity_content}}
-                  <p><a href="pages/apply-for/apply-for-voluntary.html" class="button button-big button-fill color-orange" data-activityId="{{id}}">我要参加</a></p>
+                  <p><a href="pages/apply-for/apply-for-voluntary.html" class="button button-big button-fill color-orange applyForVolBtn" data-activityid="{{activity_id}}">我要参加</a></p>
                 </div>
               </div>
             </div>

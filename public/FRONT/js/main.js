@@ -49,7 +49,7 @@ function LoadValidationScript(callback){
  */
 function LoadFramework7Script(callback){
 	if (!window.myApp){
-		$.getScript('js/framework7.min.js', callback);
+		$.getScript('js/framework7.js', callback);
 	}
 	else {
 		if (callback && typeof(callback) === "function") {

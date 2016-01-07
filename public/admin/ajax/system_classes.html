@@ -32,6 +32,7 @@
 							<th><label><input type="text" name="classes_name" value="班级名称" class="search_init" /></label></th>
 							<th><label><input type="text" name="classes_desc" value="班级描述" class="search_init" /></label></th>
 							<th><label><input type="text" name="major_id" data-select="major" value="专业ID" class="search_init" /></label></th>
+							<th><label><input type="text" name="enterYear" value="所属年级" class="search_init" /></label></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -43,6 +44,7 @@
 							<th>班级名称</th>
 							<th>班级描述</th>
 							<th>专业ID  </th>
+							<th>所属年级</th>
 						</tr>
 					</tfoot>
 				</table>
@@ -98,7 +100,7 @@ function AllTables(){
 		// EditabeTableRole();
 		EditabeTableModel({
 			table:'#datatable-classes'
-			,widths : [ 0,300,300,300 ]
+			,widths : [ 0,300,300,300,100 ]
 			,dbTable : 'classes'
 		});
 	}
@@ -123,6 +125,7 @@ $(document).ready(function() {
 			oTr.append('<td>'+(elem.classes_name)+'</td>');
 			oTr.append('<td>'+(elem.classes_desc||'-')+'</td>');
 			oTr.append('<td> '+(elem.major_id||'-')+' </td>');
+			oTr.append('<td> '+(elem.enterYear||'-')+' </td>');
 			tBody.append(oTr);
 		});
 		LoadDataTablesScripts(AllTables);

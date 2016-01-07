@@ -17,7 +17,7 @@ module.exports = function (dirname) {
 		dbClient.query('select * from '+table,function(err,results){
 			if(err){
 				console.log('查询%s表失败：%s',	table, err);
-				dbClient.end();
+				dbClient.release();
 				callback(false);
 			}else {
 				if(results){
@@ -38,7 +38,7 @@ module.exports = function (dirname) {
 		dbClient.query('select * from '+table+' where ?',idJson,function(err,results){
 			if(err){
 				console.log( '从数据库获取数据错误 : ' + err.message );
-				dbClient.end();
+				dbClient.release();
 				callback(false);
 			}else{
 				if(results){
@@ -106,7 +106,7 @@ module.exports = function (dirname) {
 		dbClient.query('delete from '+table+' where ?',id,function (err,results) {
 			if(err){
 				console.log('删除数据失败...... \n' +err );
-				dbClient.end();
+				dbClient.release();
 				callback(false);
 			}else{
 				callback(true);
@@ -153,7 +153,7 @@ module.exports = function (dirname) {
       function(error, results) {
           if (error) {
               console.log('GetData Error: ' + error.message);
-              dbClient.end();
+              dbClient.release();
               callback(false);
           } else {
 						callback(results);
@@ -169,7 +169,7 @@ module.exports = function (dirname) {
 				if(error)
 				{
 					console.log('自定义查询失败 ：\n====>'　+ error.message);
-					dbClient.end();
+					dbClient.release();
 					callback(false);
 				}else{
 					callback(results);
@@ -181,7 +181,7 @@ module.exports = function (dirname) {
 				if(error)
 				{
 					console.log('自定义查询失败 ：\n====>'　+ error.message);
-					dbClient.end();
+					dbClient.release();
 					callback(false);
 				}else{
 					callback(results);
@@ -190,7 +190,7 @@ module.exports = function (dirname) {
 		}
 	}
 	this.close = function(){
-		dbClient.end();
+		dbClient.release();
 	}
 	function __constructor (dirname) {
 		var configPath = dirname + '/config.json';
@@ -198,6 +198,12 @@ module.exports = function (dirname) {
 		//console.log(dbConfig)
 		var client = {}
 
+		client.connectionLimit = 100;
+
+		client.multipleStatements = true;
+
+		client.debug = true;
+		
 		client.host = dbConfig['host'];
 
 		client.port = dbConfig['port'];
@@ -206,16 +212,42 @@ module.exports = function (dirname) {
 
 		client.password = dbConfig['password'];
 
-		dbClient = mysql.createConnection(client);
-		dbClient.connect();
-		console.log('======>数据库连接成功......');
-		dbClient.query('use ' + dbConfig['database'],function (error,result) {
-			if(error){
-				console.log('====> 连接数据库错误：' + error.message);
-				dbClient.end();
+		client.database = dbConfig['database'];
+
+		
+		
+		var pool = mysql.createPool(client);
+		pool.getConnection(function (err,conn) {
+			if(err){
+				console.log('====> 连接数据库错误：' + err.message);
+				// dbClient.end();
+				// dbClient.release();
+			}else{
+				dbClient = conn;
+				console.log('======>成功建立连接......');
 			}
-			console.log('====> %s数据库连接成功......',dbConfig['database']);
+			// dbClient.query('use ' + dbConfig['database'],function (error,result) {
+			// 	if(error){
+			// 		console.log('====> 连接数据库错误：' + error.message);
+			// 		// dbClient.end();
+			// 		dbClient.release();
+			// 	}
+			// 	console.log('====> %s数据库连接成功......',dbConfig['database']);
+			// });
 		});
+		
+		// dbClient = mysql.createConnection(client);
+
+		// dbClient.connect();
+		// console.log('======>数据库连接成功......');
+		// dbClient.query('use ' + dbConfig['database'],function (error,result) {
+		// 	if(error){
+		// 		console.log('====> 连接数据库错误：' + error.message);
+		// 		dbClient.end();
+		// 	}
+		// 	console.log('====> %s数据库连接成功......',dbConfig['database']);
+		// });
+		
 	}
 }
 
