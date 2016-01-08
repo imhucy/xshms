@@ -75,7 +75,9 @@
 					          <div class="item-title label">竞选部门</div>
 					          <div class="item-input">
 					            <select name="dept">
-					              
+					              {{#each @global.depts}}
+												<option value="{{id}}">{{dept_name}}</option>
+												{{/each}}
 					              <!-- 
 					              <option value="科技部">科技部</option>
 					              <option value="宣传部">宣传部</option>

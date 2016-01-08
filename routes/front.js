@@ -22,7 +22,11 @@ router.get('/getUseres',function (req,res) {
 		sql = 'select * from useres join student on student.id = useres.stu_id where status_id = 2';
 	}
 	else if(joinTable === 'dept'){
-		sql = 'select * from useres join dept on dept.id = useres.dept_id join student on student.id = useres.stu_id where status_id = 2';
+		sql = 'select useres.id as id ,useres_name,stu_id,usr_qq,usr_email,usr_birth,usr_addr,usr_desc,status_id,role_id,login_name,login_pass,dept_id,dept_name,dept_desc,student_id,student_enterYear,student_name,student_sex,student_building,student_room,student_bed,student_mobile '+
+		      'from useres '+
+		      'join dept on dept.id = useres.dept_id '+
+		      'join student on student.id = useres.stu_id '+
+		      'where status_id = 2';
 	}
 	console.log('sql=====>'+sql)
 	excute.query(sql,function (results) {
@@ -463,17 +467,29 @@ router.get('/getStudentByMaxGrade',function (req,res,next){
 		res.end();
 	});
 });
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 会议考勤结果插入
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
+router.post('/postMeetingCheck',insertIntoAttendance);
 
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
-// 早操结果插入
+// 早操考勤结果插入
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
-router.get('/postExerciseCheck',function (req,res,next){
-	var data = JSON.parse( req.body.result );
+router.post('/postExerciseCheck',insertIntoAttendance);
+
+function insertIntoAttendance (req,res,next){
+	var data = JSON.parse( req.body.data );
 	var attendance_man = data.attendance_man;
 	var attendance_date = new Date().format('yyyy-MM-dd hh:mm:ss');
+	var results = data.result;
 	var sql = 'INSERT INTO attendance(attendance_man,dop_man,discipline_id,attendance_term,attendance_date) VALUES ';
+	
+	var records = [];
 	var recordsData = [];
 
 	async.waterfall([
@@ -489,11 +505,11 @@ router.get('/postExerciseCheck',function (req,res,next){
 		},
 		function (term,callback){
 			var attendance_term = term.id;
-			for ( dop_man  in json.domStudent ){
+			for ( dop_man  in results ){
 				records.push( '(?,?,?,?,?)' );
 				recordsData.push( attendance_man );
 				recordsData.push( dop_man );
-				recordsData.push( json.domStudent[dop_man] );
+				recordsData.push( results[dop_man] );
 				recordsData.push( attendance_term );
 				recordsData.push( attendance_date );
 			}
@@ -521,6 +537,126 @@ router.get('/postExerciseCheck',function (req,res,next){
 			});
 		}
 	});// end of waterfall
+}
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 获取当前登录账户的所有任务
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.get('/getMyTask',function (req,res,next) {
+	var id = req.query.id;
+	var sql = 'SELECT task.id AS id , task_name,task_useres,task_content,task_date,task_status,task_status.id AS task_status_id,task_status_name '+
+						'FROM task JOIN task_status ON task.task_status = task_status.id WHERE task_useres = ? '+
+						'ORDER BY task_date DESC';
+	excute.query(sql,[ id ],function(results){
+		if(results && results.length !== 0){
+			baseJson.status = 1;
+			baseJson.message = "获取成功";
+			baseJson.value = results;
+		}
+		else {
+			baseJson.status = 0;
+			baseJson.message = "获取失败";
+			baseJson.value = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 新成员申请
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.post('/newUser',function (req,res,next){
+	var data = req.body;
+	
+	var stu_id = data.id;
+	var dept_id = data.dept;
+	var usr_email = data.mail;
+	var usr_qq = data.qq;
+	var student_mobile = data.tel;
+	var usr_desc = data.person_explain;
+
+	async.waterfall([
+		function (callback){
+			// 确认该学生是否存在
+			excute.query('update student set student_mobile = ? where student_id = ?',
+				[student_mobile,stu_id],
+				function ( results ){
+					if(results.affectedRows){
+						// 找到了该学生，更新他的电话号码
+						callback(null,stu_id);
+						;
+					}else{
+						// 没有找到
+						callback('没有找到该学生，无法申请，请核对您的学号',3);
+						;
+					}
+			});
+		},
+		function (stu_id,callback){
+			var sql = 'select * from student where student_id = ?';
+			excute.query(sql,[stu_id],function (results){
+				if(results && results.length > 0) {
+					callback( null, results[0] );
+				}	else {
+					callback('没有找到该学生，无法申请，请核对您的学号',3);
+				}
+			});
+		},
+		function (student,callback){
+			// 查询是否已经注册了该学生
+			sql = 'select * from useres where stu_id = ?';
+			excute.query(sql,[student.id],function (r){
+				if (r && r.length > 0) {
+					callback('用户已经申请过了，请耐心等待审核',2);
+				}else{
+					callback(null,student);
+				}
+			});
+		},
+		function (student,callback){
+			var sql = 'INSERT INTO useres (useres_name,stu_id, usr_qq, usr_email, usr_desc, login_name, login_pass, dept_id, role_id) '+
+								' VALUES (?,?,?,?,?,?,?,?,?)';
+			var recordsData = [];
+			
+			recordsData.push( student.student_name );
+			recordsData.push( student.id );
+			recordsData.push( usr_qq );
+			recordsData.push( usr_email );
+			recordsData.push( usr_desc );
+			recordsData.push( student.student_id );
+			recordsData.push( '123456' );
+			recordsData.push( dept_id );
+			recordsData.push( 0 );
+
+			excute.query(sql,recordsData,function (results){
+				if ( results ){
+					// 申请成功
+					callback(null,results)
+				}
+			});
+		}
+	],function  (err,result) {
+		if ( err ) {
+			baseJson.status = result;
+			baseJson.message = err;
+			baseJson.value = '';
+		}else{
+			baseJson.status = 1;
+			baseJson.message = '申请成功，请耐心等待审核';
+			baseJson.value = result;
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+
 });
 
 //////////////////////////////////////////////////////////////
@@ -528,6 +664,21 @@ router.get('/postExerciseCheck',function (req,res,next){
 // 
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
 
 
 //////////////////////////////////////////////////////////////

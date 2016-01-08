@@ -325,10 +325,10 @@
 				<ul>{{#each this}}
 					<li>
 						<a href="#" class="item-link smart-select">
-							<select name="fruits">
-								<option value="已到">已到</option>
-								<option value="缺席" selected="selected">缺席</option>
-								<option value="请假">请假</option>
+							<select name="{{id}}">
+								<option value="14">缺席</option>
+								<option value="0">已到</option>
+								<option value="22">请假</option>
 							</select>
 							<div class="item-content">
 								<div class="item-inner">
@@ -347,7 +347,23 @@
 	</li>
 	{{/each}}
 </script>
-
+<script id="taskTemplate" type="text/template7">
+{{#each taskList}}
+<li>
+  <a href="#" class="item-link item-content">
+    <div class="item-inner">
+      <div class="item-title-row" style="background-image:none;">
+        <div class="item-title">{{task_name}}</div>
+        <!-- 发布时间 -->
+        <div class="item-after">{{task_date}}</div>
+      </div>
+      <div class="item-subtitle row"><span class="task-status-{{task_status_id}}">{{task_status_name}}</span></div>
+      <div class="item-txt task-detail">{{task_content}}</div>
+    </div>
+  </a>
+</li>
+{{/each}}
+</script>
 <script id="lessonCheckTemplate" type="text/template7">
 	<li>
 		<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select" data-page-title="选择通报名单" data-back-text="确认">

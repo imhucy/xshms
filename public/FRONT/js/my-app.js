@@ -110,6 +110,7 @@ $.getJSON('/front/getStudentByMaxGrade', function(json, textStatus) {
 		};
 });
 
+
 /*===== 1.主页 =====*/
 myApp.onPageInit('index', function(page) {
 	
@@ -162,7 +163,7 @@ myApp.onPageInit('contact', function(page) {
 
 myApp.onPageInit('meeting-check', function (page) {
 	var curPage = $(page.container);
-	var model = [];
+	var modal = $.parseJSON( cacheData.get("meetingCache") );
 	
 	showLoading();
 	// $.getJSON("jsondata/meeting.json", function(context) {
@@ -175,43 +176,69 @@ myApp.onPageInit('meeting-check', function (page) {
 			if ( !json.departments[elem.dept_name] ) json.departments[elem.dept_name] = [];
 			json.departments[elem.dept_name].push(elem);
 		});
-		console.log(json);
-		var fnSave = function(){
-			if(model.length != 0) cacheData.set("meetingCache", JSON.stringify( model ));
-			debug && console.log("save model");
-		}
-		var fnLoad = function(){
-			if( cacheData.get("meetingCache") ){
-				debug && console.log("有缓存");
-				model = JSON.parse( cacheData.get("meetingCache") );
-				checkResult.each(function(i ,elem){
-					elem.innerHTML = model[i];
-				});
-			}else{
-				debug && console.log("没有缓存");
-				for(var i = 0; i < checkResult.size();i++){
-					model.push("缺席");
-				}
-				debug && console.log("初始化数据层");
-				debug && console.log(model);
-			}
-		}
-		
+
 		$('#ajaxContain_meeting').html(compileScript('#meetingTemplate', json));
-		// 页面加载完成之后，获取所有的结果dom
-		var checkResult = curPage.find('.meeting-result');
-		// 加载数据
-		fnLoad();
-		// 监听数据改变，同步更新数据层
-		checkResult.on("DOMNodeInserted",function(){
-			var i = checkResult.index( this );
-			model[i] = this.innerHTML;
-			fnSave();
+		if( modal ){
+			// 有缓存则读缓存
+			debug && console.log('有缓存');
+			debug && console.log(modal);
+			curPage.find('select[name]').each(function (i,item){
+				var key =  $(item).attr('name');
+				var val = modal[key];
+				$(this).val( val );
+				var text = $(this).find('option:selected').text();
+				$(this).next().find('.meeting-result').text(text);
+			});
+		}else {
+			// 么有缓存就建立缓存
+			debug && console.log('没有缓存');
+			modal = {};
+			curPage.find('select[name]').each(function ( i,item ){
+				var key = $(item).attr('name');
+				var val = $(item).val();
+				modal[key] = val;
+				debug && console.log(key + val)
+			});
+			cacheData.set('meetingCache',JSON.stringify( modal ));
+			debug && console.log(modal)
+		}// end of 读缓存
+
+		curPage.find('select[name]').on('change', function(e) {
+			var key = $(this).attr('name');
+			var val = $(this).val();
+			modal[key] = val;
+			debug && console.log(key + val)
+			cacheData.set('meetingCache',JSON.stringify( modal ));
 		});
-		
+
+		curPage.find('.meetingSubmit').on('click', function(e) {
+			var ajaxData = {};
+			$.each(modal, function(sId,disciplineId) {
+				if(disciplineId == 0) delete modal[sId];
+			});
+			if( $.isEmptyObject(modal) ){
+				myApp.alert('没有缺席和请假的人员,大家全都到了，不用提交');
+				return;
+			}
+			ajaxData['attendance_man'] = Template7.global.useres.id;
+			ajaxData['result'] = modal;
+			$.post('/front/postMeetingCheck',{data : JSON.stringify(ajaxData)})
+			.done(function (data){
+				debug && console.log(data);
+				cacheData.set('meetingCache','');
+				myApp.alert('提交成功',function(){
+					mainView.back();
+				});
+			});
+		});	
 		hideLoading();
-		
 	});
+	
+	
+	// debug && console.log( curPage.find('select[name]').size() )
+	
+	
+
 });
 /*===== 5.查早起 =====*/
 myApp.onPageInit('morning-check-1',function (page) {
@@ -919,11 +946,12 @@ myApp.onPageBeforeInit('notification-detail-chart', function(page) {
 /*===== 12.早操 =====*/
 myApp.onPageInit('exercise-check', function(page) {
 	var curPage = $(page.container);
-	var modal = cacheData.get('exerciseCache');
+	var modal = $.parseJSON( cacheData.get('exerciseCache') );;
 	showLoading();
 	if ( modal ){
 		// 如果有缓存则读取缓存
 		debug && console.log( '有缓存' );
+		debug && console.log( modal )
 		curPage.find('select[name]').each(function(i,item){
 			var key = $(item).attr('name');
 			var val = modal[key] ;
@@ -965,9 +993,12 @@ myApp.onPageInit('exercise-check', function(page) {
 		ajaxData = {};
 		ajaxData[ 'attendance_man' ] = Template7.global.useres.id;
 		ajaxData[ 'result' ] = modal;
-		$.post('/front/postExerciseCheck')
+		$.post('/front/postExerciseCheck',{data : JSON.stringify(ajaxData)})
 		.done(function(data){
 			debug && console.log(data);
+			myApp.alert('提交成功',function () {
+				mainView.back();
+			});
 		});
 
 	});
@@ -1050,7 +1081,7 @@ myApp.onPageInit("apply-for-new", function(page) {
 				},
 				person_explain: {
 					required: true,
-					minlength: 50
+					minlength: 10
 				}
 			},
 			messages: {
@@ -1077,7 +1108,7 @@ myApp.onPageInit("apply-for-new", function(page) {
 				},
 				person_explain: {
 					required: "请填写您的个人评价",
-					minlength: "不得少于50字"
+					minlength: "不得少于10字"
 				}
 			},
 			errorPlacement: function(error, element) {
@@ -1091,20 +1122,16 @@ myApp.onPageInit("apply-for-new", function(page) {
 			if ($("#apply-for-new").valid()) {
 				// 表单提交
 				var json = myApp.formToJSON('#apply-for-new');
-
+				console.log(json);
 				$.ajax({
-					url: Template7.global.basePath + 'newUser',
+					url: '/front/newUser',
 					type: 'POST',
 					data: json,
 					dataType: 'json',
 					success: function(data) {
-						if (data.state) {
-							myApp.alert(data.msg, function() {
-								mainView.back();
-							});
-						} else {
-							myApp.alert(data.msg);
-						}
+						myApp.alert(data.message,function () {
+							if(data.status == 1) mainView.back();
+						})
 					}
 				});
 			}
@@ -1112,10 +1139,6 @@ myApp.onPageInit("apply-for-new", function(page) {
 	};
 
 	LoadValidationScript(applyForNewValidateFn);
-	//  Template7.global
-	$.getJSON("jsondata/department.json", {}, function(data) {
-		$('select[name=dept]').html(compileScript("#DeptList", data));
-	});
 
 });
 
@@ -1442,12 +1465,25 @@ myApp.onPageInit('my-task',function(page){
   var curPage = $$(page.container);
   //  下拉刷新
   curPage.find('.pull-to-refresh-content').on('refresh',function(e){
-    console.log("aaaa");
-    setTimeout(function(){
-      myApp.pullToRefreshDone();
-    },2000);
+    // console.log("aaaa");
+    // setTimeout(function(){
+    //   myApp.pullToRefreshDone();
+    // },2000);
+    $.getJSON('/front/getMyTask',{id : Template7.global.useres.id},function(json){
+	  	var context = {};
+	  	context['taskList'] = json.value;
+	    var htmlElem = compileScript("#taskTemplate",context);
+	    curPage.find('.ajaxContainer').html(htmlElem);
+	    myApp.pullToRefreshDone();
+	  });
   });
   //  请求数据
+  $.getJSON('/front/getMyTask',{id : Template7.global.useres.id},function(json){
+  	var context = {};
+  	context['taskList'] = json.value;
+    var htmlElem = compileScript("#taskTemplate",context);
+    $(htmlElem).appendTo(curPage.find('.ajaxContainer'));
+  });
 });
 /*27.志愿者通讯录页面*/
 myApp.onPageInit('voluntary-contact', function(page) {
@@ -1464,7 +1500,7 @@ myApp.onPageInit('idea-box-submit',function (page) {
 	var curPage = $(page.container);
 	curPage.find('.submit').click(function(e) {
 		ajaxData = {};
-
+		flag = true;
 		curPage.find('[name]').each(function(i,elem) {
 			var key = $(elem).attr('name');
 			var val = $.trim( $(elem).val() );
@@ -1473,20 +1509,26 @@ myApp.onPageInit('idea-box-submit',function (page) {
 			}
 			if(val === '' && key === 'ibox_content') {
 				myApp.alert('意见不能为空');
+				flag = false;
 				return;
 			}
 			ajaxData[ key ] = val;
 		});
 		ajaxData['ibox_date'] = new Date().format('yyyy-MM-dd');
 		
-		showLoading();
-		$.post('/front/postIBox',ajaxData)
-		.done(function (json) {
-			hideLoading();
-			json = $.parseJSON(json);
-			myApp.alert(json['message'],function () {
-				mainView.back();
+		if(!flag) {
+			return;
+		}
+		else{
+			showLoading();
+			$.post('/front/postIBox',ajaxData)
+			.done(function (json) {
+				hideLoading();
+				json = $.parseJSON(json);
+				myApp.alert(json['message'],function () {
+					mainView.back();
+				});
 			});
-		});
+		}
 	});
 });

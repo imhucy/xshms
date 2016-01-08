@@ -124,8 +124,8 @@ i.icon.icon-tips {
 	padding-top: 10px;
 }
 /*===== 任务状态 =====*/
-.task-status-ing{background-color: #5677fc;color: #fff;border-radius: 3px;padding:2px 8px;}
-.task-status-over{background-color: #4cd964;color: #fff;border-radius: 3px;padding:2px 8px;}
+.task-status-1{background-color: #5677fc;color: #fff;border-radius: 3px;padding:2px 8px;}
+.task-status-2{background-color: #4cd964;color: #fff;border-radius: 3px;padding:2px 8px;}
 .task-status-error{background-color: #f00;color: #fff;border-radius: 3px;padding:2px 8px;}
 /*===== 验证红字 =====*/
 label.error{
