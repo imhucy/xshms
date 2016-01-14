@@ -3,6 +3,7 @@ var router = express.Router();
 var Excute = require('./libs/excute.js');
 var excute = new Excute(__dirname);
 var async = require('async');
+var fs = require('fs');
 var baseJson = {
 		status : 1,
 		message : "获取成功",
@@ -19,7 +20,7 @@ router.get('/getUseres',function (req,res) {
 	
 	var sql = '';
 	if(joinTable === 'student'){
-		sql = 'select * from useres join student on student.id = useres.stu_id where status_id = 2';
+		sql = 'select useres.id as id,student_name,student_mobile,student_id from useres join student on student.id = useres.stu_id where status_id = 2';
 	}
 	else if(joinTable === 'dept'){
 		sql = 'select useres.id as id ,useres_name,stu_id,usr_qq,usr_email,usr_birth,usr_addr,usr_desc,status_id,role_id,login_name,login_pass,dept_id,dept_name,dept_desc,student_id,student_enterYear,student_name,student_sex,student_building,student_room,student_bed,student_mobile '+
@@ -31,6 +32,8 @@ router.get('/getUseres',function (req,res) {
 	console.log('sql=====>'+sql)
 	excute.query(sql,function (results) {
 		if(results){
+			baseJson.status = 1;
+			baseJson.message = "获取成功";
 			baseJson.value = results;
 		}else {
 			baseJson.status = 0;
@@ -553,7 +556,9 @@ router.get('/getMyTask',function (req,res,next) {
 		if(results && results.length !== 0){
 			baseJson.status = 1;
 			baseJson.message = "获取成功";
-			baseJson.value = results;
+			baseJson.value = results.sort(function (a,b){
+				return ( b.task_date <= a.task_date ? -1 : 1);
+			});
 		}
 		else {
 			baseJson.status = 0;
@@ -631,7 +636,8 @@ router.post('/newUser',function (req,res,next){
 			recordsData.push( usr_email );
 			recordsData.push( usr_desc );
 			recordsData.push( student.student_id );
-			recordsData.push( '123456' );
+			// 默认密码为123456
+			recordsData.push( 'e10adc3949ba59abbe56e057f20f883e' );
 			recordsData.push( dept_id );
 			recordsData.push( 0 );
 
@@ -661,24 +667,505 @@ router.post('/newUser',function (req,res,next){
 
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
+// 获取通报列表
+// 其中包括：
+//   文件名（去掉扩展名）
+//   文件创建时间
+//   文件内容 ，其中包含文件的解析地址
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.get('/getNoticeList',function (req,res,next){
+	var lists = [];
+	var urls = [
+		"pages/notification/notification-detail-zlb.html",
+		"pages/notification/notification-detail-xxb.html",
+		"pages/notification/notification-detail-pp.html",
+		"pages/notification/notification-detail-by.html"
+	]
+	
+	fs.readdir('public/notification/',function (err,files){
+
+		for (var i = 0; i < files.length; i++) {
+			// 每一个文件
+			var obj = {};
+			var fileName = files[i];
+			var filePath = 'public/notification/' + fileName;
+			var stat     = fs.statSync(filePath);
+			obj.datetime = stat.birthtime.format('yyyy-MM-dd');
+			obj.text     = fileName.split('.')[0];
+			obj.url      = urls[ fileName.split('.')[1] ];
+			obj.content  = fs.readFileSync(filePath,'utf-8');
+
+			lists.push( obj );
+		};
+		lists = lists.sort( function (a,b) {
+			return (b.datetime <= a.datetime ? -1 : 1);
+		});
+		
+		baseJson.status = 1;
+		baseJson.value = lists;
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 通报发布
+//   发布查课周报
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.get('/publishLessonCheckByWeek',function (req,res,next){
+	async.waterfall([
+		function (callback) {
+			var sql = 'select * from term where term_status = 1';
+
+			excute.query(sql,function(result){
+				if(result){
+					callback(null , result[0]);
+				}
+
+			});
+		},
+		function (term,callback) {
+			var firstdate = term.term_date;
+			var fDate = new Date(firstdate);
+			var nDate = new Date();
+			var day   = 1000*60*60*24;
+			var day7  = day * 7;
+			// 第几周了
+			// type  :  number
+			var week  = parseInt( (nDate.getTime() - fDate.getTime()) / day7 );
+			// 这周第一天（星期天）
+			// type  :  Date
+			var weekstart = new Date( nDate.getTime() - day * nDate.getDay() );
+			// 下周第一天（星期天）
+			// type  :  Date
+			var weekend   = new Date( nDate.getTime() + day * ( 7 - nDate.getDay() ) );
+
+			var fileName  = '第' + week + '周查课通报.1.json';
+
+			var weeks   = ['星期天' ,'星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+			var lessons = ['一大节' ,'二大节', '三大节', '四大节', '晚自习'];
+			var sql = [
+				'SELECT',
+				'	student_id,',
+				'	student_name,',
+				'	attendance_date AS datetime,',
+				'	discipline_score AS score,',
+				'	discipline_name AS dop_name,',
+				'	classes_name',
+				'FROM',
+				'	attendance,',
+				'	discipline,',
+				'	student,',
+				'	classes',
+				'WHERE',
+				'	discipline_type = 2',
+				'AND discipline.id = discipline_id ',
+				'AND attendance_status = 0',
+				'AND attendance_date BETWEEN ?',
+				'AND ?',
+				'AND student.id = dop_man',
+				'AND classes.id = student.classes_id'
+			].join(' ');
+			var json = {
+				title : fileName.split('.')[0],
+				datetime:nDate.format('yyyy-MM-dd hh:mm:ss'),
+				students:null
+			}
+			excute.query(sql,[weekstart.format('yyyy-MM-dd') , weekend.format('yyyy-MM-dd') ],
+				function (result) {
+					if ( result && result.length !== 0 ) {
+						fResult = {}
+						
+						for(i = 0 ;i < result.length ;i++){
+							var item = result[i];
+							var d = new Date( item.datetime );
+							var h = d.getHours();
+							
+							if ( h >= 8 && h < 10 ){
+								item.lessonNumber = lessons[ 0 ];
+							}else if( h >= 10 && h < 12 ){
+								item.lessonNumber = lessons[ 1 ];
+							}else if( h >= 14 && h < 16 ){
+								item.lessonNumber = lessons[ 2 ];
+							}else if( h >= 16 && h < 18 ){
+								item.lessonNumber = lessons[ 3 ];
+							}else if( h >= 19 && h < 21 ){
+								item.lessonNumber = lessons[ 4 ];
+							}
+
+							if( !fResult[ weeks[d.getDay()] ] ){
+								fResult[ weeks[d.getDay()] ] = [];
+								fResult[ weeks[d.getDay()] ].push( item );
+							}else{
+								fResult[ weeks[d.getDay()] ].push( item );
+							}
+						}
+
+						json.students = fResult;
+						
+						fs.writeFileSync('public/notification/'+fileName, JSON.stringify( json ) ,'utf-8');
+
+						callback(null , json);
+
+					}else{
+						callback('本周没有缺勤情况',json);
+					}
+				});
+
+			
+		},
+	],function (err,result) {
+		if(err){
+			console.log(err);
+			console.log(result);
+		}else{
+			baseJson.status = 1;
+			baseJson.message= '发布成功';
+			baseJson.value  = result;
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 通报发布
+//   发布查寝周报
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.get('/publishDormitoryCheckByWeek',function (req,res,next){
+	async.waterfall([
+		function (callback) {
+			var sql = 'select * from term where term_status = 1';
+
+			excute.query(sql,function(result){
+				if(result){
+					callback(null , result[0]);
+				}
+
+			});
+		},
+		function (term,callback) {
+			var firstdate = term.term_date;
+			var fDate = new Date(firstdate);
+			var nDate = new Date();
+			var day   = 1000*60*60*24;
+			var day7  = day * 7;
+			// 第几周了
+			// type  :  number
+			var week  = parseInt( (nDate.getTime() - fDate.getTime()) / day7 );
+			// 这周第一天（星期天）
+			// type  :  Date
+			var weekstart = new Date( nDate.getTime() - day * nDate.getDay() );
+			// 下周第一天（星期天）
+			// type  :  Date
+			var weekend   = new Date( nDate.getTime() + day * ( 7 - nDate.getDay() ) );
+
+			var fileName  = '第' + week + '周查寝通报.0.json';
+			
+			var sql = [
+				'SELECT',
+				'	student_id,',
+				'	student_name,',
+				'	student_building,',
+				'	student_room,',
+				'	student_bed,',
+				'	attendance_date AS datetime,',
+				'	discipline_score AS score,',
+				'	discipline_name AS dop_name,',
+				'	classes_name',
+				'FROM',
+				'	attendance,',
+				'	discipline,',
+				'	student,',
+				'	classes',
+				'WHERE',
+				'	discipline_type IN ( 0,1 )',
+				'AND discipline.id = discipline_id ',
+				'AND attendance_status = 0',
+				'AND attendance_date BETWEEN ?',
+				'AND ?',
+				'AND student.id = dop_man',
+				'AND classes.id = student.classes_id'
+			].join(' ');
+			var json = {
+				title : fileName.split('.')[0],
+				datetime:nDate.format('yyyy-MM-dd hh:mm:ss'),
+				students:null
+			}
+			excute.query(sql,[weekstart.format('yyyy-MM-dd') , weekend.format('yyyy-MM-dd') ],
+				function (result) {
+					if ( result && result.length !== 0 ) {
+						fResult = {}
+						
+						for(i = 0 ;i < result.length ;i++){
+							var item = result[i];
+							var d = new Date( item.datetime );
+							
+
+							if( !fResult[ item.student_building ] ){
+								fResult[ item.student_building ] = [];
+								fResult[ item.student_building ].push( item );
+							}else{
+								fResult[ item.student_building ].push( item );
+							}
+						}
+						json.students = fResult;
+						fs.writeFileSync('public/notification/'+fileName, JSON.stringify( json ) ,'utf-8');
+						callback(null , json);
+					}else{
+						callback('本周没有缺勤情况',json);
+					}
+				});
+		},
+	],function (err,result) {
+		if(err){
+			console.log(err);
+			console.log(result);
+		}else{
+			baseJson.status = 1;
+			baseJson.message= '发布成功';
+			baseJson.value  = result;
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 通报发布
+//   发布早操周报
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.get('/publishExerciseCheckByWeek',function (req,res,next){
+	async.waterfall([
+		function (callback) {
+			var sql = 'select * from term where term_status = 1';
+
+			excute.query(sql,function(result){
+				if(result){
+					callback(null , result[0]);
+				}
+
+			});
+		},
+		function (term,callback) {
+			var firstdate = term.term_date;
+			var fDate = new Date(firstdate);
+			var nDate = new Date();
+			var day   = 1000*60*60*24;
+			var day7  = day * 7;
+			// 第几周了
+			// type  :  number
+			var week  = parseInt( (nDate.getTime() - fDate.getTime()) / day7 );
+			// 这周第一天（星期天）
+			// type  :  Date
+			var weekstart = new Date( nDate.getTime() - day * nDate.getDay() );
+			// 下周第一天（星期天）
+			// type  :  Date
+			var weekend   = new Date( nDate.getTime() + day * ( 7 - nDate.getDay() ) );
+
+			var fileName  = '第' + week + '周早操通报.0.json';
+			
+			var sql = [
+				'SELECT',
+				'	student_id,',
+				'	student_name,',
+				'	student_building,',
+				'	student_room,',
+				'	student_bed,',
+				'	attendance_date AS datetime,',
+				'	discipline_score AS score,',
+				'	discipline_name AS dop_name,',
+				'	classes_name',
+				'FROM',
+				'	attendance,',
+				'	discipline,',
+				'	student,',
+				'	classes',
+				'WHERE',
+				'	discipline_type = 3',
+				'AND discipline.id = discipline_id ',
+				'AND attendance_status = 0',
+				'AND attendance_date BETWEEN ?',
+				'AND ?',
+				'AND student.id = dop_man',
+				'AND classes.id = student.classes_id'
+			].join(' ');
+			var json = {
+				title : fileName.split('.')[0],
+				datetime:nDate.format('yyyy-MM-dd hh:mm:ss'),
+				students:null
+			}
+			excute.query(sql,[weekstart.format('yyyy-MM-dd') , weekend.format('yyyy-MM-dd') ],
+				function (result) {
+					if ( result && result.length !== 0 ) {
+						fResult = {}
+						
+						for(i = 0 ;i < result.length ;i++){
+							var item = result[i];
+							var d = new Date( item.datetime );
+							
+
+							if( !fResult[ item.student_building ] ){
+								fResult[ item.student_building ] = [];
+								fResult[ item.student_building ].push( item );
+							}else{
+								fResult[ item.student_building ].push( item );
+							}
+						}
+						json.students = fResult;
+						fs.writeFileSync('public/notification/'+fileName, JSON.stringify( json ) ,'utf-8');
+						callback(null , json);
+					}else{
+						callback('本周没有缺勤情况',json);
+					}
+				});
+		},
+	],function (err,result) {
+		if(err){
+			console.log(err);
+			console.log(result);
+		}else{
+			baseJson.status = 1;
+			baseJson.message= '发布成功';
+			baseJson.value  = result;
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// 通报发布
+//   发布通报表扬和批评
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+router.get('/publishDefineCheckByWeek',function (req,res,next){
+	async.waterfall([
+		function (callback) {
+			var sql = 'select * from term where term_status = 1';
+
+			excute.query(sql,function(result){
+				if(result){
+					callback(null , result[0]);
+				}
+
+			});
+		},
+		function (term,callback) {
+			var firstdate = term.term_date;
+			var fDate = new Date(firstdate);
+			var nDate = new Date();
+			var day   = 1000*60*60*24;
+			var day7  = day * 7;
+			// 第几周了
+			// type  :  number
+			var week  = parseInt( (nDate.getTime() - fDate.getTime()) / day7 );
+			// 这周第一天（星期天）
+			// type  :  Date
+			var weekstart = new Date( nDate.getTime() - day * nDate.getDay() );
+			// 下周第一天（星期天）
+			// type  :  Date
+			var weekend   = new Date( nDate.getTime() + day * ( 7 - nDate.getDay() ) );
+
+			var fileNameBY  = '第' + week + '周通报表扬.3.json';
+			var fileNamePP  = '第' + week + '周通报批评.2.json';
+			
+			var sql = [
+				'SELECT',
+				'	student_id,',
+				'	student_name,',
+				'	student_building,',
+				'	student_room,',
+				'	student_bed,',
+				'	attendance_date AS datetime,',
+				'	discipline_score AS score,',
+				'	discipline_name AS dop_name,',
+				'	classes_name',
+				'FROM',
+				'	attendance,',
+				'	discipline,',
+				'	student,',
+				'	classes',
+				'WHERE',
+				'	discipline_type = 5',
+				'AND discipline.id = discipline_id ',
+				'AND attendance_status = 0',
+				'AND attendance_date BETWEEN ?',
+				'AND ?',
+				'AND student.id = dop_man',
+				'AND classes.id = student.classes_id'
+			].join(' ');
+			var jsonBY = {
+				title : fileNameBY.split('.')[0],
+				datetime:nDate.format('yyyy-MM-dd hh:mm:ss'),
+				students:[]
+			}
+			var jsonPP = {
+				title : fileNamePP.split('.')[0],
+				datetime:nDate.format('yyyy-MM-dd hh:mm:ss'),
+				students:[]
+			}
+			excute.query(sql,[weekstart.format('yyyy-MM-dd') , weekend.format('yyyy-MM-dd') ],
+				function (result) {
+					if ( result && result.length !== 0 ) {
+						fResult = {}
+						
+						for(i = 0 ;i < result.length ;i++){
+							var item = result[i];
+							var d = new Date( item.datetime );
+							var score = item.score;
+
+							if (score <= 0){
+								jsonPP.students.push( item );
+							}else{
+								jsonBY.students.push( item );
+							}
+						}
+						if(jsonBY.students.length)
+							fs.writeFileSync('public/notification/'+fileNameBY, JSON.stringify( jsonBY ) ,'utf-8');
+						if(jsonPP.students.length)
+							fs.writeFileSync('public/notification/'+fileNamePP, JSON.stringify( jsonPP ) ,'utf-8');
+						callback(null , jsonBY);
+					}else{
+						callback('本周没有缺勤情况',jsonBY);
+					}
+				});
+		},
+	],function (err,result) {
+		if(err){
+			console.log(err);
+			console.log(result);
+		}else{
+			baseJson.status = 1;
+			baseJson.message= '发布成功';
+			baseJson.value  = result;
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 // 
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
+router.get('/getXxx',function (req,res,next){
 
-
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-// 
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-// 
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-
+});
 
 
 //////////////////////////////////////////////////////////////

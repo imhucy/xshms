@@ -130,36 +130,73 @@ function LoadImage(callback,success,fail){
  */
 function LoginBiz(username,password,callback){
 //  	url:Template7.global.basePath + 'action/login.action', //,'login'
-	var dataFn = function(data){
-		// 使用数据编译dom
-		var leftpanel = compileScript("#panelTemplate",data);
-		// 插入dom
-		$('.panel-left').html( leftpanel );
+	// var dataFn = function(data){
+	// 	// 使用数据编译dom
+	// 	var leftpanel = compileScript("#panelTemplate",data);
+	// 	// 插入dom
+	// 	$('.panel-left').html( leftpanel );
 		
-		hideLoading();
-		// 保存cookie
-		$.cookie('username',username,{'expires':7});
-		$.cookie('password',password,{'expires':7});
-		Template7.global.login_status = data.login_status;
-		Template7.global.user = data;
+	// 	hideLoading();
+	// 	// 保存cookie
+	// 	$.cookie('username',username,{'expires':7});
+	// 	$.cookie('password',password,{'expires':7});
+	// 	Template7.global.login_status = data.login_status;
+	// 	Template7.global.user = data;
 		
-		$('.panel-left').delegate('a[href="logout"]','click',LogoutBiz);
+	// 	$('.panel-left').delegate('a[href="logout"]','click',LogoutBiz);
 		
-		if (callback && typeof(callback) === "function") {
-			callback(data.msg ,data.login_status);
-		}
-	};
-	if(username == "" || username == null || username == undefined) return;
-	if (username.length !== 12) {
-		myApp.alert("学号输入错误");
-		return ;
-	}
+	// 	if (callback && typeof(callback) === "function") {
+	// 		callback(data.msg ,data.login_status);
+	// 	}
+	// };
+	// if(username == "" || username == null || username == undefined) return;
+	// if (username.length !== 12) {
+	// 	myApp.alert("学号输入错误");
+	// 	return ;
+	// }
+	// showLoading();
+	// $.getJSON("jsondata/user.json",{
+ //    	username:username,
+ //    	password:password
+ //    },dataFn);
 	showLoading();
-	$.getJSON("jsondata/user.json",{
-    	username:username,
-    	password:password
-    },dataFn);
-	
+	var userInfo = {};
+	$.post('/loginAction',{login_name: username , login_pass: password})
+	.done(function (json){
+		json = $.parseJSON(json);
+		if(json.status == 1){
+			console.log( json );
+			Template7.global.login_status = json.status;
+			Template7.global.useres = json.value;
+
+			userInfo['useres_id']       = json.value['id'];
+			userInfo['useres_name']     = json.value['useres_name'];
+			userInfo['useres_nickname'] = json.value['useres_name'].substring( json.value['useres_name'].length-2 );
+			userInfo['power_list']      = [];
+
+			$.post('/getRolePower', {roleId: json.value.role_id})
+			.done(function (power_list){
+				power_list = $.parseJSON(power_list);
+				Template7.global.power_list = power_list.value[1];
+				userInfo['role_name'] = power_list.value[0][0]['role_name'];
+				$.each(power_list.value[1], function(i, item) {
+					if ( item.power_type === 2 && item.power_level === 1){
+						userInfo['power_list'].push( item );
+					}
+				});
+				
+				console.log(userInfo);
+				var leftpanel = compileScript("#panelTemplate",userInfo);
+				// 插入dom
+				$('.panel-left').html( leftpanel );
+				// 登录回调函数
+				callback(json.message,json.status);
+			});
+		}else {
+			callback(json.message,json.status);
+		}
+		hideLoading();
+	});
 }
 /**
  * 登录注销逻辑
@@ -175,6 +212,12 @@ function LogoutBiz(){
   return false;
 }
 
+/**
+ * 动态加载资料卡片
+ */
+$('.panel-left,.pages').on('click', '[href="pages/personal/information-card.html"]', function(e) {
+	Template7.global.userId = $(this).data('value');
+});
 /**
  * 加载模板脚本
  * @param callback
@@ -196,7 +239,7 @@ function LoadTemplates(callback){
  */
 function compileScript(id,data){
 	var template = $(id).html();
-	console.log($(id));
+	
 	var compiledTemplate = Template7.compile(template);
 	
 	var context = data;
@@ -367,9 +410,12 @@ function init(callback){
 				LoadTemplates(function(){
 					loadWheelTo(70);
 					//检查cookie
-					if($.cookie('username')){
+					if ( $.cookie('useres') ){
+						user = $.parseJSON( $.cookie('useres') );
+						var login_name = user.login_name;
+						var login_pass = user.login_pass
 						debug && console.log("有cookie");
-						LoginBiz($.cookie('username'), $.cookie('password'), function(){
+						LoginBiz(login_name, login_pass, function(){
 							hideLoading();
 							loadWheelTo(100);
 						});

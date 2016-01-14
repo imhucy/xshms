@@ -1,7 +1,7 @@
 <script id="ContactList" type="text/template7">
 	{{#each student_list}}
 	<li>
-		<a href="pages/personal/information-card.html" class="item-link toInfo">
+		<a href="pages/personal/information-card.html" data-value="{{id}}" class="item-link toInfo">
 			<div class="item-content">
 				<div class="item-inner">
 					<div class="item-title-row">
@@ -25,7 +25,7 @@
 		<ul>
 			{{#each lists}}
 			<li>
-				<a href="{{url}}" class="item-link item-content">
+				<a href="{{url}}" data-value='{{content}}' class="item-link item-content">
 					<div class="item-inner">
 						<div class="item-title">{{text}}</div>
 						<div class="item-after">{{datetime}}</div>
@@ -40,21 +40,21 @@
 	<div class="list-block  media-list">
 		<ul>
 			<li>
-				<a href="{{user.user_url}}" class="item-link item-content close-panel toInfo">
-					<div class="item-media user-photo">{{user.user_nickname}}</div>
+				<a href="pages/personal/information-card.html" data-value="{{useres_id}}" class="item-link item-content close-panel toInfo">
+					<div class="item-media user-photo">{{useres_nickname}}</div>
 					<div class="item-inner">
 						<div class="item-title-row">
-							<div class="item-title">{{user.user_name}}</div>
+							<div class="item-title">{{useres_name}}</div>
 						</div>
-						<div class="item-subtitle">{{user.user_department}}{{user.user_position}}</div>
+						<div class="item-subtitle">{{role_name}}</div>
 					</div>
 				</a>
 			</li>
-			{{#each func_list}}
+			{{#each power_list}}
 			<li>
-				<a href="{{url}}" class="item-link close-panel item-content">
+				<a href="{{power_url}}" class="item-link close-panel item-content">
 					<div class="item-inner">
-						<div class="item-title">{{name}}</div>
+						<div class="item-title">{{power_name}}</div>
 					</div>
 				</a>
 			</li>
@@ -67,13 +67,13 @@
 	<ul>
 		<li>
 			<div class="item-content">
-				<div class="item-media user-photo">{{nickname}}</div>
+				<div class="item-media user-photo">{{useres_nickname}}</div>
 				<div class="item-inner">
 					<div class="item-title-row">
-						<div class="item-title">{{name}}</div>
-						<div class="item-lower">{{dept}}{{position}}</div>
+						<div class="item-title">{{useres_name}}</div>
+						<div class="item-lower">{{role_name}}</div>
 					</div>
-					<div class="item-subtitle">{{id}}</div>
+					<div class="item-subtitle">{{student_id}}</div>
 				</div>
 			</div>
 		</li>
@@ -82,7 +82,7 @@
 				<div class="item-inner">
 					<div class="item-title-row">
 						<div class="item-title">性别</div>
-						<div class="item-after">{{sex}}</div>
+						<div class="item-after">{{student_sex}}</div>
 					</div>
 				</div>
 			</div>
@@ -92,7 +92,7 @@
 				<div class="item-inner">
 					<div class="item-title-row">
 						<div class="item-title">班级</div>
-						<div class="item-after">{{major}}{{class_id}}班</div>
+						<div class="item-after">{{classes_name}}</div>
 					</div>
 				</div>
 			</div>
@@ -102,7 +102,7 @@
 				<div class="item-inner">
 					<div class="item-title-row">
 						<div class="item-title">电话</div>
-						<div class="item-after">{{tel}}</div>
+						<div class="item-after">{{student_mobile}}</div>
 					</div>
 				</div>
 			</div>
@@ -112,7 +112,7 @@
 				<div class="item-inner">
 					<div class="item-title-row">
 						<div class="item-title">QQ</div>
-						<div class="item-after">{{qq}}</div>
+						<div class="item-after">{{usr_qq}}</div>
 					</div>
 				</div>
 			</div>
@@ -122,7 +122,7 @@
 				<div class="item-inner">
 					<div class="item-title-row">
 						<div class="item-title">邮箱</div>
-						<div class="item-after">{{mail}}</div>
+						<div class="item-after">{{usr_email}}</div>
 					</div>
 				</div>
 			</div>
@@ -132,7 +132,7 @@
 				<div class="item-inner">
 					<div class="item-title-row">
 						<div class="item-title">生日</div>
-						<div class="item-after">{{birth}}</div>
+						<div class="item-after">{{usr_birth}}</div>
 					</div>
 				</div>
 			</div>
@@ -141,8 +141,8 @@
 			<div class="item-content">
 				<div class="item-inner">
 					<div class="item-title-row">
-						<div class="item-title">家庭住址</div>
-						<div class="item-after">{{addr}}</div>
+						<div class="item-title">地址</div>
+						<div class="item-after">{{usr_addr}}</div>
 					</div>
 				</div>
 			</div>
@@ -150,8 +150,8 @@
 		<li>
 			<div class="item-content">
 				<div class="item-inner">
-					<div class="item-title">个人说明</div>
-					<div class="item-lower">{{person_explain}}</div>
+					<div class="item-title">入职宣言</div>
+					<div class="item-lower">{{usr_desc}}</div>
 				</div>
 			</div>
 		</li>
@@ -394,7 +394,7 @@
 	<div class="content-block-title"></div>
 	<div class="list-block accordion-list">
 		<ul>
-			{{#each resultList}}
+			{{#each students}}
 			<li class="accordion-item">
 				<a href="#" class="item-link item-content">
 					<div class="item-inner">
@@ -412,14 +412,14 @@
 									<div class="item-inner">
 										<div class="item-title-row">
 											<!-- 处分人 -->
-											<div class="item-title">{{name}}</div>
+											<div class="item-title">{{student_name}}</div>
 											<!-- 班级 -->
-											<div class="item-after">{{major}}{{enterYear}}级{{classes}}班</div>
+											<div class="item-after">{{classes_name}}班</div>
 										</div>
 										<!--扣分-->
-										<div class="item-subtitle">-{{score}}</div>
+										<div class="item-subtitle">扣分：{{score}}</div>
 										<!-- 处分项 -->
-										<div class="item-text">{{type}}</div>
+										<div class="item-text">{{dop_name}} <br /> {{datetime}}</div>
 									</div>
 								</div>
 							</li>
@@ -440,7 +440,7 @@
 	<div class="content-block-title"></div>
 	<div class="list-block accordion-list">
 		<ul>
-			{{#each buildings}}
+			{{#each students}}
 			<li class="accordion-item">
 				<a href="#" class="item-link item-content">
 					<div class="item-inner">
@@ -454,18 +454,18 @@
 							{{#each this}}
 							<li>
 								<div class="item-content">
-									<div class="item-media circle circle-blue">{{room}}#{{bed}}</div>
+									<div class="item-media circle circle-blue">{{student_room}}#{{student_bed}}</div>
 									<div class="item-inner">
 										<div class="item-title-row">
 											<!-- 处分人 -->
-											<div class="item-title">{{name}}</div>
+											<div class="item-title">{{student_name}}</div>
 											<!-- 班级 -->
-											<div class="item-after">{{major}}{{enterYear}}级{{classes}}班</div>
+											<div class="item-after">{{classes_name}}班</div>
 										</div>
 										<!--扣分-->
-										<div class="item-subtitle">-{{score}}</div>
+										<div class="item-subtitle">扣分：{{score}}</div>
 										<!-- 处分项 -->
-										<div class="item-text">{{#each results}}{{this}}{{#if @last}} {{else}}, {{/if}}{{/each}}</div>
+										<div class="item-text">{{dop_name}} <br /> {{datetime}}</div>
 									</div>
 								</div>
 							</li>
@@ -483,20 +483,20 @@
 <div class="content-block-title">{{title}}<br /><span class="content-block-subtitle">发布时间：{{datetime}}</span></div>
 <div class="list-block media-list">
 	<ul>
-		{{#each people}}
+		{{#each students}}
 		<li>
 			<div class="item-content">
 				<div class="item-inner">
 					<div class="item-title-row">
 						<!-- 处分人名字 -->
-						<div class="item-title">{{name}}</div>
+						<div class="item-title">{{student_name}}</div>
 						<!-- 班级 -->
-						<div class="item-after">{{major}}{{enterYear}}级{{classes}}班</div>
+						<div class="item-after">{{classes_name}}</div>
 					</div>
-					<!-- 加分 -->
-					<div class="item-subtitle">-{{score}}</div>
-					<!-- 加分项 -->
-					<div class="item-text">{{#each results}}{{this}} {{#if @last}} {{else}}, {{/if}} {{/each}}</div>
+					<!-- 扣分 -->
+					<div class="item-subtitle">扣分：{{score}}</div>
+					<!-- 扣分项 -->
+					<div class="item-text">{{dop_name}} <br /> {{datetime}}</div>
 				</div>
 			</div>
 		</li>
@@ -515,14 +515,14 @@
 					<div class="item-inner">
 						<div class="item-title-row">
 							<!-- 处分人名字 -->
-							<div class="item-title">{{name}}</div>
+							<div class="item-title">{{student_name}}</div>
 							<!-- 班级 -->
-							<div class="item-after">{{major}}{{enterYear}}级{{classes}}班</div>
+							<div class="item-after">{{classes_name}}</div>
 						</div>
 						<!-- 加分 -->
-						<div class="item-subtitle">+{{score}}</div>
+						<div class="item-subtitle">加分{{score}}</div>
 						<!-- 加分项 -->
-						<div class="item-text">{{results}}</div>
+						<div class="item-text">{{dop_name}} <br /> {{datetime}}</div>
 					</div>
 				</div>
 			</li>

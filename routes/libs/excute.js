@@ -59,7 +59,7 @@ module.exports = function (dirname) {
 	this.insert = function (table,rowInfo,callback) {
 		var callback = callback || function () {};
 		dbClient.query('insert into '+table+' SET ?', rowInfo,function  (err,result) {
-			if (err) throw er;
+			if (err) throw err;
 			callback(result.insertId);
 			/*
 			{
@@ -202,7 +202,7 @@ module.exports = function (dirname) {
 
 		client.multipleStatements = true;
 
-		client.debug = true;
+		// client.debug = true;
 		
 		client.host = dbConfig['host'];
 
@@ -220,34 +220,31 @@ module.exports = function (dirname) {
 		pool.getConnection(function (err,conn) {
 			if(err){
 				console.log('====> 连接数据库错误：' + err.message);
-				// dbClient.end();
-				// dbClient.release();
 			}else{
 				dbClient = conn;
 				console.log('======>成功建立连接......');
+				conn.on('error', handleError);
 			}
-			// dbClient.query('use ' + dbConfig['database'],function (error,result) {
-			// 	if(error){
-			// 		console.log('====> 连接数据库错误：' + error.message);
-			// 		// dbClient.end();
-			// 		dbClient.release();
-			// 	}
-			// 	console.log('====> %s数据库连接成功......',dbConfig['database']);
-			// });
 		});
-		
-		// dbClient = mysql.createConnection(client);
-
-		// dbClient.connect();
-		// console.log('======>数据库连接成功......');
-		// dbClient.query('use ' + dbConfig['database'],function (error,result) {
-		// 	if(error){
-		// 		console.log('====> 连接数据库错误：' + error.message);
-		// 		dbClient.end();
-		// 	}
-		// 	console.log('====> %s数据库连接成功......',dbConfig['database']);
-		// });
-		
+		function handleError (err) {
+		  if (err) {
+		    // 如果是连接断开，自动重新连接
+		    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+		    	// 从连接池重新获取连接
+		      pool.getConnection(function (err,conn) {
+						if(err){
+							console.log('====> 连接数据库错误：' + err.message);
+						}else{
+							dbClient = conn;
+							console.log('======>断线重连......');
+							conn.on('error', handleError);
+						}
+					});
+		    } else {
+		      console.error(err.stack || err);
+		    }
+		  }
+		}
 	}
 }
 

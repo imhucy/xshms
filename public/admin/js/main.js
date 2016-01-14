@@ -114,6 +114,24 @@ function LoadAjaxContent(url){
 		type: 'GET',
 		success: function(data) {
 			$('#ajax-content').html(data);
+			if( $('.main-menu .ajax-link.active').data('value') ) {
+				var parent_id = $('.main-menu .ajax-link.active').data('value');
+				var btns = {
+					'add'    : $('#addBtn'),
+					'modify' : $('#modifyBtn'),
+					'remove' : $('#removeBtn'),
+					'set'    : $('#setBtn')
+				}
+
+				var powerGroups = global.treeMenu.groups;
+				
+				if ( powerGroups[ parent_id ] ){
+					$.each( powerGroups[ parent_id ],function (i,item) {
+						btns[ item.power_url ].show();
+					})
+				}
+
+			}
 			// $('.preloader').hide();
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
@@ -985,6 +1003,7 @@ function EditabeTableModel(option){
 		// console.log(JSON.stringify(data) + '\n' + url );
 		$('.modifyModal').modal('hide');
 		$('.preloader').show();
+		// console.log( data )
 		$.post(url, data)
 		.done(function () {
 
@@ -1096,19 +1115,146 @@ function EditabeTableModel(option){
 });
 
 /*-------------------------------------------
-	Scripts for DataTables page (tables_datatables.html)
+	treeMenu
+	将权限数组处理为一个树形结构
 ---------------------------------------------*/
+function treeMenu(a){
+    this.tree=a||[];
+    this.groups={};
+};
+treeMenu.prototype={
+    init:function(pid){
+      this.flag = true;
+      this.group();
+      return this.getDom(this.groups[pid]);
+    },
+    group:function(){
+      for(var i=0;i<this.tree.length;i++){
+        if(this.groups[this.tree[i].parent_id]){
+          this.groups[this.tree[i].parent_id].push(this.tree[i]);
+        }else{
+          this.groups[this.tree[i].parent_id]=[];
+          this.groups[this.tree[i].parent_id].push(this.tree[i]);
+        }
+      }
+      console.log( JSON.stringify(this.groups) )
+    },
+    getDom:function(a){
+      if(!a){return ''}
+      if(this.flag)
+        var html='\n<ul class="nav main-menu">\n';
+      else{
+        var html='\n<ul class="dropdown-menu">\n';
+        this.flag = !this.flag;
+      }
+      for(var i=0;i<a.length;i++){
+        html+='<li class="dropdown">';
+        html+='<a href="javascript:;" class="dropdown-toggle">';
+        html+='<i class="fa fa-desktop"></i>';
+        html+='<span class="hidden-xs">'+a[i].power_name+'</span>';
+        html+='</a>';
+        html+=this.getDom(this.groups[a[i].id]);
+        html+='</li>\n';
+      };
+      html+='</ul>\n';
+      return html;
+    }
+};
+// 
+// 
+// 初始化用户数据
+// 
+// 
+if( !$.cookie('useres') ){
+	location.href = 'login.html';
+}
 
+var global = {
+	'useres' : $.parseJSON( $.cookie('useres') )
+}
+
+// 
+// 
+// 解析权限列表
+// 
+// 
+function treeMenu(a){
+  this.tree=a||[];
+  this.groups={};
+};
+treeMenu.prototype={
+  init:function(pid){
+    this.flag = true;
+    this.group();
+    return this.getDom(this.groups[pid]);
+  },
+  group:function(){
+    for(var i=0;i<this.tree.length;i++){
+      if(this.groups[this.tree[i].parent_id]){
+        this.groups[this.tree[i].parent_id].push(this.tree[i]);
+      }else{
+        this.groups[this.tree[i].parent_id]=[];
+        this.groups[this.tree[i].parent_id].push(this.tree[i]);
+      }
+    }
+    console.log( JSON.stringify(this.groups) )
+  },
+  getDom:function(a){
+    if(!a){return ''}
+    if(this.flag){
+      var html='\n<ul class="nav main-menu">\n';
+      this.flag = !this.flag;
+    }
+    else{
+      var html='\n<ul class="dropdown-menu">\n';
+    }
+    for(var i=0;i<a.length;i++){
+      html+='<li class="dropdown">';
+      if ( a[i].power_url ) {
+      	html+='<a href="'+(a[i].power_url || 'javascript:;')+'" class="ajax-link" data-value="'+a[i].id+'">';
+      }
+      else {
+      	html+='<a href="'+(a[i].power_url || 'javascript:;')+'" class="dropdown-toggle" data-value="'+a[i].id+'">';
+      }
+      html+='<i class="'+a[i].power_icon+'"></i>';
+      html+='<span class="hidden-xs">'+a[i].power_name+'</span>';
+      html+='</a>';
+      if(a[i]["power_level"] < 2) html+=this.getDom(this.groups[a[i].id]);
+      html+='</li>\n';
+    };
+    html+='</ul>\n';
+    return html;
+  }
+};
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 //
-//      MAIN DOCUMENT READY SCRIPT OF DEVOOPS THEME
+//      MAIN DOCUMENT READY SCRIPT
 //
 //      In this script main logic of theme
 //
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 $(document).ready(function () {
+	// 初始化左侧功能列表
+	$.ajax({
+		url: '/getRolePower',
+		type: 'POST',
+		async:false,
+		dataType: 'json',
+		data: { roleId : global.useres.role_id }
+	})
+	.done(function(json) {
+		roleInfo = json.value[0];
+		powerList = json.value[1];
+		console.log(powerList);
+		global.treeMenu = new treeMenu(powerList);
+		var html = global.treeMenu.init(0);
+		console.log( html );
+		$('#sidebar-left').html( html );
+	});
+	
+
 	$('.show-sidebar').on('click', function (e) {
 		e.preventDefault();
 		$('div#main').toggleClass('sidebar-show');
@@ -1120,6 +1266,7 @@ $(document).ready(function () {
 	}
 	// console.log(5);
 	LoadAjaxContent(ajax_url);
+	
 	$('.main-menu').on('click', 'a', function (e) {
 		var parents = $(this).parents('li');
 		var li = $(this).closest('li.dropdown');

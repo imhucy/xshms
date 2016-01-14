@@ -837,9 +837,10 @@ table.no-border-bottom tr:last-child td { border-bottom: 0 }
 .dataTables_wrapper table.table { clear: both; max-width: inherit; margin-bottom: 0 }
 .table-datatable *, .table-datatable:after, .table-datatable:before { margin: 0; padding: 0; -webkit-box-sizing: content-box; box-sizing: content-box; -moz-box-sizing: content-box }
 .table-datatable label { position: relative; display: block; font-weight: 400 }
+
 /*表格激活样式*/
-.table-datatable tbody tr.active { background: #6293BA;color:#fff; }
-.table-datatable tbody tr.active td { background: #6293BA;color:#fff ;}
+.table-datatable tbody tr.active { background: #6293BA; color: #fff; }
+.table-datatable tbody tr.active td { background: #6293BA; color: #fff; }
 .table-datatable tbody td { vertical-align: middle !important }
 .table-datatable img { margin-right: 10px; border: 1px solid #F8F8F8; width: 40px }
 .table-datatable .sorting { background: url(../img/sort.png) right center no-repeat; padding-right: 16px; cursor: pointer }
@@ -1204,3 +1205,4 @@ ul.DTTT_dropdown.dropdown-menu>li:hover>a { background: rgba(0, 0, 0, .3); color
 	#dashboard_links .nav-stacked>li { float: none }
 	#dashboard_links .nav-pills>li.active>a:before { display: none }
 }
+#addBtn, #modifyBtn, #removeBtn, #setBtn { display: none; }

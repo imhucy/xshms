@@ -26,6 +26,7 @@
 				<button class="btn btn-info" id="addBtn"> 添 加 <i class="fa fa-plus"></i></button>
 				<button class="btn btn-info" id="modifyBtn"> 修 改 <i class="fa fa-pencil"></i></button>
 				<button class="btn btn-info" id="removeBtn"> 删 除 <i class="fa fa-trash-o"></i></button>
+				<button class="btn btn-info" id="setBtn"> 设置权限 <i class="fa fa-cog"></i></button>
 				<table class="table table-bordered table-striped table-hover table-heading table-datatable" id="datatable-role">
 					<thead>
 						<tr>
@@ -49,6 +50,7 @@
 		</div>
 	</div>
 </div>
+
 <div id="removeModal" class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -90,6 +92,29 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="setRolePower" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"> 修改权限 </h4>
+      </div>
+      <div class="modal-body">
+        <form id="setRolePowerForm">
+        	<input type="hidden" name="roleId" value="" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">取消修改</button>
+        <button type="button" class="btn btn-default" id="setFormSureBtn" >确认修改</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script type="text/javascript">
 // Run Datables plugin and create 3 variants of settings
 function AllTables(){
@@ -130,6 +155,135 @@ $(document).ready(function() {
 	LoadDataTablesScripts(AllTables);
 	// Add Drag-n-Drop feature
 	WinMove();
+	getAllPower();
 });
 
+function getAllPower(){
+	$.getJSON('/all/power', function(json, textStatus) {
+		var tree = new treeMenu2(json);
+		var htmlStr = tree.init(999999);
+		$(htmlStr).appendTo('#setRolePower #setRolePowerForm');
+		$('#setBtn').click(function(e) {
+			var $row   = $('#datatable-role').find('tr.active');
+			if( $row.size() === 0 ) return false;
+			var RoleId = $row.find('input[type="hidden"]').val();
+
+			$('#setRolePowerForm').find('[name="roleId"]').val( RoleId );
+			
+			$.post('/getRolePower',{roleId:RoleId})
+			.done(function (json){
+				json = $.parseJSON(json);
+				var inputs = $('#setRolePowerForm').find('input:checkbox');
+				if(!json.status){
+					return false;
+				}
+				inputs.each(function (i,item){
+					item.checked = false;
+				});
+				$.each(json.value[1], function(i, item) {
+					inputs.filter('[name="' + item.id + '"]')[0].checked = true
+				});
+
+				$('#setRolePower').modal('show');
+
+				inputs.on('click', checkEvent);
+
+				// $('#setRolePower').find('button').on('click',function (){
+				// 	inputs.off('click', checkEvent);
+				// });
+
+				function checkEvent(e){
+				
+					if( this.checked ){
+						$(this).parents('li').children('.checkbox-inline').find(':checkbox').each(function (i ,item){
+							item.checked = true;
+						});
+					}else{
+						$(this).parent().parent().next()
+						.find(':checkbox').each(function (i ,item){
+							item.checked = false;
+						});
+					}
+				
+				}
+			});
+		});
+
+		$('#setFormSureBtn').click(function(e) {
+			var ajaxData = {};
+			var form = $('#setRolePowerForm');
+			ajaxData['role_id'] = form.find('[name="roleId"]').val();
+			ajaxData['powers']  = [];
+
+			form.find('input[type="checkbox"]').each(function (i,item){
+
+				if( item.checked )
+				{
+					ajaxData['powers'].push( item.name );
+				}
+			});
+			$('#setRolePower').modal('hide');
+			$('.preloader').show();
+			$.post('/setUserRolePower', {data: JSON.stringify( ajaxData ) }, function(data, textStatus, xhr) {
+				var json = $.parseJSON(data);
+				console.log( data );
+				if( json.status ){
+					setTimeout(function(){ 
+						$('.preloader').hide();
+						$('#successModal').find('.modal-body').text('修改成功');
+						$('#successModal').modal('show');
+					},1000);
+				}else{
+					setTimeout(function(){ 
+						$('.preloader').hide();
+						$('#successModal').find('.modal-body').text('修改失败');
+						$('#successModal').modal('show');
+					},1000);
+				}
+			});
+			console.log(ajaxData);
+		});
+	});
+}
+
+
+function treeMenu2(a){
+  this.tree=a||[];
+  this.groups={};
+};
+treeMenu2.prototype={
+  init:function(pid){
+    this.flag = true;
+    this.group();
+    return this.getDom(this.groups[pid]);
+  },
+  group:function(){
+    for(var i=0;i<this.tree.length;i++){
+      if(this.groups[this.tree[i].parent_id]){
+        this.groups[this.tree[i].parent_id].push(this.tree[i]);
+      }else{
+        this.groups[this.tree[i].parent_id]=[];
+        this.groups[this.tree[i].parent_id].push(this.tree[i]);
+      }
+    }
+    console.log( JSON.stringify(this.groups) )
+  },
+  getDom:function(a){
+    if(!a){return ''}
+  
+    var html='\n<ul>\n';
+    for(var i=0;i<a.length;i++){
+      html+='<li>';
+     	// html+='<a href="javascript:;" data-value="'+a[i].id+'">';
+      // html+='<span class="hidden-xs">'+a[i].power_name+'</span>';
+      // html+='</a>';
+			html += '<div class="checkbox-inline"><label><input type="checkbox" name="'+ a[i].id +'" />'+a[i].power_name+
+			        '<i class="fa fa-square-o"></i></label></div>'
+      if(a[i]["power_level"] < 2) html+=this.getDom(this.groups[a[i].id]);
+      html+='</li>\n';
+    };
+    html+='</ul>\n';
+    return html;
+  }
+};
 </script>

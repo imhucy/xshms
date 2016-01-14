@@ -126,17 +126,13 @@ myApp.onPageInit('login-screen', function(page) {
 	curPage.find('.login-btn').on('click', function() {
 		var username = curPage.find('input[name="username"]').val();
 		var password = curPage.find('input[name="password"]').val();
-		
-		LoginBiz(username, password,function(msg ,login_status){
-			myApp.alert(msg, function(){
-				if(login_status) mainView.back();
+		password = hex_md5( password );
+		LoginBiz(username, password,function(message ,status){
+			myApp.alert(message, function(){
+				if(status === 1) mainView.back();
 			});
 		});
-		
 	});
-	
-	
-
 });
 
 
@@ -148,7 +144,7 @@ myApp.onPageInit('contact', function(page) {
 	$.getJSON("/front/getUseres", {joinTable:'student'}, function(context) {
 		if(context.status){
 			context.student_list = context.value;
-		
+			console.log(context)
 			$('.ajaxContain').html(compileScript('#ContactList', context));
 		}
 		curPage.find('.toInfo').click(function(){
@@ -1024,12 +1020,21 @@ myApp.onPageBeforeInit('notification-detail-by', function(page) {
 /*===== 15.个人信息页面 =====*/
 myApp.onPageInit("information-card", function(page) {
 	curPage = $(page.container);
-	var student_id = $.cookie("username");
-	if(cacheData.get("userInfoCache")) student_id = cacheData.get("userInfoCache");
-	$.getJSON("jsondata/userData.json",{id:student_id},function(context){
-		curPage.find('.list-block.media-list').html(compileScript('#userInfoTemplate', context));
-		debug && console.log(student_id);
-		cacheData.remove("userInfoCache");
+	showLoading();
+	var userId = Template7.global.userId;
+
+	$.getJSON("/getUserInfoCard",{id:userId},function(json){
+
+		var context = json.value[0];
+		context['useres_nickname'] = context['useres_name'].substring(context['useres_name'].length-2);
+
+		console.log(json);
+		
+		var htmlStr = compileScript('#userInfoTemplate', context);
+		
+		curPage.find('.list-block.media-list').html( htmlStr );
+
+		hideLoading();
 	});
 });
 /*===== 16.编辑个人资料界面 =====*/
@@ -1399,15 +1404,28 @@ myApp.onPageInit('lesson-check-2',function(page){
 /*===== 20.考勤功能列表页 =====*/
 myApp.onPageInit('work-attendance',function(page){
 	var curPage = $(page.container);
-	var data ={
-		lists:[
-			{url:"pages/attendence/morning-check-1.html",text:"查早寝"},
-			{url:"pages/attendence/evening-check-1.html",text:"查晚寝"},
-			{url:"pages/attendence/lesson-check-1.html",text:"查课"},
-			{url:"pages/attendence/exercise-check.html",text:"查早操"},
-			{url:"pages/attendence/meeting-check.html",text:"会议考勤"}
-		]
-	}
+
+	// var data ={
+	// 	lists:[
+	// 		{url:"pages/attendence/morning-check-1.html",text:"查早寝"},
+	// 		{url:"pages/attendence/evening-check-1.html",text:"查晚寝"},
+	// 		{url:"pages/attendence/lesson-check-1.html",text:"查课"},
+	// 		{url:"pages/attendence/exercise-check.html",text:"查早操"},
+	// 		{url:"pages/attendence/meeting-check.html",text:"会议考勤"}
+	// 	]
+	// }
+	var data = {};
+	data.lists = [];
+	$.each(Template7.global.power_list , function (i,item){
+		if( item.parent_id == 59 ){
+			var obj = {
+				url : item.power_url,
+				text : item.power_name
+			}
+			data.lists.push( obj );
+		}
+	});
+
 	var linkList = compileScript("#linkListTemplate",data);
 	$(linkList).appendTo(curPage.find(".page-content"));
 	
@@ -1419,46 +1437,88 @@ myApp.onPageInit('notification-list',function(page){
 	var data = {
 		lists : [
 			{url:"pages/notification/notification-detail-zlb.html",text:"第10周查寝通报",datetime:"2015-5-18"},
-		    {url:"pages/notification/notification-detail-xxb.html",text:"第10周查课通报",datetime:"2015-5-18"},
-		    {url:"pages/notification/notification-detail-pp.html",text:"通报批评",datetime:"2015-5-18"},
-		    {url:"pages/notification/notification-detail-by.html",text:"通报表扬",datetime:"2015-5-18"}
+	    {url:"pages/notification/notification-detail-xxb.html",text:"第10周查课通报",datetime:"2015-5-18"},
+	    {url:"pages/notification/notification-detail-pp.html", text:"通报批评",datetime:"2015-5-18"},
+	    {url:"pages/notification/notification-detail-by.html", text:"通报表扬",datetime:"2015-5-18"}
 		]
 	}
-	var linkList = compileScript("#linkListTemplate",data);
-	$(linkList).appendTo(curPage.find(".page-content"));
+	$.getJSON('/front/getNoticeList', function(json, textStatus) {
+		var data = {
+			lists : json.value
+		};
+		// data.lists = data.lists.sort(function(a ,b) {
+		// 	return (b.datetime <= a.datetime ? -1 : 1)
+		// });
+		// $.each(data.lists, function(index, val) {
+		// 	console.log(index + ' : ' + val.datetime);
+		// });
+		var linkList = compileScript("#linkListTemplate",data);
+		$(linkList).appendTo(curPage.find(".page-content"));
+
+		$('.pages').on('click', '[href="pages/notification/notification-detail-zlb.html"],'+
+			'[href="pages/notification/notification-detail-xxb.html"],'+
+			'[href="pages/notification/notification-detail-pp.html"],'+
+			'[href="pages/notification/notification-detail-by.html"]', 
+			function(e) {
+			  var url = $(this).attr('href');
+			  var key = 'page:' + url.split('.')[0].split('/')[2];
+			  if (typeof $(this).data('value') !== 'string')
+			  	var val = JSON.stringify( $(this).data('value') );
+			  else
+			  	var val = $(this).data('value');
+			  // console.log( url );
+			  // console.log( key );
+			  // console.log( $(this).data('value') );
+			  myApp.template7Data[ key ] = val;
+		});
+	});
 });
 /*=====  22.学习部通报  =====*/
 myApp.onPageInit('notification-detail-xxb',function(page){
 	var curPage = $(page.container);
-	$.getJSON('jsondata/notification-lesson-check.json',{},function(context){
-		var htmlElem = compileScript("#lessonCheckNoticeTemplate",context);
-		$(htmlElem).appendTo(curPage.find('.page-content'));
-	});
+	
+	var context = myApp.template7Data['page:notification-detail-xxb'];
+	context = $.parseJSON(context);
+
+	// $.getJSON('jsondata/notification-lesson-check.json',{},function(context){
+	  var htmlElem = compileScript("#lessonCheckNoticeTemplate",context);
+	  $(htmlElem).appendTo(curPage.find('.page-content'));
+	// });
 });
 /*===== 23.自律部通报 =====*/
 myApp.onPageInit('notification-detail-zlb',function(page){
 	var curPage = $(page.container);
 	
-	$.getJSON('jsondata/notification-dorm-check.json',{},function(context){
+	var context = myApp.template7Data['page:notification-detail-zlb'];
+	context = $.parseJSON(context);
+	console.log(context)
+	// $.getJSON('jsondata/notification-dorm-check.json',{},function(context){
 		var htmlElem = compileScript("#dormCheckNoticeTemplate",context);
 		$(htmlElem).appendTo(curPage.find('.page-content'));
-	});
+	// });
 });
 /*===== 24.通报批评详情页 =====*/
 myApp.onPageInit('notification-detail-pp',function(page){
   var curPage = $(page.container);
-  $.getJSON('jsondata/notification-pp.json',{},function(context){
+
+  var context = myApp.template7Data['page:notification-detail-pp'];
+	context = $.parseJSON(context);
+
+  // $.getJSON('jsondata/notification-pp.json',{},function(context){
     var htmlElem = compileScript("#PPNoticeTemplate",context);
     $(htmlElem).appendTo(curPage.find('.page-content'));
-  });
+  // });
 });
 /*===== 25.通报表扬详情页 =====*/
 myApp.onPageInit('notification-detail-by',function(page){
   var curPage = $(page.container);
-  $.getJSON('jsondata/notification-by.json',{},function(context){
+  var context = myApp.template7Data['page:notification-detail-by'];
+	context = $.parseJSON(context);
+
+  // $.getJSON('jsondata/notification-by.json',{},function(context){
     var htmlElem = compileScript("#BYNoticeTemplate",context);
     $(htmlElem).appendTo(curPage.find('.page-content'));
-  });
+  // });
 });
 /*===== 26.我的任务 =====*/
 myApp.onPageInit('my-task',function(page){
@@ -1471,9 +1531,11 @@ myApp.onPageInit('my-task',function(page){
     // },2000);
     $.getJSON('/front/getMyTask',{id : Template7.global.useres.id},function(json){
 	  	var context = {};
-	  	context['taskList'] = json.value;
-	    var htmlElem = compileScript("#taskTemplate",context);
-	    curPage.find('.ajaxContainer').html(htmlElem);
+	  	context['taskList'] = json.value;{
+		  if (json.value && json.value.length !== 0)
+		    var htmlElem = compileScript("#taskTemplate",context);
+		    curPage.find('.ajaxContainer').html(htmlElem);
+		  }
 	    myApp.pullToRefreshDone();
 	  });
   });
@@ -1481,8 +1543,10 @@ myApp.onPageInit('my-task',function(page){
   $.getJSON('/front/getMyTask',{id : Template7.global.useres.id},function(json){
   	var context = {};
   	context['taskList'] = json.value;
-    var htmlElem = compileScript("#taskTemplate",context);
-    $(htmlElem).appendTo(curPage.find('.ajaxContainer'));
+  	if (json.value && json.value.length !== 0){
+    	var htmlElem = compileScript("#taskTemplate",context);
+   		$(htmlElem).appendTo(curPage.find('.ajaxContainer'));
+   	}
   });
 });
 /*27.志愿者通讯录页面*/
