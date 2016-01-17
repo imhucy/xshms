@@ -790,7 +790,7 @@ function EditabeTableModel(option){
 				// console.log(cellData);
 				// console.log(cellArray);
 				// console.log('================================================');
-				// if(index === 0) console.log(cell)
+				// if(index === 0) // console.log(cell)
 				$.each(cellArray, function(cellArrayIndex, idVal) {
 					if( idVal == elem.id ) {	
 						cell.data('multipleArray').push( elem[tableName+'_name'] );
@@ -860,7 +860,7 @@ function EditabeTableModel(option){
 	 * 翻页重绘表格
 	 */
 	oTable.on('draw', function(event) {
-		console.log('load a line');
+		// console.log('load a line');
 		$('.preloader').show();
 		
 		
@@ -925,7 +925,7 @@ function EditabeTableModel(option){
 				else if(formElem[0].tagName === 'SELECT'){
 					if(formElem.attr('multiple')){
 						var arr = [];
-						console.log(item.text());
+						// console.log(item.text());
 						var nameArray = item.text().split(',');
 						formElem.find('option').each(function(i, el) {
 							$.each(nameArray,function( nameArrayIndex,nameVal ){
@@ -998,7 +998,7 @@ function EditabeTableModel(option){
 					}
 				}
 			}
-			console.log(values)
+			// console.log(values)
 		});
 		// console.log(JSON.stringify(data) + '\n' + url );
 		$('.modifyModal').modal('hide');
@@ -1051,7 +1051,7 @@ function EditabeTableModel(option){
 				$('#successModal').modal('toggle').find('modal-body').text('删除成功');
 				oTable.row( activeRow.get(0) ).remove().draw();
 			},1000);
-			console.log(r);
+			// console.log(r);
 		})
 		.fail(function(){
 
@@ -1114,52 +1114,6 @@ function EditabeTableModel(option){
 
 });
 
-/*-------------------------------------------
-	treeMenu
-	将权限数组处理为一个树形结构
----------------------------------------------*/
-function treeMenu(a){
-    this.tree=a||[];
-    this.groups={};
-};
-treeMenu.prototype={
-    init:function(pid){
-      this.flag = true;
-      this.group();
-      return this.getDom(this.groups[pid]);
-    },
-    group:function(){
-      for(var i=0;i<this.tree.length;i++){
-        if(this.groups[this.tree[i].parent_id]){
-          this.groups[this.tree[i].parent_id].push(this.tree[i]);
-        }else{
-          this.groups[this.tree[i].parent_id]=[];
-          this.groups[this.tree[i].parent_id].push(this.tree[i]);
-        }
-      }
-      console.log( JSON.stringify(this.groups) )
-    },
-    getDom:function(a){
-      if(!a){return ''}
-      if(this.flag)
-        var html='\n<ul class="nav main-menu">\n';
-      else{
-        var html='\n<ul class="dropdown-menu">\n';
-        this.flag = !this.flag;
-      }
-      for(var i=0;i<a.length;i++){
-        html+='<li class="dropdown">';
-        html+='<a href="javascript:;" class="dropdown-toggle">';
-        html+='<i class="fa fa-desktop"></i>';
-        html+='<span class="hidden-xs">'+a[i].power_name+'</span>';
-        html+='</a>';
-        html+=this.getDom(this.groups[a[i].id]);
-        html+='</li>\n';
-      };
-      html+='</ul>\n';
-      return html;
-    }
-};
 // 
 // 
 // 初始化用户数据
@@ -1197,7 +1151,7 @@ treeMenu.prototype={
         this.groups[this.tree[i].parent_id].push(this.tree[i]);
       }
     }
-    console.log( JSON.stringify(this.groups) )
+    // console.log( JSON.stringify(this.groups) )
   },
   getDom:function(a){
     if(!a){return ''}
@@ -1236,6 +1190,11 @@ treeMenu.prototype={
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 $(document).ready(function () {
+	$('#username').text( global.useres.useres_name );
+	$('.fa-power-off').parent().click(function(e) {
+		$.cookie('useres','',{ path:'/', expires:-1 });
+		location.href = '/admin';
+	});
 	// 初始化左侧功能列表
 	$.ajax({
 		url: '/getRolePower',
@@ -1247,10 +1206,10 @@ $(document).ready(function () {
 	.done(function(json) {
 		roleInfo = json.value[0];
 		powerList = json.value[1];
-		console.log(powerList);
+		// console.log(powerList);
 		global.treeMenu = new treeMenu(powerList);
 		var html = global.treeMenu.init(0);
-		console.log( html );
+		// console.log( html );
 		$('#sidebar-left').html( html );
 	});
 	
@@ -1365,7 +1324,7 @@ $(document).ready(function () {
 		e.preventDefault();
 		var url = $(this).attr('href');
 		window.location.hash = url;
-		//console.log(2);
+		//// console.log(2);
 		LoadAjaxContent(url);
 	});
 	$('#top-panel').on('click','a', function(e){
@@ -1379,7 +1338,7 @@ $(document).ready(function () {
 			}
 			var url = $(this).attr('href');
 			window.location.hash = url;
-			console.log(3)
+			// console.log(3)
 			LoadAjaxContent(url);
 		}
 	});
@@ -1389,7 +1348,7 @@ $(document).ready(function () {
 			$('#content').removeClass('full-content');
 			ajax_url = 'ajax/page_search.html';
 			window.location.hash = ajax_url;
-			console.log(4)
+			// console.log(4)
 			LoadAjaxContent(ajax_url);
 		}
 	});

@@ -138,7 +138,58 @@ router.post('/setUserRolePower',function ( req, res, next ){
 		res.write(JSON.stringify(baseJson));
 		res.end();
 	});
-})
+});
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/// 获取
+///   未审核的考勤项
+///   根据考勤类型来查询
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+router.get('/getAttendaceListByType',function (req,res,next) {
+	var discipline_type = req.query.discipline_type;
+	var sql = 'SELECT a.id AS id ,student_id,student_name ,discipline_name FROM attendance AS a, student AS s,discipline AS d WHERE a.dop_man = s.id AND a.discipline_id = d.id AND a.attendance_status = 0 AND d.discipline_type = ? ';
+	excute.query(sql,[ discipline_type ],function (result) {
+		if(result && result.length !== 0){
+			baseJson.status = 1;
+			baseJson.message= '获取成功';
+			baseJson.value  = result;
+		}else{
+			baseJson.status = 0;
+			baseJson.message= '获取失败';
+			baseJson.value  = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write(JSON.stringify(baseJson));
+		res.end();
+	});
+});
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/// 审核考勤项
+////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+router.post('/reviewAttendance',function (req,res,next){
+	var data = req.body.data;
+	var aIdList = JSON.parse( data );
+	var sql = 'UPDATE attendance SET attendance_status = 1 WHERE id IN (' + aIdList.join(',') + ')';
+	excute.query(sql,function (result) {
+		if(result && result.length !== 0){
+			baseJson.status = 1;
+			baseJson.message= '审核成功';
+			baseJson.value  = result;
+		}else{
+			baseJson.status = 0;
+			baseJson.message= '审核失败';
+			baseJson.value  = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write(JSON.stringify(baseJson));
+		res.end();
+	});
+});
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -172,7 +223,301 @@ router.get('/getUserInfoCard',function ( req, res, next ){
 		res.end();
 	});
 });
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/// exportStudent
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+router.post('/exportStudent',function ( req, res, next ){
+	// 先上传
+	var formidable = require('formidable');
 
+	var form = new formidable.IncomingForm();
+
+	form.encoding = 'utf-8';
+
+	form.uploadDir = 'public/exportfile/';
+
+	form.keepExtensions = true;	 //保留后缀
+
+	form.maxFieldsSize = 2 * 1024 * 1024;   //文件大小 max = 2M
+
+	// 用于设置文件名不重复
+  var d = new Date();
+
+  // 解析表单
+	form.parse(req, function(err, fields, files) {
+		if (err) {
+	    baseJson.status  = 0;
+	    baseJson.message = '导入失败';
+	    baseJson.value   = '';
+
+	    res.setHeader('content-type','text/plain;charset=utf-8');
+			res.write(JSON.stringify(baseJson));
+			res.end();
+	    return;
+	  } 
+
+	  var mimeType = files.fulAvatar.type;
+
+	  extName = 'xlsx';
+
+	  var fileName = d.getTime() + d.toUTCString().replace(/[^\d]/g,'') + '.' + extName;// 随机名称 
+	  var newPath = form.uploadDir + fileName;
+
+
+	  // console.log( '==========================================')
+	  // console.log( 'temp_path :' + files.fulAvatar.path);
+	  // console.log( 'mimeType :'  + mimeType);
+	  // console.log( 'extName :'   + extName);
+	  // console.log( 'fileName :'  + fileName);
+	  // console.log( 'newPath :'   + newPath);
+	  // console.log( '==========================================')
+
+	  fs.renameSync(files.fulAvatar.path, newPath);  //重命名
+		
+		// 读文件
+		var xlsx = require('./libs/read.js');
+		
+		var sql = 'insert into student (student_id,student_enterYear,student_name,student_sex,student_building,student_room,student_bed,student_mobile,major_id,classes_id) values ';
+		var sd  = '( ?,?,?,?,?,?,?,?,(select id from major where major_name=?),(select id from classes where classes_name=?) )';
+		var recordSQL = [];
+		var recordDATA= [];
+
+		xlsx.readXlsx(newPath,function (data , row, col) {
+			for( i = 1 ; i < row ; i++ ){
+				if(!data[i][0]) continue;
+				recordSQL.push( sd );
+				for( j = 0 ; j < col ; j++ ){
+					recordDATA.push( data[i][j] );
+				}
+			}
+		});
+
+		// console.log( recordSQL );
+		// console.log( recordDATA );
+		sql += recordSQL.join(',');
+		// 写入数据库
+		excute.query(sql,recordDATA,function (result) {
+			if(result){
+				res.setHeader('content-type','text/plain;charset=utf-8');
+				res.write( '导入成功' );
+				res.end();
+			}else{
+				res.setHeader('content-type','text/plain;charset=utf-8');
+				res.write( '导入失败' );
+				res.end();
+			}
+		});
+
+		// 删除文件
+		fs.unlinkSync( newPath );
+	});
+});
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/// setPsw
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+router.post('/setPsw',function (req,res,next){
+	var origin_password = req.body.origin_password;
+	var new_password = req.body.new_password;
+	var repeat_password = req.body.repeat_password;
+	var id = req.body.id;
+
+	async.waterfall([
+		function (callback){
+			excute.query('select * from useres where id = ?' , [id] ,function (result) {
+				if( result && result.length !== 0 ){
+					if ( result[0].login_pass != origin_password ){
+						callback ( '原密码不对' ,0 );
+					}
+					else{
+						callback(null,new_password);
+					}
+				}
+			});
+		},
+		function (new_password,callback){
+			excute.query('update useres set login_pass = ? where id = ?',[ new_password,id ]
+				,function (result){
+					if( result ){
+						callback(null,result)
+					}
+			});
+		}
+	],function ( err, result){
+		if(err){
+			baseJson.status = result;
+			baseJson.message= err;
+			baseJson.value = ''
+		}else {
+			baseJson.status = 1;
+			baseJson.message= "修改成功";
+			baseJson.value  = result;
+		}
+
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+/************************************************************
+SELECT
+	student.student_enterYear AS grade,
+	classes_name,
+	discipline_name,
+	COUNT(discipline.id) AS number
+FROM
+	attendance,
+	student,
+	classes,
+	discipline,
+	term
+WHERE
+	attendance.dop_man = student.id
+AND student.classes_id = classes.id
+AND discipline.id = attendance.discipline_id
+AND attendance.attendance_term = term.id
+AND term.term_status = 1
+AND attendance.attendance_status = 1
+GROUP BY
+ 	classes.id,
+	discipline.id
+ ************************************************************/
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/// countByYear
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+router.get('/countByYear',function (req ,res ,next) {
+	var sql = [
+	'SELECT',
+	'	student.student_enterYear AS grade,',
+	// '	classes_name,',
+	'	discipline_name,',
+	'	COUNT(discipline.id) AS number',
+	'FROM',
+	'	attendance,',
+	'	student,',
+	'	classes,',
+	'	discipline,',
+	'	term',
+	'WHERE',
+	'	attendance.dop_man = student.id',
+	'AND student.classes_id = classes.id',
+	'AND discipline.id = attendance.discipline_id',
+	'AND attendance.attendance_term = term.id',
+	'AND term.term_status = 1',
+	'AND attendance.attendance_status = 1',
+	'GROUP BY',
+	' 	classes.id,',
+	'	discipline.id'
+	].join(' ');
+	excute.query(sql,function (result) {
+		if(result){
+			baseJson.status = 1;
+			baseJson.message= "获取成功";
+			baseJson.value  = result;
+		}else{
+			baseJson.status = 0;
+			baseJson.message= "获取失败";
+			baseJson.value  = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+})
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/// upload/image
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+router.post('/uploadImage',function (req,res,next){
+	
+	uploadImage (req,res,'FRONT/img/index_image/',function ( msg, avatarName, fields) {
+		excute.query('insert into index_image (image) values (?)',[avatarName],function (result) {
+			if(result){
+				res.setHeader('content-type','text/plain;charset=utf-8');
+				res.write( msg );
+				res.end();
+			}
+		});
+	});
+});
+function uploadImage(req,res,dir,callback) {
+	var formidable = require('formidable');
+	var form = new formidable.IncomingForm();   //创建上传表单
+
+  form.encoding = 'utf-8';
+  form.uploadDir = 'public/' + dir;
+  form.keepExtensions = true;	 //保留后缀
+  form.maxFieldsSize = 5 * 1024 * 1024;   //文件大小 max = 2M
+
+  res.setHeader('content-type', 'text/plain;charset=utf-8');
+  // 返回给前台
+  var msg = '';
+  // 用于设置文件名不重复
+  var d = new Date();
+  // 解析表单
+	form.parse(req, function(err, fields, files) {
+
+	  if (err) {
+	    msg = err;
+	    res.end(msg);
+	    return;
+	  }  
+	   
+	  var extName = '';  //后缀名
+	  
+	  extName = getExtName(files.fulAvatar.type);
+
+	  if(extName.length == 0){
+	      msg = '只支持png和jpg格式图片';
+	      res.end(msg);
+	      return;
+	  }
+
+	  var avatarName = d.getTime() + d.toUTCString().replace(/[^\d]/g,'') + '.' + extName;// 随机名称
+	  var newPath = form.uploadDir + avatarName;
+
+	  console.log('newPath : '+newPath);
+	  // files.fulAvatar.path
+	  console.log('tempPath : '+files.fulAvatar.path);
+	  console.log('form : ' + JSON.stringify( form ));
+	  console.log('filed' + JSON.stringify(fields) );
+	  fs.renameSync(files.fulAvatar.path, newPath);  //重命名
+		
+		msg = '上传成功';
+	  
+	  callback && callback(msg,avatarName,fields);
+
+	});
+}
+
+function getExtName (type) {
+	var extName = '';  //后缀名
+  switch (type) {
+    case 'image/pjpeg':
+      extName = 'jpg';
+      break;
+    case 'image/jpeg':
+      extName = 'jpg';
+      break;		 
+    case 'image/png':
+      extName = 'png';
+      break;
+    case 'image/x-png':
+      extName = 'png';
+      break;		 
+  }
+  return extName;
+}
 ////////////////////////////////////////////////////////////////////////
 router.get('/:type/:tableName',function (req,res,next) {
 	var tableName = req.params.tableName,

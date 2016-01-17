@@ -8,3 +8,118 @@
 	</div>
 </div>
 <!--End Breadcrumb-->
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-content">
+				<h4 class="fb">说明如下</h4>
+				<ol>
+					<li>密码必须由字母数字下划线组成</li>
+					<li>密码必须在5-20个字符之间</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-content">
+				<form class="form-horizontal" id="setPsw">
+					<input type="hidden" name="id" value="" />
+					<div class="form-group">
+						<label for="origin_password" class="col-sm-2 control-label">原始密码</label>
+						<div class="col-sm-3">
+							<input type="password" class="form-control" name="origin_password" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="origin_password" class="col-sm-2 control-label">新密码</label>
+						<div class="col-sm-3">
+							<input type="password" class="form-control" name="new_password" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="origin_password" class="col-sm-2 control-label">重复密码</label>
+						<div class="col-sm-3">
+							<input type="password" class="form-control" name="repeat_password" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-1"></div>
+						<div class="col-xs-11">
+							<div id="errorContainer" style="color:red;"></div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-1"></div>
+						<div class="col-xs-1">
+							<a href="javascript:;" id="submit-set-psw" class="btn btn-info btn-block">修改</a>
+						</div>
+					</div>
+				</form>
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="successModal" class="modal fade" role="dialog" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+          	<div class="col-md-12">密码修改成功</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script src="js/md5/md5.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$('.preloader').hide();
+	$('[name="id"]').val( global.useres.id );
+	$('#submit-set-psw').click(function(e) {
+		var setPsw          = $('#setPsw');
+		var origin_password	= setPsw.find('[name="origin_password"]').val();
+		var new_password    = setPsw.find('[name="new_password"]').val();
+		var repeat_password	= setPsw.find('[name="repeat_password"]').val();
+		var id              = setPsw.find('[name="id"]').val();
+
+		var reg = /[a-zA-Z\d_]{5,20}/;
+
+		if( reg.test( origin_password ) &&
+		    reg.test( new_password ) &&
+		    reg.test( repeat_password )  )
+		{
+			if( repeat_password == new_password ){
+				var ajaxdata = {};
+				ajaxdata[ 'origin_password' ] = hex_md5( origin_password );
+				ajaxdata[ 'new_password' ]    = hex_md5( new_password );
+				ajaxdata[ 'id' ]              = id;
+				$.post('/setPsw',ajaxdata)
+				.done(function (data){
+					var json = $.parseJSON(data);
+					if( json.status ){
+						$('#successModal').modal('show');
+						setPsw.find('[name="origin_password"]').val('');
+						setPsw.find('[name="new_password"]').val('');
+						setPsw.find('[name="repeat_password"]').val('');
+					}else{
+						$('#errorContainer').text( json.message );
+					}
+				});
+			}else{
+				$('#errorContainer').text('两次输入的密码不一致');
+				return false;
+			}
+		}else{
+			$('#errorContainer').text('密码只能包含5-20个数字字母下划线');
+			return false;
+		}
+	});
+});
+</script>

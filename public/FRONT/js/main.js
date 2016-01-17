@@ -143,7 +143,7 @@ function LoginBiz(username,password,callback){
 	// 	Template7.global.login_status = data.login_status;
 	// 	Template7.global.user = data;
 		
-	// 	$('.panel-left').delegate('a[href="logout"]','click',LogoutBiz);
+	$('.panel-left').delegate('a[href="logout"]','click',LogoutBiz);
 		
 	// 	if (callback && typeof(callback) === "function") {
 	// 		callback(data.msg ,data.login_status);
@@ -165,7 +165,6 @@ function LoginBiz(username,password,callback){
 	.done(function (json){
 		json = $.parseJSON(json);
 		if(json.status == 1){
-			console.log( json );
 			Template7.global.login_status = json.status;
 			Template7.global.useres = json.value;
 
@@ -185,7 +184,6 @@ function LoginBiz(username,password,callback){
 					}
 				});
 				
-				console.log(userInfo);
 				var leftpanel = compileScript("#panelTemplate",userInfo);
 				// 插入dom
 				$('.panel-left').html( leftpanel );
@@ -204,9 +202,7 @@ function LoginBiz(username,password,callback){
  * 还原功能列表
  */
 function LogoutBiz(){
-  $.cookie('username','');
-  $.cookie('password','');
-  
+  $.cookie('useres','',{ path:'/', expires:-1 });
   var loginBtn = '<div class="list-block"><ul><li><a href="pages/login/login.html" class="item-link item-content close-panel">您还未登陆，点击登陆</a></li></ul></div>'
   $('.panel-left').html(loginBtn);
   return false;

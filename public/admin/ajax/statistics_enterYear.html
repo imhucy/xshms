@@ -29,6 +29,42 @@
 <div id="container"></div>
 
 <script>
+function drawChart2 () {
+	Highcharts.setOptions({
+		"lang": {
+			"printChart": "打印图表",
+			"downloadJPEG": "导出JPEG图片",
+			"downloadPDF": "导出PDF文档",
+			"downloadPNG": "导出PNG 图片",
+			"downloadSVG": "导出SVG 矢量图",
+			"exportButtonTitle": "导出图片"
+		}
+	});
+	var chart = {
+		"title": {
+			"text": "各班违纪汇总图表"
+		},
+		"subtitle": {
+			"text": new Date().toString()
+		},
+		"xAxis": {
+			"categories": [],
+			"crosshair": true
+		},
+		"yAxis": {
+			"title": {
+				"text": "违 纪 人 数"
+			}
+		},
+		"series": []
+	};
+	$.getJSON('/countByYear', function(json, textStatus) {
+		console.log(json);
+		var list = json.value;
+		
+		$('#container').highcharts(chart);
+	});
+}
 function drawChart () {
 	Highcharts.setOptions({
 		"lang": {
@@ -45,7 +81,7 @@ function drawChart () {
 			"text": "各班违纪汇总图表"
 		},
 		"subtitle": {
-			"text": "2015-10-10"
+			"text": new Date().toString()
 		},
 		"xAxis": {
 			"categories": ['1班','2班'],
@@ -59,7 +95,7 @@ function drawChart () {
 		"series": [{
 			"type": "column",
 			"name": "旷课",
-			"data": [12,23]
+			"data": [12]
 		}, {
 			"type": "column",
 			"name": "未归",
@@ -193,7 +229,7 @@ function drawChart () {
 			"data": [15,54],
 			"marker": {
 				"lineWidth": 2,
-				"lineColor": "green",
+				"lineColor": "red",
 				"fillColor": "white"
 			}
 		}]
@@ -208,7 +244,7 @@ function drawChart () {
 }
 $(document).ready(function () {
 
-	LoadHighchartsScript(drawChart);
-
+	LoadHighchartsScript(drawChart2);
+	
 });
 </script>

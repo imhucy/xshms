@@ -41,6 +41,18 @@
  * ********************
  * 20.考勤选择页
  * */
+ // 初始化轮播图
+$.ajax({
+	url: '/all/index_image',
+	type: 'get',
+	dataType: 'json',
+	async:false
+})
+.done(function(data) {
+	var str = '{{#each images}}<div class="swiper-slide"><img style="height:260px;width:100%;" src="img/index_image/{{image}}" /></div>{{/each}}';
+	var htmlStr = Template7.compile(str)({images : data});
+	$('#indexImages').html( htmlStr );
+});
 
 // 初始化应用
 var myApp = new Framework7({
@@ -88,7 +100,6 @@ $.getJSON('/front/getBuildings', function(json) {
 	Template7.global.buildings = json.value;
 });
 $.getJSON('/front/getAllActivity').done(function (activities) {
-	console.log(JSON.stringify(activities));
 	myApp.template7Data['page:voluntary-activity']={
 		activities:activities.value
 	}
@@ -1434,14 +1445,14 @@ myApp.onPageInit('work-attendance',function(page){
 /*===== 21.通报列表页 =====*/
 myApp.onPageInit('notification-list',function(page){
 	var curPage = $(page.container);
-	var data = {
-		lists : [
-			{url:"pages/notification/notification-detail-zlb.html",text:"第10周查寝通报",datetime:"2015-5-18"},
-	    {url:"pages/notification/notification-detail-xxb.html",text:"第10周查课通报",datetime:"2015-5-18"},
-	    {url:"pages/notification/notification-detail-pp.html", text:"通报批评",datetime:"2015-5-18"},
-	    {url:"pages/notification/notification-detail-by.html", text:"通报表扬",datetime:"2015-5-18"}
-		]
-	}
+	// var data = {
+	// 	lists : [
+	// 		{url:"pages/notification/notification-detail-zlb.html",text:"第10周查寝通报",datetime:"2015-5-18"},
+	//     {url:"pages/notification/notification-detail-xxb.html",text:"第10周查课通报",datetime:"2015-5-18"},
+	//     {url:"pages/notification/notification-detail-pp.html", text:"通报批评",datetime:"2015-5-18"},
+	//     {url:"pages/notification/notification-detail-by.html", text:"通报表扬",datetime:"2015-5-18"}
+	// 	]
+	// }
 	$.getJSON('/front/getNoticeList', function(json, textStatus) {
 		var data = {
 			lists : json.value
@@ -1461,7 +1472,8 @@ myApp.onPageInit('notification-list',function(page){
 			'[href="pages/notification/notification-detail-by.html"]', 
 			function(e) {
 			  var url = $(this).attr('href');
-			  var key = 'page:' + url.split('.')[0].split('/')[2];
+			  var key = 'page:' + url.split('.')[0].split('/')[2] + '-data';
+			  
 			  if (typeof $(this).data('value') !== 'string')
 			  	var val = JSON.stringify( $(this).data('value') );
 			  else
@@ -1470,16 +1482,17 @@ myApp.onPageInit('notification-list',function(page){
 			  // console.log( key );
 			  // console.log( $(this).data('value') );
 			  myApp.template7Data[ key ] = val;
+
 		});
 	});
 });
 /*=====  22.学习部通报  =====*/
 myApp.onPageInit('notification-detail-xxb',function(page){
+	console.log('================================================================')
 	var curPage = $(page.container);
 	
-	var context = myApp.template7Data['page:notification-detail-xxb'];
+	var context = myApp.template7Data['page:notification-detail-xxb-data'];
 	context = $.parseJSON(context);
-
 	// $.getJSON('jsondata/notification-lesson-check.json',{},function(context){
 	  var htmlElem = compileScript("#lessonCheckNoticeTemplate",context);
 	  $(htmlElem).appendTo(curPage.find('.page-content'));
@@ -1489,7 +1502,7 @@ myApp.onPageInit('notification-detail-xxb',function(page){
 myApp.onPageInit('notification-detail-zlb',function(page){
 	var curPage = $(page.container);
 	
-	var context = myApp.template7Data['page:notification-detail-zlb'];
+	var context = myApp.template7Data['page:notification-detail-zlb-data'];
 	context = $.parseJSON(context);
 	console.log(context)
 	// $.getJSON('jsondata/notification-dorm-check.json',{},function(context){
@@ -1501,7 +1514,7 @@ myApp.onPageInit('notification-detail-zlb',function(page){
 myApp.onPageInit('notification-detail-pp',function(page){
   var curPage = $(page.container);
 
-  var context = myApp.template7Data['page:notification-detail-pp'];
+  var context = myApp.template7Data['page:notification-detail-pp-data'];
 	context = $.parseJSON(context);
 
   // $.getJSON('jsondata/notification-pp.json',{},function(context){
@@ -1512,7 +1525,7 @@ myApp.onPageInit('notification-detail-pp',function(page){
 /*===== 25.通报表扬详情页 =====*/
 myApp.onPageInit('notification-detail-by',function(page){
   var curPage = $(page.container);
-  var context = myApp.template7Data['page:notification-detail-by'];
+  var context = myApp.template7Data['page:notification-detail-by-data'];
 	context = $.parseJSON(context);
 
   // $.getJSON('jsondata/notification-by.json',{},function(context){
@@ -1592,6 +1605,43 @@ myApp.onPageInit('idea-box-submit',function (page) {
 				myApp.alert(json['message'],function () {
 					mainView.back();
 				});
+			});
+		}
+	});
+});
+
+myApp.onPageInit('setting-password',function (page) {
+	var curPage = $(page.container);
+	curPage.find('.submit-setting-pass').click(function (){
+		var flag = false;
+		var ajaxData = {};
+		curPage.find('input[type="password"]').each(function (i,item){
+			var reg = /[a-zA-Z_0-9]{5,20}/;
+			if ( reg.test(item.value) ){
+				ajaxData[ item.name ] =  hex_md5( $.trim(item.value) ) ;
+			}else{
+				flag = true;
+			}
+		});
+		if( $.trim(curPage.find('input[name="new_password"]').val()) != $.trim(curPage.find('input[name="repeat_password"]').val()) ){
+			myApp.alert( '两次输入的密码不一致,请重新输入' );
+			return false;
+		}
+		if(flag) {
+			myApp.alert( '密码不符合要求,请重新输入' );
+			return false;
+		}else{
+			ajaxData[ 'id' ] = curPage.find('[name="id"]').val();
+			// console.log( ajaxData );
+			$.post('/setPsw',ajaxData)
+			.done(function (data) {
+				// console.log(data);
+				var json = $.parseJSON(data);
+				if (json.status) {
+					myApp.alert(json.message,function (){
+						mainView.back();
+					});
+				};
 			});
 		}
 	});

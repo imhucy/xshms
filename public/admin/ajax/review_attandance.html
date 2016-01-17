@@ -1,0 +1,184 @@
+<!--Start Breadcrumb-->
+<div class="row">
+	<div id="breadcrumb" class="col-xs-12">
+		<ol class="breadcrumb">
+			<li><a href="index.html">主 页</a></li>
+			<li><a href="javascript:;">日常管理</a></li>
+			<li><a href="javascript:;">考勤审核</a></li>
+		</ol>
+	</div>
+</div>
+<!--End Breadcrumb-->
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-content">
+				<h4 class="fb">说明如下</h4>
+				<ol>
+					<li>aaaa</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-content">
+				
+				<div class="row">
+					<div class="col-xs-4">
+						<select name="d_type" id="d_type">
+						</select>
+					</div>
+				</div>
+				<br>
+
+				<div class="row">
+					<div class="col-xs-4">
+						<button class="btn btn-info" id="sureBtn">同意考勤结果</button>
+					</div>
+				</div>
+
+				
+				<hr>
+				<br>
+				
+				<table class="table table-striped table-hover table-responsive ">
+					<thead>
+						<th><div class="checkbox"><label><input name="selectAll" type="checkbox">全选<i class="fa fa-square-o small"></i></label></div></th>
+						<th>学号</th>
+						<th>姓名</th>
+						<th>考勤项</th>
+					</thead>
+					<tbody id="attendanceList"></tbody>
+					<tfoot></tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="successModal" class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+          	<div class="col-md-12">审核通过</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="errorModal" class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+          	<div class="col-md-12">审核失败</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+function MakeSelect2(){
+	$('select').select2();
+}
+
+function loadDisciplineType () {
+	$.getJSON('/all/d_type', function(json, textStatus) {
+		var str = '<option value="">请选择考勤类型</option>';
+		$.each(json, function(i, item) {
+			str += '<option value="' + item.id +'">'+ item.d_type_name +'</option>'
+		});
+		$('#d_type').html(str);
+	});
+}
+function loadAttendanceList ( id ) {
+	$.getJSON('/getAttendaceListByType', {discipline_type: id}, function(json, textStatus) {
+		console.log(json);
+		var html = funcListStr(json.value);
+		$('#attendanceList').html(html);
+		$('#attendanceList').find(':checkbox').on('click',function () {
+			if (!this.checked){
+				$('[name="selectAll"]')[0].checked = false;
+			}
+		});
+	});
+}
+function funcListStr ( json ) {
+	var str = '';
+
+	$.each(json, function (i, item) {
+		str += '<tr>';
+		str += '  <td>';
+		str += '    <div class="checkbox"><label><input name="'+item.id+'" type="checkbox"><i class="fa fa-square-o small"></i></label></div>';
+		str += '  </td>';
+		str += '  <td>';
+		str += item.student_id;
+		str += '  </td>';
+		str += '  <td>';
+		str += item.student_name;
+		str += '  </td>';
+		str += '  <td>';
+		str += item.discipline_name;
+		str += '  </td>';
+		str += '</tr>';
+	});
+	return str;
+}
+
+$(document).ready(function() {
+	$('.preloader').hide();
+
+	loadDisciplineType();
+
+	LoadSelect2Script(MakeSelect2);
+
+	$('#d_type').on('change',function (){
+		var id = $(this).val();
+		loadAttendanceList( id );
+	});
+	$('[name="selectAll"]').on('click', function (e) {
+		var b = this.checked;
+		$('#attendanceList').find(':checkbox').each(function(i, item) {
+			item.checked = b;
+		});
+	});
+	$('#sureBtn').on('click', function() {
+		var checkbox = $('#attendanceList').find(':checkbox');
+		if ( checkbox.size() === 0 ) return false;
+		var aIdList = [];
+		checkbox.each(function (i,item) {
+			if ( item.checked ){
+				aIdList.push( item.name );
+			}
+		});
+		// console.log(aIdList)
+		$('.preloader').show();
+
+		$.post('/reviewAttendance',{ data : JSON.stringify( aIdList ) } )
+		.done(function (json){
+			json = $.parseJSON(json);
+			if(json.status){
+ 				$('#successModal').modal('show');
+				loadAttendanceList( $('#d_type').val() );
+			}else{
+				$('#errorModal').modal('show');
+			}
+			$('.preloader').hide();
+		});
+
+	});
+	WinMove();
+});
+
+</script>
