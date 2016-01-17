@@ -1,0 +1,97 @@
+<!--Start Breadcrumb-->
+<div class="row">
+	<div id="breadcrumb" class="col-xs-12">
+		<ol class="breadcrumb">
+			<li><a href="index.html">主 页</a></li>
+			<li><a href="javascript:;">日常管理</a></li>
+			<li><a href="javascript:;">周通报发布</a></li>
+		</ol>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box-content">
+			<h4>本页说明：</h4>
+			<ol>
+				<li>点击即可发布本周通报 </li>
+				<li>需要注意的是，通报必须在本周内发布才有效，建议在周五或者周六进行发布</li>
+				<li>周通报的开始时间是每周日0点至周六23:59:59</li>
+				<li>每周的第一天是星期天</li>
+			</ol>
+			<hr>
+			<div class="row">
+				<div class="col-xs-2">
+					<button id="lesson" class="btn btn-info btn-block">点击发布查课通报</button>
+				</div>
+				<div class="col-xs-2">
+					<button id="dormitory" class="btn btn-info btn-block">点击发布查寝通报</button>
+				</div>
+				<div class="col-xs-2">
+					<button id="exercise" class="btn btn-info btn-block">点击发布查早操通报</button>
+				</div>
+				<div class="col-xs-4">
+					<button id="define" class="btn btn-info btn-block">点击发布其他通报（通报表扬和批评）</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="successModal" class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+          	<div class="col-md-12">发布成功</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+	jQuery(document).ready(function($) {
+		$('.preloader').hide();
+		$('#lesson').click(function () {
+			$('.preloader').show();
+			$.get('/front/publishLessonCheckByWeek', function(data) {
+				
+					$('.preloader').hide();
+					$('#successModal').modal('show');
+				
+			});
+		});
+		
+		$('#dormitory').click(function () {
+			$('.preloader').show();
+			$.get('/front/publishDormitoryCheckByWeek', function(data) {
+				
+					$('.preloader').hide();
+					$('#successModal').modal('show');
+				
+			});
+		});
+
+		$('#exercise').click(function () {
+			$('.preloader').show();
+			$.get('/front/publishExerciseCheckByWeek', function(data) {
+				
+					$('.preloader').hide();
+					$('#successModal').modal('show');
+				
+			});
+		});
+
+		$('#define').click(function () {
+			$('.preloader').show();
+			$.get('/front/publishDefineCheckByWeek', function(data) {
+				
+					$('.preloader').hide();
+					$('#successModal').modal('show');
+				
+			});
+		});
+
+	});
+</script>

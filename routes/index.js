@@ -412,6 +412,93 @@ router.get('/countByYear',function (req ,res ,next) {
 	'AND term.term_status = 1',
 	'AND attendance.attendance_status = 1',
 	'GROUP BY',
+	'	discipline.id'
+	].join(' ');
+	excute.query(sql,function (result) {
+		if(result){
+			baseJson.status = 1;
+			baseJson.message= "获取成功";
+			baseJson.value  = result;
+		}else{
+			baseJson.status = 0;
+			baseJson.message= "获取失败";
+			baseJson.value  = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/// countByMajor
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+router.get('/countByMajor',function (req ,res ,next) {
+	var sql = [
+	'SELECT',
+	// '	student.student_enterYear AS grade,',
+	'	major_name,',
+	'	discipline_name,',
+	'	COUNT(discipline.id) AS number',
+	'FROM',
+	'	attendance,',
+	'	student,',
+	'	major,',
+	'	discipline,',
+	'	term',
+	'WHERE',
+	'	attendance.dop_man = student.id',
+	'AND student.major_id = major.id',
+	'AND discipline.id = attendance.discipline_id',
+	'AND attendance.attendance_term = term.id',
+	'AND term.term_status = 1',
+	'AND attendance.attendance_status = 1',
+	'GROUP BY',
+	' 	major.id,',
+	'	discipline.id'
+	].join(' ');
+	excute.query(sql,function (result) {
+		if(result){
+			baseJson.status = 1;
+			baseJson.message= "获取成功";
+			baseJson.value  = result;
+		}else{
+			baseJson.status = 0;
+			baseJson.message= "获取失败";
+			baseJson.value  = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/// countByClasses
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+router.get('/countByClasses',function (req ,res ,next) {
+	var sql = [
+	'SELECT',
+	'	classes_name,',
+	'	discipline_name,',
+	'	COUNT(discipline.id) AS number',
+	'FROM',
+	'	attendance,',
+	'	student,',
+	'	classes,',
+	'	discipline,',
+	'	term',
+	'WHERE',
+	'	attendance.dop_man = student.id',
+	'AND student.classes_id = classes.id',
+	'AND discipline.id = attendance.discipline_id',
+	'AND attendance.attendance_term = term.id',
+	'AND term.term_status = 1',
+	'AND attendance.attendance_status = 1',
+	'GROUP BY',
 	' 	classes.id,',
 	'	discipline.id'
 	].join(' ');
@@ -429,8 +516,7 @@ router.get('/countByYear',function (req ,res ,next) {
 		res.write( JSON.stringify( baseJson ) );
 		res.end();
 	});
-})
-
+});
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////

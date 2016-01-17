@@ -9,3 +9,96 @@
 	</div>
 </div>
 <!--End Breadcrumb-->
+
+<!--End Breadcrumb-->
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box-content">
+			<h4>本页说明：</h4>
+			<ol>
+				<li>点击图标下方的色块，可以暂时显示或隐藏某项指标 </li>
+				<li>鼠标移动到某一列上时会显示该列的详细信息</li>
+			</ol>
+			<hr>
+		</div>
+	</div>
+</div>
+<div id="container"></div>
+<script>
+function drawChart () {
+	Highcharts.setOptions({
+		"lang": {
+			"printChart": "打印图表",
+			"downloadJPEG": "导出JPEG图片",
+			"downloadPDF": "导出PDF文档",
+			"downloadPNG": "导出PNG 图片",
+			"downloadSVG": "导出SVG 矢量图",
+			"exportButtonTitle": "导出图片"
+		}
+	});
+	var chart = {
+		"title": {
+			"text": "各专业考勤情况汇总图表"
+		},
+		"subtitle": {
+			"text": new Date().toString()
+		},
+		"xAxis": {
+			"categories": [],
+			"crosshair": true
+		},
+		"yAxis": {
+			"title": {
+				"text": "各项指标对应人数"
+			}
+		},
+		"series": []
+	};
+	var seriesJson = {};
+	$.getJSON('/all/discipline', function( discipline_list ) {
+		$.each(discipline_list, function(i, item) {
+			seriesJson[item.discipline_name] = {
+				"type": "column",
+				"name": item.discipline_name,
+				"data": []
+			};
+		});
+	});
+	$.getJSON('/countByMajor', function( json ) {
+		console.log(json);
+		var list = json.value;
+		var newJson = {};
+		$.each(list, function(i, item) {
+			if ( !newJson[ item.major_name ] ) {
+				newJson[ item.major_name ] = {};
+			}
+			newJson[ item.major_name ][ item.discipline_name ] = item.number;
+		});
+		
+		
+		var categories = [];
+		$.each(newJson, function(major_name, item) {
+			categories.push(major_name);
+			
+			$.each(seriesJson, function(discipline_name, obj) {
+				obj['data'].push( newJson[major_name][discipline_name] || 0 );
+			});
+			
+		});
+		var seriesArray = [];
+		$.each(seriesJson, function(discipline_name	, item) {
+			seriesArray.push(item);
+		});
+		
+		chart['series'] = seriesArray;
+		chart.xAxis.categories = categories;
+		// console.log( JSON.stringify(chart) );
+		$('#container').highcharts(chart);
+	});
+}
+
+$(document).ready(function () {
+	LoadHighchartsScript(drawChart);
+	$('.preloader').hide();
+});
+</script>
