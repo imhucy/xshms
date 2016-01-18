@@ -162,6 +162,7 @@ function getAllPower(){
 	$.getJSON('/all/power', function(json, textStatus) {
 		var tree = new treeMenu2(json);
 		var htmlStr = tree.init(999999);
+		console.log(htmlStr)
 		$(htmlStr).appendTo('#setRolePower #setRolePowerForm');
 		$('#setBtn').click(function(e) {
 			var $row   = $('#datatable-role').find('tr.active');
@@ -181,6 +182,7 @@ function getAllPower(){
 					item.checked = false;
 				});
 				$.each(json.value[1], function(i, item) {
+					console.log(item.id)
 					inputs.filter('[name="' + item.id + '"]')[0].checked = true
 				});
 
@@ -277,9 +279,9 @@ treeMenu2.prototype={
      	// html+='<a href="javascript:;" data-value="'+a[i].id+'">';
       // html+='<span class="hidden-xs">'+a[i].power_name+'</span>';
       // html+='</a>';
-			html += '<div class="checkbox-inline"><label><input type="checkbox" name="'+ a[i].id +'" />'+a[i].power_name+
+			html += '<div class="checkbox-inline"><label><input type="checkbox" checked="false" name="'+ a[i].id +'" />'+a[i].power_name+
 			        '<i class="fa fa-square-o"></i></label></div>'
-      if(a[i]["power_level"] < 2) html+=this.getDom(this.groups[a[i].id]);
+      if(a[i]["power_level"] < 3) html+=this.getDom(this.groups[a[i].id]);
       html+='</li>\n';
     };
     html+='</ul>\n';
