@@ -1496,7 +1496,7 @@ myApp.onPageInit('activity-list',function(page){
 			  else
 			  	var val = $(this).data('value');
 			  myApp.template7Data[ key ] = val;
-
+			  // console.log('myApp.template7Data[ '+key+' ]' + myApp.template7Data[ key ])
 		});
 	});
 });
@@ -1579,8 +1579,10 @@ myApp.onPageInit('my-task',function(page){
 /*27.志愿者通讯录页面*/
 myApp.onPageInit('voluntary-contact', function(page) {
   var curPage = $(page.container);
-  var volunteer_ids = myApp.template7Data[ 'voluntary-contact-data' ];
+  var volunteer_ids = myApp.template7Data["page:voluntary-contact-data"];
+  // console.log('myApp.template7Data["page:voluntary-contact-data"] : ' + myApp.template7Data["page:voluntary-contact-data"])
   showLoading();
+
   $.getJSON("/front/getVolunteerList", {ids:volunteer_ids}, function(context) {
     $('.ajaxContain').html(compileScript('#VolunteerList', context));
     hideLoading();

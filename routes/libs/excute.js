@@ -202,7 +202,7 @@ module.exports = function (dirname) {
 
 		client.multipleStatements = true;
 
-		// client.debug = true;
+		client.debug = true;
 		
 		client.host = dbConfig['host'];
 
