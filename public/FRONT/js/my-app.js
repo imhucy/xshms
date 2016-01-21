@@ -1479,7 +1479,7 @@ myApp.onPageInit('activity-list',function(page){
 		var data = {
 			lists : json.value
 		};
-		$.each(data.list, function(i, item) {
+		$.each(data.lists, function(i, item) {
 			item['url'] = 'pages/contact/voluntary-contact.html';
 		});
 	
