@@ -119,7 +119,7 @@ router.get('/getAllActivity',function (req,res) {
 
 router.get('/getMyActivity',function (req,res) {
 	var id = req.query.id;
-	var sql = 'select activity.id AS activity_id , activity_name AS text,activity_date AS datetime,volunteer AS content from activity join useres on activity.activity_leader = ? where activity_status = 1'
+	var sql = 'select activity.id AS activity_id , activity_name AS text,activity_date AS datetime,volunteer AS content from activity where activity_status = 1,activity.activity_leader = ?'
 	excute.query(sql,[id],function (results) {
 		if(results){
 			baseJson.status = 1;
