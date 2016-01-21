@@ -1445,24 +1445,12 @@ myApp.onPageInit('work-attendance',function(page){
 /*===== 21.通报列表页 =====*/
 myApp.onPageInit('notification-list',function(page){
 	var curPage = $(page.container);
-	// var data = {
-	// 	lists : [
-	// 		{url:"pages/notification/notification-detail-zlb.html",text:"第10周查寝通报",datetime:"2015-5-18"},
-	//     {url:"pages/notification/notification-detail-xxb.html",text:"第10周查课通报",datetime:"2015-5-18"},
-	//     {url:"pages/notification/notification-detail-pp.html", text:"通报批评",datetime:"2015-5-18"},
-	//     {url:"pages/notification/notification-detail-by.html", text:"通报表扬",datetime:"2015-5-18"}
-	// 	]
-	// }
+	
 	$.getJSON('/front/getNoticeList', function(json, textStatus) {
 		var data = {
 			lists : json.value
 		};
-		// data.lists = data.lists.sort(function(a ,b) {
-		// 	return (b.datetime <= a.datetime ? -1 : 1)
-		// });
-		// $.each(data.lists, function(index, val) {
-		// 	console.log(index + ' : ' + val.datetime);
-		// });
+	
 		var linkList = compileScript("#linkListTemplate",data);
 		$(linkList).appendTo(curPage.find(".page-content"));
 
@@ -1478,9 +1466,35 @@ myApp.onPageInit('notification-list',function(page){
 			  	var val = JSON.stringify( $(this).data('value') );
 			  else
 			  	var val = $(this).data('value');
-			  // console.log( url );
-			  // console.log( key );
-			  // console.log( $(this).data('value') );
+			  myApp.template7Data[ key ] = val;
+
+		});
+	});
+});
+// 活动列表页
+myApp.onPageInit('activity-list',function(page){
+	var curPage = $(page.container);
+	
+	$.getJSON('/front/getMyActivity', {id:Template7.global.useres.id}, function(json, textStatus) {
+		var data = {
+			lists : json.value
+		};
+		$.each(data.list, function(i, item) {
+			item['url'] = 'pages/contact/voluntary-contact.html';
+		});
+	
+		var linkList = compileScript("#linkListTemplate",data);
+		$(linkList).appendTo(curPage.find(".page-content"));
+
+		$('.pages').on('click', '[href="pages/contact/voluntary-contact.html"]', 
+			function(e) {
+			  var url = $(this).attr('href');
+			  var key = 'page:' + url.split('.')[0].split('/')[2] + '-data';
+			  
+			  if (typeof $(this).data('value') !== 'string')
+			  	var val = JSON.stringify( $(this).data('value') );
+			  else
+			  	var val = $(this).data('value');
 			  myApp.template7Data[ key ] = val;
 
 		});
@@ -1565,10 +1579,10 @@ myApp.onPageInit('my-task',function(page){
 /*27.志愿者通讯录页面*/
 myApp.onPageInit('voluntary-contact', function(page) {
   var curPage = $(page.container);
+  var volunteer_ids = myApp.template7Data[ 'voluntary-contact-data' ];
   showLoading();
-  $.getJSON("jsondata/contacts.json", {}, function(context) {
-    $('.ajaxContain').html(compileScript('#ContactList', context));
-    
+  $.getJSON("/front/getVolunteerList", {ids:volunteer_ids}, function(context) {
+    $('.ajaxContain').html(compileScript('#VolunteerList', context));
     hideLoading();
   });
 });

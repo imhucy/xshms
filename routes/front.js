@@ -14,7 +14,9 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-
+/*
+获取在职人员通讯录
+ */
 router.get('/getUseres',function (req,res) {
 	var joinTable = req.query.joinTable;
 	
@@ -99,7 +101,6 @@ router.post('/postIBox',function (req,res,next) {
 ///////////////////////////////////////////////////////////////
 router.get('/getAllActivity',function (req,res) {
 	var sql = 'select activity.id AS activity_id , activity_name,activity_date,activity_content,useres_name from activity join useres on activity.activity_leader = useres.id where activity_status = 1'
-	// var sql = 'select * from activity join useres on activity.activity_leader = useres.id where activity_status = 1';
 	excute.query(sql,function (results) {
 		if(results){
 			baseJson.status = 1;
@@ -116,7 +117,42 @@ router.get('/getAllActivity',function (req,res) {
 	});
 });
 
-
+router.get('/getMyActivity',function (req,res) {
+	var id = req.query.id;
+	var sql = 'select activity.id AS activity_id , activity_name AS text,activity_date AS datetime,volunteer AS content from activity join useres on activity.activity_leader = ? where activity_status = 1'
+	excute.query(sql,[id],function (results) {
+		if(results){
+			baseJson.status = 1;
+			baseJson.message = '获取成功';
+			baseJson.value = results;
+		} else {
+			baseJson.status = 0;
+			baseJson.message = "获取失败";
+			baseJson.value = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
+router.get('/getVolunteerList',function (req,res,next) {
+	var ids = req.query.ids;
+	var sql = 'SELECT * FROM student WHERE id IN (?)';
+	excute.query(sql,[ids],function(results) {
+		if(results){
+			baseJson.status = 1;
+			baseJson.message = '获取成功';
+			baseJson.value = results;
+		} else {
+			baseJson.status = 0;
+			baseJson.message = "获取失败";
+			baseJson.value = '';
+		}
+		res.setHeader('content-type','text/plain;charset=utf-8');
+		res.write( JSON.stringify( baseJson ) );
+		res.end();
+	});
+});
 //////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
 // 提交志愿者活动申请 applyForActivity
