@@ -202,7 +202,7 @@ module.exports = function (dirname) {
 
 		client.multipleStatements = true;
 
-		client.debug = true;
+		// client.debug = true;
 		
 		client.host = dbConfig['host'];
 
@@ -214,8 +214,6 @@ module.exports = function (dirname) {
 
 		client.database = dbConfig['database'];
 
-		
-		
 		var pool = mysql.createPool(client);
 		pool.getConnection(function (err,conn) {
 			if(err){

@@ -63,6 +63,7 @@ var myApp = new Framework7({
 	smartSelectBackOnSelect: true,
 	precompileTemplates: true,
 	template7Pages: true,
+	modalTitle:"学生会OA系统",
 	template7Data: {}
 });
 
