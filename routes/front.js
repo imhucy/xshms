@@ -137,8 +137,9 @@ router.get('/getMyActivity',function (req,res) {
 });
 router.get('/getVolunteerList',function (req,res,next) {
 	var ids = req.query.ids;
-	var sql = 'SELECT * FROM student WHERE id IN (?)';
-	excute.query(sql,[ids],function(results) {
+	console.log("ids :"+ids);
+	var sql = 'SELECT * FROM student WHERE id IN ('+ids+')';
+	excute.query(sql,function(results) {
 		if(results){
 			baseJson.status = 1;
 			baseJson.message = '获取成功';

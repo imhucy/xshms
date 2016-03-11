@@ -18,17 +18,15 @@
 <script id="VolunteerList" type="text/template7">
 	{{#each value}}
 	<li>
-		<a href="javascript:;" class="item-link">
-			<div class="item-content">
-				<div class="item-inner">
-					<div class="item-title-row">
-						<div class="item-title">{{student_name}}</div>
-						<div class="item-after">{{student_mobile}}</div>
-					</div>
-					<div class="item-subtitle">{{student_id}}</div>
+		<div class="item-content">
+			<div class="item-inner">
+				<div class="item-title-row">
+					<div class="item-title">{{student_name}}</div>
+					<div class="item-after">{{student_mobile}}</div>
 				</div>
+				<div class="item-subtitle">{{student_id}}</div>
 			</div>
-		</a>
+		</div>
 	</li>
 	{{/each}}
 </script>
