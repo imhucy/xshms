@@ -1170,8 +1170,12 @@ treeMenu.prototype={
       else {
       	html+='<a href="'+(a[i].power_url || 'javascript:;')+'" class="dropdown-toggle" data-value="'+a[i].id+'">';
       }
-      html+='<i class="'+a[i].power_icon+'"></i>';
-      html+='<span class="hidden-xs">'+a[i].power_name+'</span>';
+      if( a[i].power_icon ){
+      	html+='<i class="'+a[i].power_icon+'"></i>';
+      	html+='<span class="hidden-xs">'+a[i].power_name+'</span>';
+      }else{
+      	html+=a[i].power_name;
+      }
       html+='</a>';
       if(a[i]["power_level"] < 2) html+=this.getDom(this.groups[a[i].id]);
       html+='</li>\n';

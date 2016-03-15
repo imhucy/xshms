@@ -18,7 +18,7 @@
 			<div class="list-block media-list">
 				<ul id="lessonCheckForm">
 					<li>
-						<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select" data-page-title="选择通报名单" data-back-text="确认">
+						<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select" data-page-title="选择旷课名单" data-back-text="确认">
 							<select name="students" multiple>
 								{{#each @global.lessonCheckStudent}}
 								<option value="{{id}}">{{student_name}}({{student_id}})</option>
@@ -35,7 +35,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select" data-page-title="选择通报名单" data-back-text="确认">
+						<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select" data-page-title="选择请假名单" data-back-text="确认">
 							<select id="student-list-leave" name="students" multiple>
 								{{#each @global.lessonCheckStudent}}
 								<option value="{{id}}">{{student_name}}({{student_id}})</option>
@@ -47,6 +47,23 @@
 										<div class="item-title">请假名单</div>
 									</div>
 									<div class="item-text"><span class="item-after student-list-leave"></span></div>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select" data-page-title="选择迟到名单" data-back-text="确认">
+							<select id="student-list-leave" name="students" multiple>
+								{{#each @global.lessonCheckStudent}}
+								<option value="{{id}}">{{student_name}}({{student_id}})</option>
+								{{/each}}
+							</select>
+							<div class="item-content">
+								<div class="item-inner">
+									<div class="item-title-row">
+										<div class="item-title">迟到名单</div>
+									</div>
+									<div class="item-text"><span class="item-after student-list-late"></span></div>
 								</div>
 							</div>
 						</a>

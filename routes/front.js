@@ -323,11 +323,19 @@ router.get('/getStudentByMajorGradeClasses',function (req,res,next) {
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
 router.post('/postLessonCheck',function (req,res,next) {
-	var attendance_man = req.body['attendance_man'];
-	var attendance_date = req.body['attendance_date'];
-	var attendance_desc = req.body['attendance_desc'];
-	var qStudents = req.body['result[]'];
+	var body = JSON.parse(req.body['data']);
+	var attendance_man = body['attendance_man'];
+	var attendance_date = body['attendance_date'];
+	var attendance_desc = body['attendance_desc'];
+	var result = body['result'];
+	var absentList = result['absentList'];
+	var leaveList = result['leaveList'];
+	var lateList = result['lateList'];
 
+	// console.log(absentList);
+	// console.log(leaveList);
+	// console.log(lateList);
+	
 	// console.log('======>'+JSON.stringify(req.body));
 	// console.log('======>'+JSON.stringify(qStudents));
 	// console.log('======>'+attendance_man);
@@ -335,6 +343,8 @@ router.post('/postLessonCheck',function (req,res,next) {
 	// console.log('======>'+attendance_desc);
 	var sql = '';
 	var data = [];
+	// console.log(req.body);
+	// res.end('{ok:123}');
 	async.waterfall([
 		function (callback) {
 			excute.query('select id from term where term_status = 1',function(results){
@@ -348,12 +358,32 @@ router.post('/postLessonCheck',function (req,res,next) {
 		},
 		function (term,callback){
 			var term_id = term.id;
-			for(i = 0 ; i < qStudents.length; i++){
+			for(i = 0 ; i < absentList.length; i++){
 				sql += 'insert into attendance SET attendance_man = ? ,dop_man = ?,discipline_id = ?,attendance_term = ? ,attendance_date = ? , attendance_desc = ?;';
 				data.push( attendance_man );
-				data.push( qStudents[i] );
-				// 查课类型id号
+				data.push( absentList[i] );
+				// 查课类型id号  旷课
 				data.push( 11 );
+				data.push( term_id );
+				data.push( attendance_date );
+				data.push( attendance_desc );
+			}
+			for(i = 0 ; i < leaveList.length; i++){
+				sql += 'insert into attendance SET attendance_man = ? ,dop_man = ?,discipline_id = ?,attendance_term = ? ,attendance_date = ? , attendance_desc = ?;';
+				data.push( attendance_man );
+				data.push( leaveList[i] );
+				// 查课类型id号  请假
+				data.push( 20 );
+				data.push( term_id );
+				data.push( attendance_date );
+				data.push( attendance_desc );
+			}
+			for(i = 0 ; i < lateList.length; i++){
+				sql += 'insert into attendance SET attendance_man = ? ,dop_man = ?,discipline_id = ?,attendance_term = ? ,attendance_date = ? , attendance_desc = ?;';
+				data.push( attendance_man );
+				data.push( lateList[i] );
+				// 查课类型id号  迟到
+				data.push( 10 );
 				data.push( term_id );
 				data.push( attendance_date );
 				data.push( attendance_desc );

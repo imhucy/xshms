@@ -1320,7 +1320,7 @@ myApp.onPageInit('lesson-check-1',function(page){
 	    var course = ajaxData['course'];
 
 	    var attendenceDesc = className + '班于' + now +'在'+buildingNumber+classroom+'上'
-	    											+course+'课时，旷课'+qNumber+'人';
+	    											+course+'课时，'+qNumber+'人考勤异常';
 	    //  查课数据											
 	    Template7.global.lessonCheck = {
 	    	data : {
@@ -1363,11 +1363,14 @@ myApp.onPageInit('lesson-check-2',function(page){
 			$('.student-list').off();
 			$('.student-list').html(substr);
 			$('.student-list').on('DOMNodeInserted',fnFormart);
-		}else 
-		if( $(e.target).hasClass('student-list-leave') ){
+		}else if( $(e.target).hasClass('student-list-leave') ){
 			$('.student-list-leave').off();
 			$('.student-list-leave').html(substr);
 			$('.student-list-leave').on('DOMNodeInserted',fnFormart);
+		}else if( $(e.target).hasClass('student-list-late') ){
+			$('.student-list-late').off();
+			$('.student-list-late').html(substr);
+			$('.student-list-late').on('DOMNodeInserted',fnFormart);
 		}
 	};
 	
@@ -1375,17 +1378,38 @@ myApp.onPageInit('lesson-check-2',function(page){
 		cacheData.remove('lessonCheck');
 	};
 	var fnSaveAll = function(){
-		var arr = [];
+		var arrLeave  = [];
+		var arrAbsent = [];
+		var arrLate   = [];
 		var obj = JSON.parse( cacheData.get("lessonCheck") );
-		curPage.find('select option:checked').each(function(index, el) {
-		  arr.push(el.value);
+		console.log( curPage.find('select:eq(0) :selected').size() );
+
+		curPage.find('select:eq(0) :selected').each(function(index, el) {
+		  arrAbsent.push(el.value);
 		});
-		if( obj["need-number"]-obj["real-number"] != arr.length ){
+		curPage.find('select:eq(1) :selected').each(function(index, el) {
+		  arrLeave.push(el.value);
+		});
+		curPage.find('select:eq(2) :selected').each(function(index, el) {
+		  arrLate.push(el.value);
+		});
+
+		if( obj["need-number"]-obj["real-number"] != (arrAbsent.length+arrLeave.length+arrLate.length) ){
 			myApp.alert("人数与缺勤人数不一致,请重新选择");return null;
 		}
-		obj["result"] = arr;
-		// 缺课名单
-		Template7.global.lessonCheck['data']['result'] = arr;
+		obj["result"] = {
+			absentList : arrAbsent,
+			leaveList  : arrLeave,
+			lateList   : arrLate
+		};
+		Template7.global.lessonCheck['data']['result'] = {
+			// 缺课名单
+			absentList : arrAbsent,
+			// 请假名单
+			leaveList  : arrLeave,
+			// 迟到名单
+			lateList   : arrLate
+		};
 		// 查课时间
 		Template7.global.lessonCheck['data']['attendance_date'] = new Date().format('yyyy-MM-dd hh:mm:ss');
 		return obj;
@@ -1396,7 +1420,9 @@ myApp.onPageInit('lesson-check-2',function(page){
 		debug && console.log( data );
 		showLoading();
 		//	此处可以将数据传到后台去
-		$.post('/front/postLessonCheck', Template7.global.lessonCheck.data)
+		var strstr = JSON.stringify(Template7.global.lessonCheck.data);
+		console.log(strstr)
+		$.post('/front/postLessonCheck', {data : strstr})
 		.done(function(json){
 			json = $.parseJSON(json);
 			console.log(json);
@@ -1417,7 +1443,7 @@ myApp.onPageInit('lesson-check-2',function(page){
 	// 	$(htmlStr).appendTo(container);
 		
 	// });
-	$('.student-list,.student-list-leave').on('DOMNodeInserted',fnFormart);
+	$('.student-list,.student-list-leave,.student-list-late').on('DOMNodeInserted',fnFormart);
 	var curPage = $(page.container);
 	// 只能提交一次
 	curPage.find('.submit').on('click',fnSubmit);
