@@ -1355,13 +1355,22 @@ myApp.onPageInit('lesson-check-1',function(page){
 myApp.onPageInit('lesson-check-2',function(page){
 	var fnFormart = function(e){
 		var text = $(e.target).html();
+		
 		var substr = text.replace(/,/g,'<br>');
 		debug && console.log(text);
 		debug && console.log(substr);
-		$('.student-list').off();
-		$('.student-list').html(substr);
-		$('.student-list').on('DOMNodeInserted',fnFormart);
+		if( $(e.target).hasClass('student-list') ){
+			$('.student-list').off();
+			$('.student-list').html(substr);
+			$('.student-list').on('DOMNodeInserted',fnFormart);
+		}else 
+		if( $(e.target).hasClass('student-list-leave') ){
+			$('.student-list-leave').off();
+			$('.student-list-leave').html(substr);
+			$('.student-list-leave').on('DOMNodeInserted',fnFormart);
+		}
 	};
+	
 	var fnClear = function(){
 		cacheData.remove('lessonCheck');
 	};
@@ -1408,7 +1417,7 @@ myApp.onPageInit('lesson-check-2',function(page){
 	// 	$(htmlStr).appendTo(container);
 		
 	// });
-	$('.student-list').on('DOMNodeInserted',fnFormart);
+	$('.student-list,.student-list-leave').on('DOMNodeInserted',fnFormart);
 	var curPage = $(page.container);
 	// 只能提交一次
 	curPage.find('.submit').on('click',fnSubmit);

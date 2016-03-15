@@ -34,6 +34,23 @@
 							</div>
 						</a>
 					</li>
+					<li>
+						<a href="#" data-searchbar="true" data-searchbar-placeholder="请输入名字以搜索" class="item-link smart-select" data-page-title="选择通报名单" data-back-text="确认">
+							<select id="student-list-leave" name="students" multiple>
+								{{#each @global.lessonCheckStudent}}
+								<option value="{{id}}">{{student_name}}({{student_id}})</option>
+								{{/each}}
+							</select>
+							<div class="item-content">
+								<div class="item-inner">
+									<div class="item-title-row">
+										<div class="item-title">请假名单</div>
+									</div>
+									<div class="item-text"><span class="item-after student-list-leave"></span></div>
+								</div>
+							</div>
+						</a>
+					</li>
 				</ul>
 			</div>
 			<div class="list-block media-list">
