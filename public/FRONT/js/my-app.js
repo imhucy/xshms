@@ -753,7 +753,7 @@ function drawChart () {
 		"series": []
 	};
 	var seriesJson = {};
-	$.getJSON('/all/discipline', function( discipline_list ) {
+	$.getJSON(ipField + '/all/discipline', function( discipline_list ) {
 		$.each(discipline_list, function(i, item) {
 			seriesJson[item.discipline_name] = {
 				"type": "column",
@@ -762,7 +762,7 @@ function drawChart () {
 			};
 		});
 	});
-	$.getJSON('/countByClasses', function( json ) {
+	$.getJSON(ipField + '/countByClasses', function( json ) {
 		console.log(json);
 		var list = json.value;
 		var newJson = {};
@@ -826,7 +826,7 @@ function drawChart2 () {
 		"series": []
 	};
 	var seriesJson = {};
-	$.getJSON('/all/discipline', function( discipline_list ) {
+	$.getJSON(ipField + '/all/discipline', function( discipline_list ) {
 		$.each(discipline_list, function(i, item) {
 			seriesJson[item.discipline_name] = {
 				"type": "column",
@@ -835,7 +835,7 @@ function drawChart2 () {
 			};
 		});
 	});
-	$.getJSON('/countByMajor', function( json ) {
+	$.getJSON(ipField + '/countByMajor', function( json ) {
 		console.log(json);
 		var list = json.value;
 		var newJson = {};
@@ -899,7 +899,7 @@ function drawChart3 () {
 		"series": []
 	};
 	var seriesJson = {};
-	$.getJSON('/all/discipline', function( discipline_list ) {
+	$.getJSON(ipField + '/all/discipline', function( discipline_list ) {
 		$.each(discipline_list, function(i, item) {
 			seriesJson[item.discipline_name] = {
 				"type": "column",
@@ -908,7 +908,7 @@ function drawChart3 () {
 			};
 		});
 	});
-	$.getJSON('/countByYear', function( json ) {
+	$.getJSON(ipField + '/countByYear', function( json ) {
 		console.log(json);
 		var list = json.value;
 		var newJson = {};
