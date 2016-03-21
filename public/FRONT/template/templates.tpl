@@ -303,15 +303,15 @@
 					<li>
 						<a href="#" class="item-link smart-select">
 							<select name="work-attendance">
-								<option value="已到" selected="selected">已到</option>
-								<option value="缺席">缺席</option>
+								<option value="已到">已到</option>
+								<option value="缺席" selected="selected">缺席</option>
 								<option value="请假">请假</option>
 							</select>
 							<div class="item-content">
 								<div class="item-inner">
 									<div class="item-title-row">
 										<div class="item-title">{{name}}</div>
-										<div class="item-after exercise-result">已到</div>
+										<div class="item-after exercise-result">缺席</div>
 									</div>
 									<div class="item-subtitle">{{id}}</div>
 								</div>

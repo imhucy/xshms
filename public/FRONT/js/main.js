@@ -1,3 +1,4 @@
+var ipField = 'http://pushhand.cn:4000'
 /**
  * 加载jQuery.cookie插件
  */
@@ -161,7 +162,7 @@ function LoginBiz(username,password,callback){
  //    },dataFn);
 	showLoading();
 	var userInfo = {};
-	$.post('/loginAction',{login_name: username , login_pass: password})
+	$.post(ipField + '/loginAction',{login_name: username , login_pass: password})
 	.done(function (json){
 		json = $.parseJSON(json);
 		if(json.status == 1){
@@ -173,7 +174,7 @@ function LoginBiz(username,password,callback){
 			userInfo['useres_nickname'] = json.value['useres_name'].substring( json.value['useres_name'].length-2 );
 			userInfo['power_list']      = [];
 
-			$.post('/getRolePower', {roleId: json.value.role_id})
+			$.post(ipField + '/getRolePower', {roleId: json.value.role_id})
 			.done(function (power_list){
 				power_list = $.parseJSON(power_list);
 				Template7.global.power_list = power_list.value[1];

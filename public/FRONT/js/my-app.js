@@ -42,8 +42,9 @@
  * 20.考勤选择页
  * */
  // 初始化轮播图
+var ipField = 'http://pushhand.cn:4000'
 $.ajax({
-	url: '/all/index_image',
+	url: ipField + '/all/index_image',
 	type: 'get',
 	dataType: 'json',
 	async:false
@@ -85,27 +86,27 @@ Template7.global = {
 	}
 };
 /*===== 0.初始化应用数据 =====*/
-$.getJSON('/all/dept').done(function (tableContent){
+$.getJSON(ipField + '/all/dept').done(function (tableContent){
 	Template7.global.depts = tableContent;
 	myApp.template7Data['page:introduction-department']={
 		depts:tableContent
 	}
 });
-$.getJSON('/all/major').done(function (tableContent){
+$.getJSON(ipField + '/all/major').done(function (tableContent){
 	Template7.global.majors = tableContent;
 });
-$.getJSON('/front/getGrades', function(json) {
+$.getJSON(ipField + '/front/getGrades', function(json) {
 	Template7.global.grades = json.value;
 });
-$.getJSON('/front/getBuildings', function(json) {
+$.getJSON(ipField + '/front/getBuildings', function(json) {
 	Template7.global.buildings = json.value;
 });
-$.getJSON('/front/getAllActivity').done(function (activities) {
+$.getJSON(ipField + '/front/getAllActivity').done(function (activities) {
 	myApp.template7Data['page:voluntary-activity']={
 		activities:activities.value
 	}
 });
-$.getJSON('/front/getStudentByMaxGrade', function(json, textStatus) {
+$.getJSON(ipField + '/front/getStudentByMaxGrade', function(json, textStatus) {
 		var students = json.value;
 		var classesData = {};
 		$.each(students,function (i,sItem) {
@@ -153,7 +154,7 @@ myApp.onPageInit('contact', function(page) {
 	var curPage = $(page.container);
 	showLoading();
 	// $.getJSON("jsondata/contacts.json", {}, function(context) {
-	$.getJSON("/front/getUseres", {joinTable:'student'}, function(context) {
+	$.getJSON(ipField + "/front/getUseres", {joinTable:'student'}, function(context) {
 		if(context.status){
 			context.student_list = context.value;
 			console.log(context)
@@ -175,7 +176,7 @@ myApp.onPageInit('meeting-check', function (page) {
 	
 	showLoading();
 	// $.getJSON("jsondata/meeting.json", function(context) {
-	$.getJSON("/front/getUseres",{joinTable:'dept'}, function(context) {
+	$.getJSON(ipField + "/front/getUseres",{joinTable:'dept'}, function(context) {
 		var json = {};
 		json.departments = {};
 
@@ -230,7 +231,7 @@ myApp.onPageInit('meeting-check', function (page) {
 			}
 			ajaxData['attendance_man'] = Template7.global.useres.id;
 			ajaxData['result'] = modal;
-			$.post('/front/postMeetingCheck',{data : JSON.stringify(ajaxData)})
+			$.post(ipField + '/front/postMeetingCheck',{data : JSON.stringify(ajaxData)})
 			.done(function (data){
 				debug && console.log(data);
 				cacheData.set('meetingCache','');
@@ -274,7 +275,7 @@ myApp.onPageInit('morning-check-1',function (page) {
 	    });
 
 			// 请求学生列表
-			$.getJSON('/front/getStudentByGradeBuilding', 
+			$.getJSON(ipField + '/front/getStudentByGradeBuilding', 
 				{
 					enterYear : ajaxData['enterYear'],
 					student_building : ajaxData['student_building']
@@ -431,7 +432,7 @@ myApp.onPageInit('morning-check-2',function (page){
 		// 查寝负责人
 		ajaxData['attendance_man'] = Template7.global['useres']['id'];
 		console.log(ajaxData);
-		$.post('/front/postDormitoryCheck',{data:JSON.stringify(ajaxData)})
+		$.post(ipField + '/front/postDormitoryCheck',{data:JSON.stringify(ajaxData)})
 		.done(function (data){
 			console.log(data);
 			myApp.alert('提交成功',function(){
@@ -473,7 +474,7 @@ myApp.onPageInit('evening-check-1',function (page) {
 	    });
 
 			// 请求学生列表
-			$.getJSON('/front/getStudentByGradeBuilding', 
+			$.getJSON(ipField + '/front/getStudentByGradeBuilding', 
 				{
 					enterYear : ajaxData['enterYear'],
 					student_building : ajaxData['student_building']
@@ -646,7 +647,7 @@ myApp.onPageInit('evening-check-2',function (page){
 		// 查寝负责人
 		ajaxData['attendance_man'] = Template7.global['useres']['id']
 		console.log(ajaxData);
-		$.post('/front/postDormitoryCheck',{data:JSON.stringify(ajaxData)})
+		$.post(ipField + '/front/postDormitoryCheck',{data:JSON.stringify(ajaxData)})
 		.done(function (data){
 			console.log(data);
 			myApp.alert('提交成功',function(){
@@ -722,234 +723,226 @@ myApp.onPageBeforeInit('interview', function(page) {
 });
 
 /*===== 11.报表页面 =====*/
-
+function drawChart () {
+	Highcharts.setOptions({
+		"lang": {
+			"printChart": "打印图表",
+			"downloadJPEG": "导出JPEG图片",
+			"downloadPDF": "导出PDF文档",
+			"downloadPNG": "导出PNG 图片",
+			"downloadSVG": "导出SVG 矢量图",
+			"exportButtonTitle": "导出图片"
+		}
+	});
+	var chart = {
+		"title": {
+			"text": "各班级考勤情况汇总图表"
+		},
+		"subtitle": {
+			"text": new Date().toString()
+		},
+		"xAxis": {
+			"categories": [],
+			"crosshair": true
+		},
+		"yAxis": {
+			"title": {
+				"text": "各项指标对应人数"
+			}
+		},
+		"series": []
+	};
+	var seriesJson = {};
+	$.getJSON('/all/discipline', function( discipline_list ) {
+		$.each(discipline_list, function(i, item) {
+			seriesJson[item.discipline_name] = {
+				"type": "column",
+				"name": item.discipline_name,
+				"data": []
+			};
+		});
+	});
+	$.getJSON('/countByClasses', function( json ) {
+		console.log(json);
+		var list = json.value;
+		var newJson = {};
+		$.each(list, function(i, item) {
+			if ( !newJson[ item.classes_name ] ) {
+				newJson[ item.classes_name ] = {};
+			}
+			newJson[ item.classes_name ][ item.discipline_name ] = item.number;
+		});
+		
+		
+		var categories = [];
+		$.each(newJson, function(classes_name, item) {
+			categories.push(classes_name);
+			
+			$.each(seriesJson, function(discipline_name, obj) {
+				obj['data'].push( newJson[classes_name][discipline_name] || 0 );
+			});
+			
+		});
+		var seriesArray = [];
+		$.each(seriesJson, function(discipline_name	, item) {
+			seriesArray.push(item);
+		});
+		
+		chart['series'] = seriesArray;
+		chart.xAxis.categories = categories;
+		// console.log( JSON.stringify(chart) );
+		$('#container_new').highcharts(chart);
+		drawChart2();
+		myApp.hidePreloader('载入中');
+	});
+}
+function drawChart2 () {
+	Highcharts.setOptions({
+		"lang": {
+			"printChart": "打印图表",
+			"downloadJPEG": "导出JPEG图片",
+			"downloadPDF": "导出PDF文档",
+			"downloadPNG": "导出PNG 图片",
+			"downloadSVG": "导出SVG 矢量图",
+			"exportButtonTitle": "导出图片"
+		}
+	});
+	var chart = {
+		"title": {
+			"text": "各专业考勤情况汇总图表"
+		},
+		"subtitle": {
+			"text": new Date().toString()
+		},
+		"xAxis": {
+			"categories": [],
+			"crosshair": true
+		},
+		"yAxis": {
+			"title": {
+				"text": "各项指标对应人数"
+			}
+		},
+		"series": []
+	};
+	var seriesJson = {};
+	$.getJSON('/all/discipline', function( discipline_list ) {
+		$.each(discipline_list, function(i, item) {
+			seriesJson[item.discipline_name] = {
+				"type": "column",
+				"name": item.discipline_name,
+				"data": []
+			};
+		});
+	});
+	$.getJSON('/countByMajor', function( json ) {
+		console.log(json);
+		var list = json.value;
+		var newJson = {};
+		$.each(list, function(i, item) {
+			if ( !newJson[ item.major_name ] ) {
+				newJson[ item.major_name ] = {};
+			}
+			newJson[ item.major_name ][ item.discipline_name ] = item.number;
+		});
+		
+		
+		var categories = [];
+		$.each(newJson, function(major_name, item) {
+			categories.push(major_name);
+			
+			$.each(seriesJson, function(discipline_name, obj) {
+				obj['data'].push( newJson[major_name][discipline_name] || 0 );
+			});
+			
+		});
+		var seriesArray = [];
+		$.each(seriesJson, function(discipline_name	, item) {
+			seriesArray.push(item);
+		});
+		
+		chart['series'] = seriesArray;
+		chart.xAxis.categories = categories;
+		// console.log( JSON.stringify(chart) );
+		$('#container_new2').highcharts(chart);
+		drawChart3()
+		myApp.hidePreloader();
+	});
+}
+function drawChart3 () {
+	Highcharts.setOptions({
+		"lang": {
+			"printChart": "打印图表",
+			"downloadJPEG": "导出JPEG图片",
+			"downloadPDF": "导出PDF文档",
+			"downloadPNG": "导出PNG 图片",
+			"downloadSVG": "导出SVG 矢量图",
+			"exportButtonTitle": "导出图片"
+		}
+	});
+	var chart = {
+		"title": {
+			"text": "各年级考勤情况汇总图表"
+		},
+		"subtitle": {
+			"text": new Date().toString()
+		},
+		"xAxis": {
+			"categories": [],
+			"crosshair": true
+		},
+		"yAxis": {
+			"title": {
+				"text": "各项指标对应人数"
+			}
+		},
+		"series": []
+	};
+	var seriesJson = {};
+	$.getJSON('/all/discipline', function( discipline_list ) {
+		$.each(discipline_list, function(i, item) {
+			seriesJson[item.discipline_name] = {
+				"type": "column",
+				"name": item.discipline_name,
+				"data": []
+			};
+		});
+	});
+	$.getJSON('/countByYear', function( json ) {
+		console.log(json);
+		var list = json.value;
+		var newJson = {};
+		$.each(list, function(i, item) {
+			if ( !newJson[ item.grade ] ) {
+				newJson[ item.grade ] = {};
+			}
+			newJson[ item.grade ][ item.discipline_name ] = item.number;
+		});
+		
+		
+		var categories = [];
+		$.each(newJson, function(grade, item) {
+			categories.push(grade);
+			
+			$.each(seriesJson, function(discipline_name, obj) {
+				obj['data'].push( newJson[grade][discipline_name] || 0 );
+			});
+			
+		});
+		var seriesArray = [];
+		$.each(seriesJson, function(discipline_name	, item) {
+			seriesArray.push(item);
+		});
+		
+		chart['series'] = seriesArray;
+		chart.xAxis.categories = categories;
+		// console.log( JSON.stringify(chart) );
+		$('#container_new3').highcharts(chart);
+	});
+}
 myApp.onPageBeforeInit('notification-detail-chart', function(page) {
 	myApp.showPreloader('载入中');
-	LoadHighchartScript(function() {
-		Highcharts.setOptions({
-			"lang": {
-				"printChart": "打印图表",
-				"downloadJPEG": "下载JPEG图片",
-				"downloadPDF": "下载PDF文档",
-				"downloadPNG": "下载PNG 图片",
-				"downloadSVG": "下载SVG 矢量图",
-				"exportButtonTitle": "导出图片"
-			}
-		});
-		$.ajax({
-			url: "jsondata/violations-data.json",
-			data: {},
-			dataType: "json",
-			success: function(data) {
-				myApp.hidePreloader();
-
-				var no_back = [],
-					late_back = [],
-					no_lesson = [],
-					illegal_use_of_electricity = [],
-					refuse_to_check = [],
-					no_make_bed = [],
-					no_wake_up = [],
-					no_locked = [],
-					stick_windows = [],
-					morning_exercises_absence = [],
-					meeting_absence = [],
-					leave_off = [],
-					other = [],
-					classes = [];
-				// 各班违纪总人次
-				var all_class_array = [],
-					// 年级违纪总人次
-					sum = 0,
-					// 各班违纪率
-					all_class_violation_rate = [];
-
-
-
-				for (var i = 0; i < data.class.length; i++) {
-					var _this = data.class[i];
-					all_class_array.push(0);
-					for (var type in _this) {
-						switch (type) {
-							case "name":
-								classes.push(_this[type]);
-								break;
-							case "no-back":
-								no_back.push(_this[type]);
-								break;
-							case "late-back":
-								late_back.push(_this[type]);
-								break;
-							case "no-lesson":
-								no_lesson.push(_this[type]);
-								break;
-							case "illegal-use-of-electricity":
-								illegal_use_of_electricity.push(_this[type]);
-								break;
-							case "refuse-to-check":
-								refuse_to_check.push(_this[type]);
-								break;
-							case "no-make-bed":
-								no_make_bed.push(_this[type]);
-								break;
-							case "no-wake-up":
-								no_wake_up.push(_this[type]);
-								break;
-							case "no-locked":
-								no_locked.push(_this[type]);
-								break;
-							case "stick-windows":
-								stick_windows.push(_this[type]);
-								break;
-							case "morning-exercises-absence":
-								morning_exercises_absence.push(_this[type]);
-								break;
-							case "meeting-absence":
-								meeting_absence.push(_this[type]);
-								break;
-							case "leave-off":
-								leave_off.push(_this[type]);
-								break;
-							case "other":
-								other.push(_this[type]);
-								break;
-							default:
-								break;
-						}
-
-						if (type !== "name") {
-							all_class_array[i] += _this[type];
-						}
-
-					}
-				}
-
-				for (var i = 0; i < data.class.length; i++) {
-					sum += all_class_array[i];
-				}
-
-				for (var i = 0; i < data.class.length; i++) {
-					var obj = [data.class[i]["name"], all_class_array[i] / sum];
-					all_class_violation_rate.push(obj);
-				}
-
-				var chart = new Highcharts.Chart({
-					"chart": {
-						"renderTo": "container"
-					},
-					"title": {
-						"text": "各班违纪汇总图表"
-					},
-					"subtitle": {
-						"text": "2015-10-10"
-					},
-					"xAxis": {
-						"categories": classes,
-						"crosshair": true
-					},
-					"yAxis": {
-						"title": {
-							"text": "违 纪 人 数"
-						}
-					},
-					"series": [{
-						"type": "column",
-						"name": "旷课",
-						"data": no_lesson
-					}, {
-						"type": "column",
-						"name": "未归",
-						"data": no_back
-					}, {
-						"type": "column",
-						"name": "晚归",
-						"data": late_back
-					}, {
-						"type": "column",
-						"name": "违章用电",
-						"data": illegal_use_of_electricity
-					}, {
-						"type": "column",
-						"name": "拒检",
-						"data": refuse_to_check
-					}, {
-						"type": "column",
-						"name": "未叠被子",
-						"data": no_make_bed
-					}, {
-						"type": "column",
-						"name": "未起床",
-						"data": no_wake_up
-					}, {
-						"type": "column",
-						"name": "未挂大锁",
-						"data": no_locked
-					}, {
-						"type": "column",
-						"name": "贴可视窗",
-						"data": stick_windows
-					}, {
-						"type": "column",
-						"name": "缺早操",
-						"data": morning_exercises_absence
-					}, {
-						"type": "column",
-						"name": "大会缺席",
-						"data": meeting_absence
-					}, {
-						"type": "column",
-						"name": "其他违纪",
-						"data": other
-					}, {
-						"type": "column",
-						"name": "请假",
-						"data": leave_off
-					}, {
-						"type": "spline",
-						"name": "总违纪数",
-						"data": all_class_array,
-						"marker": {
-							"lineWidth": 2,
-							"lineColor": "green",
-							"fillColor": "white"
-						}
-					}]
-				});
-				var chart2 = new Highcharts.Chart({
-					chart: {
-						plotBackgroundColor: null,
-						plotBorderWidth: null,
-						plotShadow: false,
-						renderTo: "container2"
-					},
-					title: {
-						text: '15级各班违纪率'
-					},
-					tooltip: {
-						pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-					},
-					plotOptions: {
-						pie: {
-							allowPointSelect: true,
-							cursor: 'pointer',
-							dataLabels: {
-								enabled: true
-							},
-							showInLegend: true
-						}
-					},
-					series: [{
-						type: "pie",
-						name: "各班违纪率",
-						data: all_class_violation_rate
-					}]
-				});
-
-			}
-		});
-
-	})
-
+	LoadHighchartScript(drawChart);
 });
 /*===== 12.早操 =====*/
 myApp.onPageInit('exercise-check', function(page) {
@@ -1001,7 +994,7 @@ myApp.onPageInit('exercise-check', function(page) {
 		ajaxData = {};
 		ajaxData[ 'attendance_man' ] = Template7.global.useres.id;
 		ajaxData[ 'result' ] = modal;
-		$.post('/front/postExerciseCheck',{data : JSON.stringify(ajaxData)})
+		$.post(ipField + '/front/postExerciseCheck',{data : JSON.stringify(ajaxData)})
 		.done(function(data){
 			debug && console.log(data);
 			myApp.alert('提交成功',function () {
@@ -1035,7 +1028,7 @@ myApp.onPageInit("information-card", function(page) {
 	showLoading();
 	var userId = Template7.global.userId;
 
-	$.getJSON("/getUserInfoCard",{id:userId},function(json){
+	$.getJSON(ipField + "/getUserInfoCard",{id:userId},function(json){
 
 		var context = json.value[0];
 		context['useres_nickname'] = context['useres_name'].substring(context['useres_name'].length-2);
@@ -1141,7 +1134,7 @@ myApp.onPageInit("apply-for-new", function(page) {
 				var json = myApp.formToJSON('#apply-for-new');
 				console.log(json);
 				$.ajax({
-					url: '/front/newUser',
+					url: ipField + '/front/newUser',
 					type: 'POST',
 					data: json,
 					dataType: 'json',
@@ -1209,7 +1202,7 @@ myApp.onPageInit('apply-for-voluntary',function(page){
 			});
 
 			console.log(ajaxData);
-			$.post('/front/applyForActivity',ajaxData)
+			$.post(ipField + '/front/applyForActivity',ajaxData)
 			.done(function (json){
 				json = $.parseJSON(json);
 				console.log(JSON.stringify( json ) )
@@ -1264,7 +1257,7 @@ myApp.onPageInit('lesson-check-1',function(page){
 		var majorId = curPage.find('[name="majorId"]').val();
 		var enterYear = curPage.find('[name="enterYear"]').val();
 		var classesSelect = curPage.find('[name="classes"]');
-		$.getJSON('/front/getClasses',{majorId:majorId,enterYear:enterYear}
+		$.getJSON(ipField + '/front/getClasses',{majorId:majorId,enterYear:enterYear}
 			, function(json, textStatus) {
 			var data = json.value;
 			var str = '';
@@ -1334,7 +1327,7 @@ myApp.onPageInit('lesson-check-1',function(page){
 			debug && console.log(attendenceDesc);
 			showLoading();
 			// 请求学生列表
-			$.getJSON('/front/getStudentByMajorGradeClasses', 
+			$.getJSON(ipField + '/front/getStudentByMajorGradeClasses', 
 				{
 					majorId : ajaxData['majorId'],
 					enterYear : ajaxData['enterYear'],
@@ -1422,7 +1415,7 @@ myApp.onPageInit('lesson-check-2',function(page){
 		//	此处可以将数据传到后台去
 		var strstr = JSON.stringify(Template7.global.lessonCheck.data);
 		console.log(strstr)
-		$.post('/front/postLessonCheck', {data : strstr})
+		$.post(ipField + '/front/postLessonCheck', {data : strstr})
 		.done(function(json){
 			json = $.parseJSON(json);
 			console.log(json);
@@ -1482,7 +1475,7 @@ myApp.onPageInit('work-attendance',function(page){
 myApp.onPageInit('notification-list',function(page){
 	var curPage = $(page.container);
 	
-	$.getJSON('/front/getNoticeList', function(json, textStatus) {
+	$.getJSON(ipField + '/front/getNoticeList', function(json, textStatus) {
 		var data = {
 			lists : json.value
 		};
@@ -1511,7 +1504,7 @@ myApp.onPageInit('notification-list',function(page){
 myApp.onPageInit('activity-list',function(page){
 	var curPage = $(page.container);
 	
-	$.getJSON('/front/getMyActivity', {id:Template7.global.useres.id}, function(json, textStatus) {
+	$.getJSON(ipField + '/front/getMyActivity', {id:Template7.global.useres.id}, function(json, textStatus) {
 		var data = {
 			lists : json.value
 		};
@@ -1592,7 +1585,7 @@ myApp.onPageInit('my-task',function(page){
     // setTimeout(function(){
     //   myApp.pullToRefreshDone();
     // },2000);
-    $.getJSON('/front/getMyTask',{id : Template7.global.useres.id},function(json){
+    $.getJSON(ipField + '/front/getMyTask',{id : Template7.global.useres.id},function(json){
 	  	var context = {};
 	  	context['taskList'] = json.value;{
 		  if (json.value && json.value.length !== 0)
@@ -1603,7 +1596,7 @@ myApp.onPageInit('my-task',function(page){
 	  });
   });
   //  请求数据
-  $.getJSON('/front/getMyTask',{id : Template7.global.useres.id},function(json){
+  $.getJSON(ipField + '/front/getMyTask',{id : Template7.global.useres.id},function(json){
   	var context = {};
   	context['taskList'] = json.value;
   	if (json.value && json.value.length !== 0){
@@ -1619,7 +1612,7 @@ myApp.onPageInit('voluntary-contact', function(page) {
   // console.log('myApp.template7Data["page:voluntary-contact-data"] : ' + myApp.template7Data["page:voluntary-contact-data"])
   showLoading();
 
-  $.getJSON("/front/getVolunteerList", {ids:volunteer_ids}, function(context) {
+  $.getJSON(ipField + "/front/getVolunteerList", {ids:volunteer_ids}, function(context) {
     $('.ajaxContain').html(compileScript('#VolunteerList', context));
     hideLoading();
   });
@@ -1650,7 +1643,7 @@ myApp.onPageInit('idea-box-submit',function (page) {
 		}
 		else{
 			showLoading();
-			$.post('/front/postIBox',ajaxData)
+			$.post(ipField + '/front/postIBox',ajaxData)
 			.done(function (json) {
 				hideLoading();
 				json = $.parseJSON(json);
@@ -1685,7 +1678,7 @@ myApp.onPageInit('setting-password',function (page) {
 		}else{
 			ajaxData[ 'id' ] = curPage.find('[name="id"]').val();
 			// console.log( ajaxData );
-			$.post('/setPsw',ajaxData)
+			$.post(ipField + '/setPsw',ajaxData)
 			.done(function (data) {
 				// console.log(data);
 				var json = $.parseJSON(data);
