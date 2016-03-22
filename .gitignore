@@ -1,3 +1,4 @@
 #gitignore node modules
 node_modules/
 public/notification/
+public/FRONT/img/index_image/
